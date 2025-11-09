@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const HERO = document.getElementById('hero');
     const INTERACTIVE = document.getElementById('interactive');
     const DOT = document.getElementById('dot-cursor');
+    // NEW: Get all navigation links
+    const NAV_LINKS = document.querySelectorAll('.glass-island a'); 
 
     const TOTAL_IMAGES_AVAILABLE = 26; // Image files 1.jpg to 26.jpg
     const SHOW_COUNT = 25; // Number of cards to create (Adjust this number if you need fewer cards)
@@ -120,8 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentX = 0, currentY = 0;
     let targetScale = 1, currentScale = 1;
 
-    const PAN_RANGE_X = 0.22; // Adjusted down from 0.28 for less movement
-    const PAN_RANGE_Y = 0.16; // Adjusted down from 0.18 for less movement
+    const PAN_RANGE_X = 0.22; 
+    const PAN_RANGE_Y = 0.16; 
     const EASE = 0.08;
     const SCALE_EASE = 0.06;
 
@@ -144,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         targetScale = Math.max(0.85, Math.min(1.22, targetScale));
     }
 
-    // --- Cursor Tracking ---
+    // --- Cursor Tracking and Hover Effects ---
 
     let mouseX = window.innerWidth/2, mouseY = window.innerHeight/2;
     let dotX = mouseX, dotY = mouseY;
@@ -152,22 +154,40 @@ document.addEventListener('DOMContentLoaded', () => {
         mouseX = e.clientX; mouseY = e.clientY;
     });
 
-    // enlarge cursor on card hover
-    document.addEventListener('mouseover', (ev)=>{
-        const card = ev.target.closest && ev.target.closest('.artwork-card');
-        if(card){
+    // Helper function to apply hover styles
+    function applyHoverStyles(isHovering){
+        if(isHovering){
             DOT.style.width = '26px';
             DOT.style.height = '26px';
-            DOT.style.backgroundColor = 'rgba(0,0,0,0.85)';
-        }
-    });
-    document.addEventListener('mouseout', (ev)=>{
-        const card = ev.target.closest && ev.target.closest('.artwork-card');
-        if(card){
+            // Keeping cursor black on hover for visibility, adjusting opacity for effect
+            DOT.style.backgroundColor = 'rgba(0,0,0,0.85)'; 
+        } else {
+            // Revert to default styles defined by CSS variables
             DOT.style.width = '';
             DOT.style.height = '';
             DOT.style.backgroundColor = '';
         }
+    }
+
+    // Hover over Artwork Cards
+    document.addEventListener('mouseover', (ev)=>{
+        const card = ev.target.closest && ev.target.closest('.artwork-card');
+        if(card) applyHoverStyles(true);
+    });
+    document.addEventListener('mouseout', (ev)=>{
+        const card = ev.target.closest && ev.target.closest('.artwork-card');
+        // Only revert if not hovering over a link (to prevent flicker)
+        if(card && !ev.target.closest('.glass-island a')) applyHoverStyles(false);
+    });
+
+    // NEW: Hover over Navigation Links
+    NAV_LINKS.forEach(link => {
+        link.addEventListener('mouseenter', () => applyHoverStyles(true));
+        link.addEventListener('mouseleave', () => {
+            // Check if the cursor is currently over an artwork card before reverting
+            const overCard = document.querySelector('.artwork-card:hover');
+            if(!overCard) applyHoverStyles(false);
+        });
     });
 
     // --- Main Animation Loop (requestAnimationFrame) ---
