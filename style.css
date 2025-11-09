@@ -1,5 +1,5 @@
 /*
- * main.css - FINAL COMBINED FILE with Darker Cursor
+ * main.css - FINAL COMBINED FILE with Solid Black Cursor
  */
 
 /* ================================================= */
@@ -28,11 +28,11 @@
 /* 2. MAIN STYLING                                   */
 /* ================================================= */
 
-/* --- Custom Properties - ADJUSTED DOT COLOR --- */
+/* --- Custom Properties --- */
 :root{
     --bg: #fff;
     --dot-size: 14px; 
-    --dot-color: #000; /* CHANGED: Pure black for a darker cursor */
+    --dot-color: #000; /* Pure black */
     --card-radius: 16px;
     --card-shadow: 0 18px 40px rgba(0,0,0,0.18);
     --border-radius-lg: 50px;
@@ -64,13 +64,13 @@ body{
     align-items: center;
 }
 
-/* Interactive Area - ADJUSTED SIZE FOR SPACING */
+/* Interactive Area */
 #interactive {
     position:absolute;
     left:50%;
     top:50%;
-    width: 350vw; /* Increased from 300vw */
-    height: 270vh; /* Increased from 220vh */
+    width: 350vw; 
+    height: 270vh; 
     transform: translate3d(-50%,-50%,0) translateZ(0);
     transform-style: preserve-3d;
     will-change: transform;
@@ -156,20 +156,20 @@ body{
     100% { transform: translate3d(-8px, 10px, 0) rotateZ(-2.2deg); }
 }
 
-/* --- Dot Cursor --- */
+/* --- Dot Cursor - REMOVED mix-blend-mode --- */
 #dot-cursor {
     position:fixed;
     left:0;
     top:0;
-    width:var(--dot-size); /* Uses the updated --dot-size */
-    height:var(--dot-size); /* Uses the updated --dot-size */
-    background:var(--dot-color); /* Uses the updated --dot-color */
+    width:var(--dot-size); 
+    height:var(--dot-size); 
+    background:var(--dot-color); 
     border-radius:50%;
     transform: translate(-50%,-50%);
     pointer-events:none;
     z-index:99999;
     transition: width 150ms ease, height 150ms ease, background-color 200ms;
-    mix-blend-mode: difference;
+    /* REMOVED: mix-blend-mode: difference; */
 }
 
 /* --- Scroll Indicator --- */
@@ -188,6 +188,5 @@ body{
 
 /* --- Responsive Tweaks --- */
 @media (max-width:900px){
-    /* Adjusted dot size for mobile too */
     :root { --dot-size: 12px; --card-radius:12px; } 
 }
