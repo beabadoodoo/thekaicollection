@@ -1,5 +1,5 @@
 /*
- * main.css - FINAL COMBINED FILE with Transparency and Larger Cursor + KAI Title
+ * main.css - FINAL COMBINED FILE with Darker Cursor
  */
 
 /* ================================================= */
@@ -28,11 +28,11 @@
 /* 2. MAIN STYLING                                   */
 /* ================================================= */
 
-/* --- Custom Properties - ADJUSTED DOT SIZE --- */
+/* --- Custom Properties - ADJUSTED DOT COLOR --- */
 :root{
     --bg: #fff;
-    --dot-size: 14px; /* Increased from 10px for a slightly larger default cursor */
-    --dot-color: #111;
+    --dot-size: 14px; 
+    --dot-color: #000; /* CHANGED: Pure black for a darker cursor */
     --card-radius: 16px;
     --card-shadow: 0 18px 40px rgba(0,0,0,0.18);
     --border-radius-lg: 50px;
@@ -163,7 +163,7 @@ body{
     top:0;
     width:var(--dot-size); /* Uses the updated --dot-size */
     height:var(--dot-size); /* Uses the updated --dot-size */
-    background:var(--dot-color);
+    background:var(--dot-color); /* Uses the updated --dot-color */
     border-radius:50%;
     transform: translate(-50%,-50%);
     pointer-events:none;
