@@ -1,0 +1,193 @@
+/*
+ * main.css - FINAL COMBINED FILE with Transparency and Larger Cursor + KAI Title
+ */
+
+/* ================================================= */
+/* 1. FONT DEFINITIONS: Athletics                    */
+/* ================================================= */
+
+@font-face {
+  font-family: 'Athletics';
+  font-style: normal;
+  font-weight: 400; /* Regular weight, for navigation */
+  font-display: swap;
+  /* Ensure these paths are correct for your files! */
+  src: url('./fonts/Athletics Regular.otf') format('opentype'); 
+}
+
+@font-face {
+  font-family: 'Athletics';
+  font-style: normal;
+  font-weight: 500; /* Medium weight, for KAI title */
+  font-display: swap;
+  /* Ensure these paths are correct for your files! */
+  src: url('./fonts/Athletics Medium.otf') format('opentype'); 
+}
+
+/* ================================================= */
+/* 2. MAIN STYLING                                   */
+/* ================================================= */
+
+/* --- Custom Properties - ADJUSTED DOT SIZE --- */
+:root{
+    --bg: #fff;
+    --dot-size: 14px; /* Increased from 10px for a slightly larger default cursor */
+    --dot-color: #111;
+    --card-radius: 16px;
+    --card-shadow: 0 18px 40px rgba(0,0,0,0.18);
+    --border-radius-lg: 50px;
+}
+
+/* --- Global Reset & Body --- */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+    background:var(--bg);
+    overflow:hidden;
+    cursor:none; 
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    /* Apply Athletics globally (default weight is 400) */
+    font-family: 'Athletics', Arial, sans-serif; 
+}
+
+/* --- Hero & Background Containers --- */
+.hero {
+    position:relative;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+    perspective:1500px;
+    background:linear-gradient(180deg, #fff 0%, #fbfbfb 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Interactive Area - ADJUSTED SIZE FOR SPACING */
+#interactive {
+    position:absolute;
+    left:50%;
+    top:50%;
+    width: 350vw; /* Increased from 300vw */
+    height: 270vh; /* Increased from 220vh */
+    transform: translate3d(-50%,-50%,0) translateZ(0);
+    transform-style: preserve-3d;
+    will-change: transform;
+    pointer-events:none; 
+}
+
+/* --- KAI Header & Title --- */
+.navbar {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+}
+.glass-island {
+    display: flex;
+    gap: 30px;
+    padding: 15px 30px;
+    border-radius: var(--border-radius-lg);
+    /* Liquid Glass Effect */
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px) saturate(180%);
+    -webkit-backdrop-filter: blur(10px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease;
+}
+.glass-island a {
+    color: #000;
+    text-decoration: none;
+    /* Navigation: Set to 400 (Regular) */
+    font-weight: 400; 
+    font-size: 1.1rem;
+    transition: color 0.3s ease-in-out;
+    padding: 5px 0;
+    font-family: 'Athletics', sans-serif; 
+}
+
+.luis-title {
+    position: absolute;
+    left: 50%; /* Ensures horizontal centering */
+    top: 55%; /* Pushes the title down 5% from the center point */
+    /* Adjusts for its own size (-50% on x and y) and adds an additional 5vh nudge down */
+    transform: translate(-50%, -50%) translateY(5vh); 
+    font-size: clamp(10rem, 25vw, 30rem);
+    /* Title: Set to 500 (Medium) */
+    font-weight: 500; 
+    letter-spacing: -0.05em;
+    line-height: 0.8;
+    color: rgba(0, 0, 0, 0.95);
+    user-select: none;
+    z-index: 100;
+    font-family: 'Athletics', sans-serif; 
+}
+
+/* --- Artwork Card Styling (Floating boxes) --- */
+.artwork-card {
+    position:absolute;
+    border-radius:var(--card-radius);
+    overflow:hidden;
+    box-shadow: var(--card-shadow);
+    background:#eee;
+    pointer-events:auto;
+    will-change: transform, opacity;
+    transition: transform 350ms cubic-bezier(.2,.9,.2,1), opacity 450ms ease;
+    touch-action: none;
+}
+.artwork-card img{
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transform-origin:center center;
+    pointer-events:none;
+    user-select:none;
+    opacity: 0.85; /* Slightly transparent images */
+}
+
+/* --- Drift Animation (Fixed) --- */
+@keyframes drift {
+    0% { transform: translate3d(0, 0, 0) rotateZ(0deg); }
+    50% { transform: translate3d(18px, -12px, 0) rotateZ(2.2deg); }
+    100% { transform: translate3d(-8px, 10px, 0) rotateZ(-2.2deg); }
+}
+
+/* --- Dot Cursor --- */
+#dot-cursor {
+    position:fixed;
+    left:0;
+    top:0;
+    width:var(--dot-size); /* Uses the updated --dot-size */
+    height:var(--dot-size); /* Uses the updated --dot-size */
+    background:var(--dot-color);
+    border-radius:50%;
+    transform: translate(-50%,-50%);
+    pointer-events:none;
+    z-index:99999;
+    transition: width 150ms ease, height 150ms ease, background-color 200ms;
+    mix-blend-mode: difference;
+}
+
+/* --- Scroll Indicator --- */
+.scroll-indicator {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    z-index: 100;
+    font-family: 'Athletics', sans-serif; 
+}
+
+/* --- Responsive Tweaks --- */
+@media (max-width:900px){
+    /* Adjusted dot size for mobile too */
+    :root { --dot-size: 12px; --card-radius:12px; } 
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Gallery - The Kai Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="dark-mode">
+    
+    <header id="main-header"> 
+        <nav>
+            <div class="logo">
+                <a href="index.html">THE KAI COLLECTION</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html#hero">Home</a></li>
+                <li><a href="#">Gallery</a></li>
+                <li><a href="index.html#commission-section">Commission</a></li>
+                <li><a href="index.html#contact-footer">Contact</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="icon-button" aria-label="Toggle dark/light mode"><i class="fas fa-sun"></i></button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="full-gallery" class="section-padding">
+            <h2>FULL ARTWORK GALLERY</h2>
+            <p class="subtitle">A complete visual journey of traditional art created for clients.</p>
+            <div class="gallery-grid-full">
+                </div>
+        </section>
+    </main>
+    
+    <footer id="contact-footer" class="section-padding">
+        <p class="copyright">&copy; 2024 The Kai Collection. All rights reserved.</p>
+    </footer>
+
+    <div id="lightbox" class="lightbox-modal">
+        <span class="lightbox-close" tabindex="0" aria-label="Close image preview">&times;</span>
+        <img class="lightbox-content" id="lightbox-img" alt="Artwork preview">
+        <a class="lightbox-prev" tabindex="0" aria-label="Previous image">&#10094;</a>
+        <a class="lightbox-next" tabindex="0" aria-label="Next image">&#10095;</a>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
