@@ -6,7 +6,7 @@
     <title>LÜIS | Creative Agency</title>
     <style>
 /*
- * style.css - FINAL VERSION (Mas Mahabang Lines at Bahagyang Mas Malalaking Floating Pics)
+ * style.css - FINAL VERSION (Stacking Transition)
  */
 
 /* ================================================= */
@@ -117,7 +117,8 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
 .content-section {
     position: fixed; bottom: 0; left: 50%; width: var(--final-width-percent); height: var(--final-height-percent);
     transform: translateX(-50%) translateY(100%); 
-    z-index: 5; pointer-events: none; border-radius: var(--initial-border-radius); 
+    z-index: 5; /* Layer 1 */
+    pointer-events: none; border-radius: var(--initial-border-radius); 
     will-change: transform, border-radius, opacity; overflow: hidden;
     opacity: 0; 
     transition: none;
@@ -125,7 +126,7 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
 
 .black-overlay { position: absolute; inset: 0; background-color: var(--dark-bg); }
 
-/* 1. Main Content (Top-Left - RETAINED Original Style) */
+/* 1. Main Content (Top-Left) */
 .section-content {
     position: absolute; 
     top: 15%; 
@@ -143,7 +144,7 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
     font-size: 1.5em; font-weight: 500; margin-bottom: 10px;
 }
 
-/* 2. Footer Text (Bottom-Right - UPDATED for Larger Font & More Indentation) */
+/* 2. Footer Text (Bottom-Right) */
 .section-footer-text {
     position: absolute;
     bottom: var(--spacing-xl-footer); /* 120px */
@@ -159,10 +160,69 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
     pointer-events: auto;
 }
 
+/* IDINAGDAG: WHITE CARD SECTION */
+.white-section {
+    position: fixed; 
+    bottom: 0; 
+    left: 50%; 
+    width: var(--final-width-percent); 
+    height: var(--final-height-percent);
+    transform: translateX(-50%) translateY(100%); 
+    z-index: 7; /* Layer 2: Mas mataas kaysa black card */
+    pointer-events: none; 
+    border-radius: var(--initial-border-radius); 
+    will-change: transform, border-radius, opacity;
+    overflow: hidden;
+    opacity: 0; 
+    transition: none;
+}
+
+.white-overlay {
+    position: absolute; 
+    inset: 0; 
+    background-color: var(--bg-light); /* White background */
+}
+
+/* INAYOS: Smaller Font, Wider Area, Consistent Left Spacing (10%) */
+.white-section-content {
+    position: absolute;
+    top: 15%; 
+    left: 10%; /* NEW: Mas malawak ang espasyo sa kaliwa (10%) */
+    transform: none; 
+    text-align: left; 
+    z-index: 8; 
+    color: var(--text-dark); 
+    font-family: 'Athletics', sans-serif;
+    font-weight: 400; 
+    
+    /* NEW: Mas maliit na font size */
+    font-size: clamp(1.2rem, 3vw, 2.2rem); 
+    
+    line-height: 1.3;
+    
+    /* NEW: Mas malawak na max-width para hindi masikip */
+    max-width: 1200px; 
+    
+    padding-right: 10%; /* NEW: Espasyo sa kanan (10%) */
+    pointer-events: auto;
+}
+
+.white-tag {
+    display: inline-block;
+    border: 1px solid var(--text-dark);
+    border-radius: var(--border-radius-lg);
+    padding: 8px 25px;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 30px;
+}
+/* END WHITE CARD SECTION */
+
 
 /* Footer Spacer (Crucial for Scroll Distance) */
 .footer-spacer { 
-    height: 650vh; 
+    /* Dinedoble ang scroll range para sa stacking effect */
+    height: 450vh; 
     background-color: transparent; 
     z-index: 4; 
 }
@@ -191,8 +251,16 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
     
     /* Mobile Menu - I-hide ang hamburger icon kapag bukas */
     .menu-open .hamburger-menu {
-        pointer-events: none; /* Hindi na pwedeng i-click */
+        pointer-events: none; 
         opacity: 0;
+    }
+    
+    /* Mobile White Card Spacing */
+    .white-section-content {
+        font-size: clamp(1.2rem, 5vw, 2.5rem);
+        max-width: 95vw;
+        left: var(--spacing-md); /* Use smaller mobile spacing */
+        padding-right: var(--spacing-md);
     }
 }
 
@@ -208,26 +276,26 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
     width: 100vw;
     height: 100vh;
     background-color: var(--dark-bg); /* Black background */
-    z-index: 500; /* Dapat nasa ibabaw ng lahat */
+    z-index: 500; 
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Center ang links vertically */
+    justify-content: center; 
     align-items: center;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s ease-in-out;
-    padding: 100px 20px; /* Space para sa logo/close button */
+    padding: 100px 20px; 
 }
 
 /* Menu header para sa logo */
 .menu-header {
     position: absolute;
     top: 30px;
-    left: var(--spacing-md); /* Same left padding as navbar */
+    left: var(--spacing-md); 
     z-index: 510;
 }
 .menu-header .luis-logo {
-    color: var(--text-light); /* Gawing puti ang logo */
+    color: var(--text-light); 
 }
 
 .fullscreen-menu.is-open {
@@ -239,17 +307,16 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
     list-style: none;
     text-align: center;
     width: 100%; 
-    max-width: 950px; /* **BINAGO: Ginawang 950px para mas mahaba** */
+    max-width: none; 
 }
 
 .menu-links li {
     margin: 0;
-    /* Ginawang mas light ang border opacity */
     border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+    padding: 0 var(--spacing-md); 
 }
 
 .menu-links li:first-child {
-    /* Ginawang mas light ang border opacity */
     border-top: 1px solid rgba(255, 255, 255, 0.1); 
 }
 
@@ -356,12 +423,22 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
         </div>
 
     </div>
-
+    
+    <div class="white-section" id="white-section">
+        <div class="white-overlay"></div>
+        
+        <div class="white-section-content">
+            <span class="white-tag">The Kai Collection</span>
+            <h1>Digital and traditional art. Watercolor, realism, anime, cartoons.</h1>
+            <p>Let’s make something memorable.</p>
+        </div>
+        
+    </div>
     <div class="footer-spacer"></div>
 
     <script>
 /*
- * script.js - FINAL VERSION (Larger Parallax Pics)
+ * script.js - FINAL VERSION (Stacking Animation: Black up, then White up over Black)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -369,6 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const HERO = document.getElementById('hero');
     const INTERACTIVE = document.getElementById('interactive');
     const INTRO_SECTION = document.getElementById('intro-section');
+    const WHITE_SECTION = document.getElementById('white-section'); 
     const NAVBAR = document.getElementById('navbar');
     
     // Menu Elements
@@ -385,20 +463,20 @@ document.addEventListener('DOMContentLoaded', () => {
     function openMenu() {
         FULLSCREEN_MENU.classList.add('is-open');
         BODY.classList.add('menu-open');
-        BODY.style.overflow = 'hidden'; // Pigilan ang page scroll kapag bukas ang menu
+        BODY.style.overflow = 'hidden'; 
     }
 
     function closeMenu() {
         FULLSCREEN_MENU.classList.remove('is-open');
         BODY.classList.remove('menu-open');
-        BODY.style.overflow = 'auto'; // Ibalik ang scroll
-        handleScroll(); // I-refresh ang scroll state
+        BODY.style.overflow = 'auto'; 
+        handleScroll(); 
     }
 
     HAMBURGER_OPEN.addEventListener('click', openMenu);
     HAMBURGER_CLOSE.addEventListener('click', closeMenu);
     
-    // Auto-close menu kapag kinlick ang link sa loob
+    // Auto-close menu
     FULLSCREEN_MENU.querySelectorAll('.menu-links a').forEach(link => {
         link.addEventListener('click', closeMenu);
     });
@@ -447,7 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'artwork-card';
             
-            // BINAGO: Bahagyang itinaas ang base at range para lumaki ang pics
+            // Mas malaki ang pics (Base 220 + Math.random()*280)
             const w = Math.floor(220 + Math.random()*280); 
             
             const h = Math.floor(w * (0.68 + Math.random()*0.48));
@@ -501,7 +579,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function animate(){
-        // Walang return statement, kaya tuloy ang animation kahit bukas ang menu
+        // Walang return statement
         currentX += (targetX - currentX) * EASE;
         currentY += (targetY - currentY) * EASE;
         currentScale += (targetScale - currentScale) * SCALE_EASE;
@@ -524,53 +602,97 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(animate);
     }
     
-    // --- The Crucial Scroll Animation Function (Black Card Slide) ---
+    // --- The Crucial Scroll Animation Function (Stacking Cards) ---
     function handleScroll() {
         const scrollY = window.scrollY;
         const heroHeight = HERO.offsetHeight;
-        const section = INTRO_SECTION;
         
-        /* SLOW SCROLL: 6.0x ang scroll range */
-        const startScroll = heroHeight * 0;
-        const endScroll = heroHeight * 6.0; 
-        let progress = 0;
+        // Stacking Logic: Black Card 0.0x to 1.5x. White Card 1.5x to 3.0x.
+        const SCROLL_RANGE_PER_CARD = 1.5; 
+        
+        // Stage 1: Black Card In (0.0x to 1.5x)
+        const startBlackIn = heroHeight * 0.0;
+        const endBlackIn = heroHeight * SCROLL_RANGE_PER_CARD; 
+        
+        // Stage 2: White Card In (1.5x to 3.0x)
+        const startWhiteIn = endBlackIn; // Starts where black ends
+        const endWhiteIn = endBlackIn + (heroHeight * SCROLL_RANGE_PER_CARD); 
+        // Total scroll distance is 3.0x hero height. (Footer spacer is 450vh)
 
-        if (scrollY > startScroll) {
-            progress = (scrollY - startScroll) / (endScroll - startScroll);
-            progress = Math.min(1, Math.max(0, progress));
+
+        const translateYStart = 100; // Outside view
+        const translateYDiff = 100;
+
+        // --- 1. BLACK CARD LOGIC (In and Hold) ---
+        let progressBlackIn = 0;
+
+        if (scrollY >= startBlackIn && scrollY <= endBlackIn) {
+            progressBlackIn = (scrollY - startBlackIn) / (endBlackIn - startBlackIn);
+        } else if (scrollY > endBlackIn) {
+            progressBlackIn = 1; // Mananatiling naka-full screen
         }
 
-        // Smooth Easing (Septic Ease Out)
-        const eased = 1 - Math.pow(1 - progress, 7);
+        const easedBlackIn = 1 - Math.pow(1 - progressBlackIn, 7);
 
-        // 1. Vertical Position (Smooth Slide Up/Down)
-        const translateYStart = 100;
-        const translateYEnd = 0; 
-        const translateYDiff = translateYStart - translateYEnd;
+        // A. VERTICAL POSITION (In and Hold)
+        let currentTranslateYBlack = translateYStart - translateYDiff * easedBlackIn;
 
-        const translateY = translateYStart - translateYDiff * eased;
-        section.style.transform = `translateX(-50%) translateY(${translateY}%)`;
+        INTRO_SECTION.style.transform = `translateX(-50%) translateY(${currentTranslateYBlack}%)`;
 
-        // 2. Border Radius (Mananatili ang roundness)
-        const radiusDiff = initialBorderRadius - finalTopRadius;
-        const currentTopRadius = initialBorderRadius - radiusDiff * eased;
-        const currentBottomRadius = 0; 
-
-        section.style.borderRadius = `${currentTopRadius}px ${currentTopRadius}px ${currentBottomRadius}px ${currentBottomRadius}px`;
-
-        // 3. Card Opacity (SOLID BLACK - 100% Opacity agad pag nagsimula ang scroll)
-        if (progress > 0) {
-            section.style.opacity = 1;
-            
-            // Header color change logic: Only apply white color when black card is almost fully engaged (eased > 0.9)
-            if (eased > 0.9) { 
-                NAVBAR.classList.add('on-dark-bg');
-            } else {
-                NAVBAR.classList.remove('on-dark-bg');
-            }
+        // B. BORDER RADIUS & OPACITY (Visible lang kapag umaakyat/naka-hold)
+        if (progressBlackIn > 0) {
+             const easedRadius = 1 - Math.pow(1 - progressBlackIn, 5);
+             const radiusDiff = initialBorderRadius - finalTopRadius;
+             const currentTopRadius = initialBorderRadius - radiusDiff * easedRadius;
+             INTRO_SECTION.style.borderRadius = `${currentTopRadius}px ${currentTopRadius}px 0px 0px`;
+             INTRO_SECTION.style.opacity = 1;
 
         } else {
-            section.style.opacity = 0;
+             INTRO_SECTION.style.opacity = 0; 
+        }
+
+
+        // --- 2. WHITE CARD LOGIC (In and Hold, Over Black Card) ---
+        let progressWhiteIn = 0;
+        
+        if (scrollY >= startWhiteIn && scrollY <= endWhiteIn) {
+            progressWhiteIn = (scrollY - startWhiteIn) / (endWhiteIn - startWhiteIn);
+            progressWhiteIn = Math.min(1, Math.max(0, progressWhiteIn));
+        } else if (scrollY > endWhiteIn) {
+            progressWhiteIn = 1; // Naka-full screen
+        }
+
+        // Gamitin ang Easing para Dahan-Dahan ang pag-akyat
+        const easedWhiteIn = 1 - Math.pow(1 - progressWhiteIn, 7);
+
+        // A. VERTICAL POSITION
+        let currentTranslateYWhite = translateYStart;
+        if (progressWhiteIn > 0) {
+            // Pag-akyat ng White Card
+            currentTranslateYWhite = translateYStart - translateYDiff * easedWhiteIn;
+        }
+
+        WHITE_SECTION.style.transform = `translateX(-50%) translateY(${currentTranslateYWhite}%)`;
+        
+        // B. BORDER RADIUS & OPACITY
+        if (progressWhiteIn > 0.01) { 
+            const radiusDiff = initialBorderRadius - finalTopRadius;
+            const currentTopRadius = initialBorderRadius - radiusDiff * easedWhiteIn;
+            WHITE_SECTION.style.borderRadius = `${currentTopRadius}px ${currentTopRadius}px 0px 0px`;
+            WHITE_SECTION.style.opacity = 1;
+        } else {
+            WHITE_SECTION.style.opacity = 0;
+        }
+
+
+        // --- 3. NAVBAR COLOR CHANGE LOGIC ---
+        // Navbar is white on black card, black on white card/hero
+        const isWhiteCardVisible = currentTranslateYWhite < 99; // < 100
+        const isBlackCardVisible = currentTranslateYBlack < 99;
+
+        if (isBlackCardVisible && !isWhiteCardVisible) { 
+            NAVBAR.classList.add('on-dark-bg');
+        } else {
             NAVBAR.classList.remove('on-dark-bg');
         }
     }
@@ -593,7 +715,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('mousemove', onMouseMove);
 
-    // Touch support (for mobile parallax)
+    // Touch support 
     let lastTouch = null;
     HERO.addEventListener('touchstart', (e)=> lastTouch = e.touches[0]);
     HERO.addEventListener('touchmove', (e)=>{
