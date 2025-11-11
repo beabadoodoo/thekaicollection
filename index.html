@@ -80,11 +80,11 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
     background-color: var(--text-dark); transition: background-color 0.3s ease-in-out; 
 }
 
-/* Color change when scrolled (Fixed) */
-.scrolled .luis-logo { color: var(--text-light); }
-.scrolled .hamburger-menu span { background-color: var(--text-light); }
-.scrolled .glass-island { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.4); }
-.scrolled .glass-island a { color: var(--text-light); }
+/* Color change when the black card is engaged */
+.on-dark-bg .luis-logo { color: var(--text-light); } 
+.on-dark-bg .hamburger-menu span { background-color: var(--text-light); } 
+.on-dark-bg .glass-island { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.4); } 
+.on-dark-bg .glass-island a { color: var(--text-light); } 
 
 
 /* Main Hero Title */
@@ -133,7 +133,7 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
     transform: none; 
     text-align: left; z-index: 6; color: #fff; font-family: 'Athletics', sans-serif; 
     font-weight: 400; 
-    font-size: clamp(1.2rem, 3.5vw, 2.5rem); /* RETAINED original smaller font */
+    font-size: clamp(1.2rem, 3.5vw, 2.5rem); 
     line-height: 1.4; 
     padding-right: var(--spacing-lg); /* 80px */
     opacity: 1; 
@@ -146,14 +146,14 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
 /* 2. Footer Text (Bottom-Right - UPDATED for Larger Font & More Indentation) */
 .section-footer-text {
     position: absolute;
-    bottom: var(--spacing-xl-footer); /* UPDATED: 120px */
-    right: var(--spacing-xl-footer); /* UPDATED: 120px */
+    bottom: var(--spacing-xl-footer); /* 120px */
+    right: var(--spacing-xl-footer); /* 120px */
     text-align: right;
     z-index: 6;
     color: #fff;
     font-family: 'Athletics', sans-serif;
     font-weight: 400;
-    font-size: clamp(1.1rem, 2.5vw, 1.8rem); /* UPDATED: Increased Font Size */
+    font-size: clamp(1.1rem, 2.5vw, 1.8rem); /* Increased Font Size */
     opacity: 1; 
     max-width: 400px;
     pointer-events: auto;
@@ -172,7 +172,7 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
         --final-top-radius: 20px; 
         --spacing-lg: 40px; 
         --spacing-md: 20px; 
-        --spacing-xl-footer: 40px; /* Adjusted Mobile Footer Spacing */
+        --spacing-xl-footer: 40px; 
     }
     .section-content { 
         font-size: clamp(1rem, 5vw, 1.8rem); 
@@ -183,7 +183,7 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
     .section-footer-text {
         bottom: var(--spacing-md);
         right: var(--spacing-md);
-        font-size: clamp(0.9rem, 3.5vw, 1.2rem); /* Adjusted Mobile Footer Font */
+        font-size: clamp(0.9rem, 3.5vw, 1.2rem); 
     }
     .luis-title { font-size: clamp(10rem, 30vw, 30rem); }
     .navbar { padding: 0 var(--spacing-md); }
@@ -234,7 +234,7 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
 
     <script>
 /*
- * script.js - FINAL VERSION (Full Functionality Restored)
+ * script.js - FINAL VERSION (Header Color Triggered by Black Card)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -402,15 +402,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3. Card Opacity (SOLID BLACK - 100% Opacity agad pag nagsimula ang scroll)
         if (progress > 0) {
             section.style.opacity = 1;
-            // Header color change based on scroll
-            if (eased > 0.1) {
-                NAVBAR.classList.add('scrolled');
+            
+            // UPDATED: Header color change logic: Only apply white color when black card is almost fully engaged (eased > 0.9)
+            if (eased > 0.9) { 
+                NAVBAR.classList.add('on-dark-bg');
             } else {
-                NAVBAR.classList.remove('scrolled');
+                NAVBAR.classList.remove('on-dark-bg');
             }
+
         } else {
             section.style.opacity = 0;
-            NAVBAR.classList.remove('scrolled');
+            NAVBAR.classList.remove('on-dark-bg');
         }
     }
 
