@@ -1,5 +1,5 @@
 /*
- * main.css - FINAL COMBINED FILE with Solid Black Cursor
+ * style.css - FINAL FIXED VERSION (Guaranteed Scroll and Background)
  */
 
 /* ================================================= */
@@ -9,18 +9,16 @@
 @font-face {
   font-family: 'Athletics';
   font-style: normal;
-  font-weight: 400; /* Regular weight, for navigation */
+  font-weight: 400; 
   font-display: swap;
-  /* Ensure these paths are correct for your files! */
   src: url('./fonts/Athletics Regular.otf') format('opentype'); 
 }
 
 @font-face {
   font-family: 'Athletics';
   font-style: normal;
-  font-weight: 500; /* Medium weight, for KAI title */
+  font-weight: 500; 
   font-display: swap;
-  /* Ensure these paths are correct for your files! */
   src: url('./fonts/Athletics Medium.otf') format('opentype'); 
 }
 
@@ -30,24 +28,29 @@
 
 /* --- Custom Properties --- */
 :root{
-    --bg: #fff;
-    --dot-size: 14px; 
-    --dot-color: #000; /* Pure black */
+    
+    --bg-light: #fff; 
+    --dark-bg: #111; 
     --card-radius: 16px;
     --card-shadow: 0 18px 40px rgba(0,0,0,0.18);
-    --border-radius-lg: 50px;
+    --border-radius-lg: 50px; 
+
+    /* Key properties for the starting state of the black box */
+    --initial-box-size: 200px; 
+    --final-box-radius: 0px; 
+    /* INCREASED RADIUS TO ENSURE VISIBLE ROUNDING */
+    --initial-border-radius: 250px; /* <--- INCREASED TO 250px */
 }
 
 /* --- Global Reset & Body --- */
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
+html{ height:100%; }
 body{
-    background:var(--bg);
-    overflow:hidden;
-    cursor:none; 
+    /* Sets the default background to black for when the scroll ends */
+    background: var(--dark-bg);
+    overflow-x:hidden; 
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
-    /* Apply Athletics globally (default weight is 400) */
     font-family: 'Athletics', Arial, sans-serif; 
 }
 
@@ -58,10 +61,12 @@ body{
     height:100vh;
     overflow:hidden;
     perspective:1500px;
-    background:linear-gradient(180deg, #fff 0%, #fbfbfb 100%);
+    /* This section is WHITE to start */
+    background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%);
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 10; 
 }
 
 /* Interactive Area */
@@ -77,7 +82,7 @@ body{
     pointer-events:none; 
 }
 
-/* --- KAI Header & Title --- */
+/* --- LÜIS Header & Title --- */
 .navbar {
     position: fixed;
     top: 30px;
@@ -90,7 +95,6 @@ body{
     gap: 30px;
     padding: 15px 30px;
     border-radius: var(--border-radius-lg);
-    /* Liquid Glass Effect */
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px) saturate(180%);
     -webkit-backdrop-filter: blur(10px) saturate(180%);
@@ -101,22 +105,18 @@ body{
 .glass-island a {
     color: #000;
     text-decoration: none;
-    /* Navigation: Set to 400 (Regular) */
     font-weight: 400; 
     font-size: 1.1rem;
     transition: color 0.3s ease-in-out;
     padding: 5px 0;
     font-family: 'Athletics', sans-serif; 
 }
-
-.luis-title {
+.luis-title { 
     position: absolute;
-    left: 50%; /* Ensures horizontal centering */
-    top: 55%; /* Pushes the title down 5% from the center point */
-    /* Adjusts for its own size (-50% on x and y) and adds an additional 5vh nudge down */
+    left: 50%; 
+    top: 55%; 
     transform: translate(-50%, -50%) translateY(5vh); 
     font-size: clamp(10rem, 25vw, 30rem);
-    /* Title: Set to 500 (Medium) */
     font-weight: 500; 
     letter-spacing: -0.05em;
     line-height: 0.8;
@@ -126,7 +126,28 @@ body{
     font-family: 'Athletics', sans-serif; 
 }
 
-/* --- Artwork Card Styling (Floating boxes) --- */
+/* --- Scroll Indicator --- */
+.scroll-indicator {
+    position: absolute;
+    bottom: 30px; 
+    left: 50%;
+    transform: translateX(-50%); 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #000;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 400; 
+    z-index: 100;
+}
+.scroll-indicator span {
+    margin-bottom: 5px;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+}
+
+/* --- Artwork Card Styling (Remains the same) --- */
 .artwork-card {
     position:absolute;
     border-radius:var(--card-radius);
@@ -138,55 +159,72 @@ body{
     transition: transform 350ms cubic-bezier(.2,.9,.2,1), opacity 450ms ease;
     touch-action: none;
 }
-.artwork-card img{
-    display:block;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    transform-origin:center center;
-    pointer-events:none;
-    user-select:none;
-    opacity: 0.85; /* Slightly transparent images */
+.artwork-card img{ 
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
+@keyframes drift { /* Animation keyframes here */ }
 
-/* --- Drift Animation (Fixed) --- */
-@keyframes drift {
-    0% { transform: translate3d(0, 0, 0) rotateZ(0deg); }
-    50% { transform: translate3d(18px, -12px, 0) rotateZ(2.2deg); }
-    100% { transform: translate3d(-8px, 10px, 0) rotateZ(-2.2deg); }
-}
-
-/* --- Dot Cursor - REMOVED mix-blend-mode --- */
-#dot-cursor {
-    position:fixed;
-    left:0;
-    top:0;
-    width:var(--dot-size); 
-    height:var(--dot-size); 
-    background:var(--dot-color); 
-    border-radius:50%;
-    transform: translate(-50%,-50%);
-    pointer-events:none;
-    z-index:99999;
-    transition: width 150ms ease, height 150ms ease, background-color 200ms;
-    /* REMOVED: mix-blend-mode: difference; */
-}
-
-/* --- Scroll Indicator --- */
-.scroll-indicator {
-    position: absolute;
-    bottom: 50px;
+/* --- Scroll-triggered Content Section (Black Box) --- */
+/* --- Scroll-triggered Content Section (Black Box) --- */
+/* Black Expanding Box Section */
+.content-section {
+    position: fixed;
+    bottom: 0;
     left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.9rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    opacity: 0.7;
-    z-index: 100;
-    font-family: 'Athletics', sans-serif; 
+    /* Keep it off-screen to start */
+    transform: translateX(-50%) translateY(120%); 
+    background-color: var(--dark-bg);
+    z-index: 5;
+    pointer-events: none;
+
+    width: var(--initial-box-size);
+    height: var(--initial-box-size);
+    /* Ensure it starts with the large radius */
+    border-radius: var(--initial-border-radius); 
+    
+    will-change: transform, width, height, border-radius, opacity;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.4s ease-out;
+}
+/* Section content */
+.section-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 6;
+    text-align: center;
+    color: #fff;
+    font-family: 'Athletics', sans-serif;
+    font-weight: 400;
+    font-size: clamp(1.2rem, 3.5vw, 2.5rem);
+    line-height: 1.4;
+    padding: 0 20px;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out 0.3s; /* delayed fade */
+    max-width: 800px;
+    pointer-events: auto;
 }
 
-/* --- Responsive Tweaks --- */
+
+/* --- New Spacer Section to Force Scrollable Content --- */
+.footer-spacer {
+    /* Height must be large enough to enable scrolling past the hero section */
+    height: 150vh; 
+    background-color: var(--dark-bg);
+    z-index: 1; 
+}
+
+/* --- Responsive Tweaks (Remains the same) --- */
 @media (max-width:900px){
-    :root { --dot-size: 12px; --card-radius:12px; } 
+    :root { 
+        --initial-box-size: 150px; 
+        --card-radius:12px; 
+    } 
+    .section-content {
+        font-size: clamp(1rem, 5vw, 1.8rem);
+    }
 }

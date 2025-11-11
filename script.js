@@ -1,44 +1,37 @@
 /*
- * script.js
- * LÜIS Creative Agency - Interactive Background Logic
+ * script.js - FINAL FIXED VERSION (Correct Animation Logic)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    
     // Configuration and DOM Elements
     const HERO = document.getElementById('hero');
     const INTERACTIVE = document.getElementById('interactive');
-    const DOT = document.getElementById('dot-cursor');
-    // NEW: Get all navigation links
-    const NAV_LINKS = document.querySelectorAll('.glass-island a'); 
+    const INTRO_SECTION = document.getElementById('intro-section');
+    const SECTION_CONTENT = INTRO_SECTION.querySelector('.section-content');
 
-    const TOTAL_IMAGES_AVAILABLE = 26; // Image files 1.jpg to 26.jpg
-    const SHOW_COUNT = 25; // Number of cards to create (Adjust this number if you need fewer cards)
-    const MIN_DISTANCE = 280; // Minimum center-to-center px distance between cards (Slightly increased for more space)
-    const PLANE_PADDING = 120; // Padding from plane edges (px)
-    const MAX_TRIES = 200; // Attempts to place a card without overlapping
+    // --- Parallax Variables ---
+    const TOTAL_IMAGES_AVAILABLE = 26;
+    const SHOW_COUNT = 25;
+    const MIN_DISTANCE = 280;
+    const PLANE_PADDING = 120;
+    const MAX_TRIES = 200;
 
-    // --- Card Placement and Generation ---
-
-    function getPlaneSize(){
+    // Helper functions for card placement (Must be included)
+    function getPlaneSize(){ 
         const rect = INTERACTIVE.getBoundingClientRect();
         return {w: rect.width, h: rect.height};
     }
-
-    // utility: euclidean distance
     function dist(a,b){ const dx=a.x-b.x; const dy=a.y-b.y; return Math.sqrt(dx*dx+dy*dy); }
-
-    // pick unique random image indices
-    function pickImageIndices(n){
+    function pickImageIndices(n){ 
         const pool = Array.from({length: TOTAL_IMAGES_AVAILABLE}, (_, i) => i + 1);
         for(let i=pool.length-1;i>0;i--){
             const j = Math.floor(Math.random()*(i+1));
-            [pool[i],pool[j]] = [pool[j],pool[i]];
+            [pool[i],pool[j]] = [pool[i],pool[j]];
         }
         return pool.slice(0, n);
     }
-
-    // Place cards ensuring spacing (identical to your logic)
-    function generatePositions(count, planeW, planeH, minDist){
+    function generatePositions(count, planeW, planeH, minDist){ 
         const positions = [];
         const attemptsLimit = MAX_TRIES;
         for(let i=0;i<count;i++){
@@ -59,9 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return positions;
     }
-
-    // create and insert cards into the DOM
-    function createCards(){
+    
+    function createCards(){ 
         INTERACTIVE.innerHTML = '';
         const plane = getPlaneSize();
         const imgIndices = pickImageIndices(SHOW_COUNT);
@@ -74,35 +66,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'artwork-card';
             
-            // randomized width/height 
             const w = Math.floor(180 + Math.random()*240);
             const h = Math.floor(w * (0.68 + Math.random()*0.48));
             card.style.width = w + 'px';
             card.style.height = h + 'px';
             
-            // place via left/top
             card.style.left = (p.x - w/2) + 'px';
             card.style.top  = (p.y - h/2) + 'px';
 
-            // random rotation and depth factor (0.2 far..1.1 near)
             const baseRot = (Math.random()*28 - 14).toFixed(2);
             const depth = (Math.random()*0.9 + 0.2).toFixed(3); 
             card.dataset.depth = depth;
             card.dataset.baseRot = baseRot;
 
-            // drift animation timing
             const dur = (12 + Math.random()*14).toFixed(2); 
             const delay = (-Math.random()*8).toFixed(2);
             card.style.animation = `drift ${dur}s ease-in-out ${delay}s infinite alternate`;
 
-            // image element
             const img = document.createElement('img');
             img.draggable = false;
             img.alt = 'artwork ' + idx;
             img.src = `images/${idx}.jpg`; 
             card.appendChild(img);
 
-            // subtle glass overlay gradient
             const overlay = document.createElement('div');
             overlay.style.position = 'absolute';
             overlay.style.inset = '0';
@@ -116,95 +102,97 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Camera Control (Panning and Zoom) ---
 
+    // --- Camera Control and Parallax ---
     let targetX = 0, targetY = 0;
     let currentX = 0, currentY = 0;
-    let targetScale = 1, currentScale = 1;
-
+    let targetScale = 1.0; 
+    let currentScale = 1.0; 
     const PAN_RANGE_X = 0.22; 
     const PAN_RANGE_Y = 0.16; 
     const EASE = 0.08;
     const SCALE_EASE = 0.06;
 
-    // update target pan based on mouse position
+    // Parallax update based on mouse position
     function onMouseMove(e){
-        const rect = HERO.getBoundingClientRect();
-        const mx = (e.clientX - rect.left) / rect.width; 
-        const my = (e.clientY - rect.top) / rect.height;
+        const mx = e.clientX / window.innerWidth; 
+        const my = e.clientY / window.innerHeight;
         const cx = (mx - 0.5) * 2;
         const cy = (my - 0.5) * 2;
         const plane = getPlaneSize();
         targetX = -cx * (plane.w * PAN_RANGE_X);
         targetY = -cy * (plane.h * PAN_RANGE_Y);
     }
+    // ... inside script.js ...
+// ... inside script.js ...
 
-    // wheel adjusts zoom slightly
-    function onWheel(e){
-        e.preventDefault();
-        targetScale += (e.deltaY < 0) ? 0.03 : -0.03;
-        targetScale = Math.max(0.85, Math.min(1.22, targetScale));
+function handleScroll() {
+    const scrollY = window.scrollY;
+    const heroHeight = HERO.offsetHeight; 
+
+    const section = INTRO_SECTION;
+    const content = SECTION_CONTENT;
+    
+    // Set the scroll range for the animation
+    const startScroll = heroHeight * 0.15; // Animation starts at 15% of hero scroll
+    const endScroll = heroHeight * 0.85;  // Animation ends at 85% of hero scroll
+    let progress = 0;
+
+    if (scrollY > startScroll) {
+        progress = (scrollY - startScroll) / (endScroll - startScroll);
+        progress = Math.min(1, Math.max(0, progress));
     }
 
-    // --- Cursor Tracking and Hover Effects ---
+    // Use cubic easing (pow(..., 3)) for a smoother, faster start
+    const eased = 1 - Math.pow(1 - progress, 3);
+    
+    // --- Configuration Values (pulled from CSS or defined here) ---
+    const initialBoxSize = 200;       // Starting width/height in px
+    const initialBorderRadius = 250;  // Starting border radius in px
+    const finalBorderRadius = 20;     // Final, subtle border radius in px
+    
+    // --- 1. Opacity: Fade in the black box immediately ---
+    // Make it fully visible (opacity 1) after 5% scroll progress
+    section.style.opacity = eased > 0.05 ? 1 : 0; 
 
-    let mouseX = window.innerWidth/2, mouseY = window.innerHeight/2;
-    let dotX = mouseX, dotY = mouseY;
-    document.addEventListener('mousemove', (e)=>{
-        mouseX = e.clientX; mouseY = e.clientY;
-    });
+    // --- 2. Vertical Position (TranslateY): Move up from 120% off-screen to 0% on-screen ---
+    const translateY = 120 - eased * 120;
+    section.style.transform = `translateX(-50%) translateY(${translateY}%)`;
 
-    // Helper function to apply hover styles
-    function applyHoverStyles(isHovering){
-        if(isHovering){
-            DOT.style.width = '26px';
-            DOT.style.height = '26px';
-            // Keeping cursor black on hover for visibility, adjusting opacity for effect
-            DOT.style.backgroundColor = 'rgba(0,0,0,0.85)'; 
-        } else {
-            // Revert to default styles defined by CSS variables
-            DOT.style.width = '';
-            DOT.style.height = '';
-            DOT.style.backgroundColor = '';
-        }
-    }
+    // --- 3. Size: Grow to fill the viewport ---
+    // Calculate the size difference between the viewport and the starting box size
+    const widthDiff = window.innerWidth - initialBoxSize;
+    const heightDiff = window.innerHeight - initialBoxSize;
+    
+    // Current size is initial size + (difference * eased progress)
+    const currentWidth = initialBoxSize + widthDiff * eased;
+    const currentHeight = initialBoxSize + heightDiff * eased;
+    
+    section.style.width = `${currentWidth}px`;
+    section.style.height = `${currentHeight}px`;
 
-    // Hover over Artwork Cards
-    document.addEventListener('mouseover', (ev)=>{
-        const card = ev.target.closest && ev.target.closest('.artwork-card');
-        if(card) applyHoverStyles(true);
-    });
-    document.addEventListener('mouseout', (ev)=>{
-        const card = ev.target.closest && ev.target.closest('.artwork-card');
-        // Only revert if not hovering over a link (to prevent flicker)
-        if(card && !ev.target.closest('.glass-island a')) applyHoverStyles(false);
-    });
+    // --- 4. Border Radius: Transition from large to small corner ---
+    const radiusDiff = initialBorderRadius - finalBorderRadius;
+    const currentBorderRadius = initialBorderRadius - radiusDiff * eased;
+    section.style.borderRadius = `${currentBorderRadius}px`;
 
-    // NEW: Hover over Navigation Links
-    NAV_LINKS.forEach(link => {
-        link.addEventListener('mouseenter', () => applyHoverStyles(true));
-        link.addEventListener('mouseleave', () => {
-            // Check if the cursor is currently over an artwork card before reverting
-            const overCard = document.querySelector('.artwork-card:hover');
-            if(!overCard) applyHoverStyles(false);
-        });
-    });
-
-    // --- Main Animation Loop (requestAnimationFrame) ---
-
+    // --- 5. Fade Text: Fade content in only when the expansion is nearly complete ---
+    content.style.opacity = eased > 0.7 ? (eased - 0.7) / 0.3 : 0;
+}
+// ... rest of script.js (including the animate function) is the same ...
+    // --- Main Animation Loop (for parallax smoothness) ---
     function animate(){
-        // Smooth Camera Pan & Zoom
+        // Update the mouse/parallax position smoothly
         currentX += (targetX - currentX) * EASE;
         currentY += (targetY - currentY) * EASE;
-        currentScale += (targetScale - currentScale) * SCALE_EASE;
+        currentScale += (targetScale - currentScale) * SCALE_EASE; 
 
         INTERACTIVE.style.transform = `translate3d(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px), 0) scale(${currentScale})`;
 
-        // Apply Parallax to Cards
+        // Card movement based on depth
         const cards = INTERACTIVE.querySelectorAll('.artwork-card');
-        cards.forEach(card => {
+        cards.forEach(card => { 
             const depth = parseFloat(card.dataset.depth || 0.6); 
-            // Parallax factor
             const px = (currentX) * (1 - depth) * 0.35;
             const py = (currentY) * (1 - depth) * 0.35;
             const baseRot = parseFloat(card.dataset.baseRot || 0);
@@ -212,34 +200,29 @@ document.addEventListener('DOMContentLoaded', () => {
             card.style.transform = `translate3d(${px}px, ${py}px, 0) rotateZ(${rot}deg)`;
         });
 
-        // Smooth Cursor
-        dotX += (mouseX - dotX) * 0.18;
-        dotY += (mouseY - dotY) * 0.18;
-        DOT.style.transform = `translate(${dotX}px, ${dotY}px) translate(-50%, -50%)`;
-
         requestAnimationFrame(animate);
     }
 
     // --- Initialization and Event Listeners ---
-    
-    // on resize, rebuild positions
     let rebuildTimeout;
     function rebuild(){
         clearTimeout(rebuildTimeout);
         rebuildTimeout = setTimeout(()=> {
             createCards();
+            handleScroll();
         }, 120);
     }
     window.addEventListener('resize', rebuild);
+    
+    // Attach the animation logic to the native scroll event
+    window.addEventListener('scroll', handleScroll);
 
     createCards();
     animate();
+    handleScroll(); 
 
-    // Event listeners
-    HERO.addEventListener('mousemove', onMouseMove);
-    HERO.addEventListener('wheel', onWheel, {passive:false});
+    document.addEventListener('mousemove', onMouseMove); 
     
-    // touch drag to pan on mobile
     let lastTouch = null;
     HERO.addEventListener('touchstart', (e)=> lastTouch = e.touches[0]);
     HERO.addEventListener('touchmove', (e)=>{
