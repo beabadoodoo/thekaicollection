@@ -6,7 +6,7 @@
     <title>LÜIS | Creative Agency</title>
     <style>
 /*
- * style.css - FINAL VERSION (Larger Footer Text & More Indentation)
+ * style.css - FINAL VERSION (Mas Mahabang Lines at Bahagyang Mas Malalaking Floating Pics)
  */
 
 /* ================================================= */
@@ -188,7 +188,116 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
     .luis-title { font-size: clamp(10rem, 30vw, 30rem); }
     .navbar { padding: 0 var(--spacing-md); }
     .glass-island { display: none; }
+    
+    /* Mobile Menu - I-hide ang hamburger icon kapag bukas */
+    .menu-open .hamburger-menu {
+        pointer-events: none; /* Hindi na pwedeng i-click */
+        opacity: 0;
+    }
 }
+
+
+/* ================================================= */
+/* 3. FULLSCREEN HAMBURGER MENU STYLING (UPDATED)   */
+/* ================================================= */
+
+.fullscreen-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--dark-bg); /* Black background */
+    z-index: 500; /* Dapat nasa ibabaw ng lahat */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center ang links vertically */
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease-in-out;
+    padding: 100px 20px; /* Space para sa logo/close button */
+}
+
+/* Menu header para sa logo */
+.menu-header {
+    position: absolute;
+    top: 30px;
+    left: var(--spacing-md); /* Same left padding as navbar */
+    z-index: 510;
+}
+.menu-header .luis-logo {
+    color: var(--text-light); /* Gawing puti ang logo */
+}
+
+.fullscreen-menu.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.menu-links {
+    list-style: none;
+    text-align: center;
+    width: 100%; 
+    max-width: 950px; /* **BINAGO: Ginawang 950px para mas mahaba** */
+}
+
+.menu-links li {
+    margin: 0;
+    /* Ginawang mas light ang border opacity */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+}
+
+.menu-links li:first-child {
+    /* Ginawang mas light ang border opacity */
+    border-top: 1px solid rgba(255, 255, 255, 0.1); 
+}
+
+
+.menu-links a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: clamp(2rem, 5vw, 3.5rem); 
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: -0.04em;
+    display: block; 
+    padding: 20px 0; 
+    transition: color 0.3s ease;
+}
+
+.menu-links a:hover {
+    color: #999; 
+}
+
+.menu-close-btn {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    z-index: 510; 
+}
+/* X icon styling (same as before) */
+.menu-close-btn::before, .menu-close-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--text-light);
+    transition: transform 0.3s ease;
+}
+
+.menu-close-btn::before {
+    transform: rotate(45deg);
+}
+.menu-close-btn::after {
+    transform: rotate(-45deg);
+}
+
     </style>
 </head>
 <body>
@@ -196,19 +305,37 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
         <div class="luis-logo">LÜIS</div>
         
         <nav class="glass-island">
-            <a href="#projects">Projects</a>
-            <a href="#agency">agency</a>
-            <a href="#journal">journal</a>
-            <a href="#contact">contact</a>
+            <a href="#home">Home</a> 
+            <a href="#portfolio">Portfolio</a> 
+            <a href="#commissions">Commissions</a> 
+            <a href="#about">About</a> 
+            <a href="#contact">Contact</a> 
         </nav>
         
-        <div class="hamburger-menu">
+        <div class="hamburger-menu" id="hamburger-open">
             <span></span>
             <span></span>
             <span></span>
         </div>
     </header>
 
+    <div class="fullscreen-menu" id="fullscreen-menu">
+        
+        <div class="menu-header">
+            <div class="luis-logo">LÜIS</div>
+        </div>
+
+        <div class="menu-close-btn" id="hamburger-close"></div>
+
+        <ul class="menu-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#portfolio">Portfolio</a></li>
+            <li><a href="#commissions">Commissions</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+
+    </div>
     <div id="interactive"></div>
 
     <div class="hero" id="hero">
@@ -234,7 +361,7 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
 
     <script>
 /*
- * script.js - FINAL VERSION (Header Color Triggered by Black Card)
+ * script.js - FINAL VERSION (Larger Parallax Pics)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -242,11 +369,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const HERO = document.getElementById('hero');
     const INTERACTIVE = document.getElementById('interactive');
     const INTRO_SECTION = document.getElementById('intro-section');
-    const SECTION_CONTENT = INTRO_SECTION.querySelector('.section-content');
     const NAVBAR = document.getElementById('navbar');
+    
+    // Menu Elements
+    const HAMBURGER_OPEN = document.getElementById('hamburger-open');
+    const HAMBURGER_CLOSE = document.getElementById('hamburger-close');
+    const FULLSCREEN_MENU = document.getElementById('fullscreen-menu');
+    const BODY = document.body;
+
 
     const initialBorderRadius = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--initial-border-radius').trim());
     const finalTopRadius = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--final-top-radius').trim());
+
+    // --- Hamburger Menu Toggle Logic ---
+    function openMenu() {
+        FULLSCREEN_MENU.classList.add('is-open');
+        BODY.classList.add('menu-open');
+        BODY.style.overflow = 'hidden'; // Pigilan ang page scroll kapag bukas ang menu
+    }
+
+    function closeMenu() {
+        FULLSCREEN_MENU.classList.remove('is-open');
+        BODY.classList.remove('menu-open');
+        BODY.style.overflow = 'auto'; // Ibalik ang scroll
+        handleScroll(); // I-refresh ang scroll state
+    }
+
+    HAMBURGER_OPEN.addEventListener('click', openMenu);
+    HAMBURGER_CLOSE.addEventListener('click', closeMenu);
+    
+    // Auto-close menu kapag kinlick ang link sa loob
+    FULLSCREEN_MENU.querySelectorAll('.menu-links a').forEach(link => {
+        link.addEventListener('click', closeMenu);
+    });
 
     // --- Parallax setup ---
     const TOTAL_IMAGES_AVAILABLE = 26;
@@ -291,7 +446,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const p = pos[i];
             const card = document.createElement('div');
             card.className = 'artwork-card';
-            const w = Math.floor(180 + Math.random()*240);
+            
+            // BINAGO: Bahagyang itinaas ang base at range para lumaki ang pics
+            const w = Math.floor(220 + Math.random()*280); 
+            
             const h = Math.floor(w * (0.68 + Math.random()*0.48));
             card.style.width = w + 'px';
             card.style.height = h + 'px';
@@ -343,6 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function animate(){
+        // Walang return statement, kaya tuloy ang animation kahit bukas ang menu
         currentX += (targetX - currentX) * EASE;
         currentY += (targetY - currentY) * EASE;
         currentScale += (targetScale - currentScale) * SCALE_EASE;
@@ -403,7 +562,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (progress > 0) {
             section.style.opacity = 1;
             
-            // UPDATED: Header color change logic: Only apply white color when black card is almost fully engaged (eased > 0.9)
+            // Header color change logic: Only apply white color when black card is almost fully engaged (eased > 0.9)
             if (eased > 0.9) { 
                 NAVBAR.classList.add('on-dark-bg');
             } else {
