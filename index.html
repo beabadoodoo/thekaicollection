@@ -144,6 +144,44 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
     font-size: 1.5em; font-weight: 500; margin-bottom: 10px;
 }
 
+/* BUTTON STYLING (Used for both black and white cards) */
+.card-button {
+    display: inline-block;
+    background-color: var(--text-light); /* Default: White background for Black Card */
+    color: var(--text-dark); /* Default: Black text */
+    text-decoration: none;
+    font-weight: 500;
+    
+    /* NEW: Pinaliit ang Font Size */
+    font-size: 1.1rem;
+    
+    padding: 15px 40px;
+    border-radius: var(--border-radius-lg); /* Highly rounded */
+    margin-top: 30px; /* Space from text */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    border: none;
+    font-family: 'Athletics', sans-serif;
+    letter-spacing: 0.02em;
+}
+
+.card-button:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-1px);
+}
+
+/* NEW: Dark Button Style for White Card (Para mag-pop) */
+.card-button.dark {
+    background-color: var(--dark-bg); /* Black background */
+    color: var(--text-light); /* White text */
+}
+
+.card-button.dark:hover {
+    background-color: #333; /* Darker on hover */
+    transform: translateY(-1px);
+}
+/* END NEW BUTTON STYLING */
+
 /* 2. Footer Text (Bottom-Right) */
 .section-footer-text {
     position: absolute;
@@ -261,6 +299,13 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
         max-width: 95vw;
         left: var(--spacing-md); /* Use smaller mobile spacing */
         padding-right: var(--spacing-md);
+    }
+    
+    /* Mobile Button Adjustment (both cards) */
+    .card-button {
+        font-size: 1.1rem;
+        padding: 12px 30px;
+        margin-top: 20px;
     }
 }
 
@@ -416,6 +461,9 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
         <div class="section-content">
             <h1>The Kai Collection</h1>
             <p>My art. My rules. Browse the portfolio or get a commissioned piece, made by me, Luis.</p>
+            
+            <a href="#portfolio" class="card-button">View Portfolio</a>
+            
         </div>
 
         <div class="section-footer-text">
@@ -431,6 +479,9 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
             <span class="white-tag">The Kai Collection</span>
             <h1>Digital and traditional art. Watercolor, realism, anime, cartoons.</h1>
             <p>Let’s make something memorable.</p>
+            
+            <a href="#commissions" class="card-button dark">Commission an Artwork</a>
+            
         </div>
         
     </div>
@@ -532,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.style.width = w + 'px';
             card.style.height = h + 'px';
             card.style.left = (p.x - w/2) + 'px';
-            card.style.top  = (p.y - h/2) + 'px';
+            card.style.top  = (p.y - h/2) + 'px';
             const baseRot = (Math.random()*28 - 14).toFixed(2);
             const depth = (Math.random()*0.9 + 0.2).toFixed(3);
             card.dataset.depth = depth;
