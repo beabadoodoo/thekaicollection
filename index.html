@@ -6,7 +6,8 @@
     <title>LÜIS | Creative Agency</title>
     <style>
 /*
- * style.css - FINAL VERSION (Stacking Transition)
+ * style.css - FINAL VERSION for index.html (Stacking Transition + Artworks)
+ * Note: Ideal to move this CSS to a separate linked file (global.css)
  */
 
 /* ================================================= */
@@ -34,17 +35,17 @@
     --final-width-percent: 100vw;
     --final-height-percent: 100vh;
 
-    /* ORIGINAL Spacing for Top Text */
+    /* Spacing */
     --spacing-lg: 80px; 
     --spacing-md: 40px; 
-    
-    /* NEW: Increased Spacing for Footer Text */
     --spacing-xl-footer: 120px; 
+    --artworks-padding: 100px;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
 html{ height:100%; }
 body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); overflow-x:hidden; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; font-family: 'Athletics', Arial, sans-serif; }
+.menu-open { overflow: hidden !important; }
 
 /* --- Hero & Parallax --- */
 .hero { position:relative; width:100vw; height:100vh; overflow:hidden; perspective:1500px; background: transparent; display: flex; justify-content: center; align-items: center; z-index: 10; }
@@ -58,9 +59,7 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
 .navbar { 
     position: fixed; top: 30px; left: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 var(--spacing-md); z-index: 200; 
 }
-.luis-logo {
-    font-size: 2.5rem; font-weight: 500; color: var(--text-dark); transition: color 0.3s ease-in-out; 
-}
+.luis-logo { font-size: 2.5rem; font-weight: 500; color: var(--text-dark); transition: color 0.3s ease-in-out; }
 .glass-island { 
     display: flex; gap: 30px; padding: 15px 30px; border-radius: var(--border-radius-lg); 
     background: rgba(255, 255, 255, 0.2); 
@@ -69,18 +68,11 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2); 
     transition: all 0.3s ease; 
 }
-.glass-island a { 
-    color: var(--text-dark); text-decoration: none; font-weight: 400; font-size: 1.1rem; transition: color 0.3s ease-in-out; padding: 5px 0; font-family: 'Athletics', sans-serif; 
-}
-.hamburger-menu {
-    width: 30px; height: 30px; display: flex; flex-direction: column; justify-content: space-around; cursor: pointer; padding: 5px 0;
-}
-.hamburger-menu span {
-    display: block; width: 100%; height: 2px;
-    background-color: var(--text-dark); transition: background-color 0.3s ease-in-out; 
-}
+.glass-island a { color: var(--text-dark); text-decoration: none; font-weight: 400; font-size: 1.1rem; transition: color 0.3s ease-in-out; padding: 5px 0; font-family: 'Athletics', sans-serif; }
+.hamburger-menu { width: 30px; height: 30px; display: flex; flex-direction: column; justify-content: space-around; cursor: pointer; padding: 5px 0; }
+.hamburger-menu span { display: block; width: 100%; height: 2px; background-color: var(--text-dark); transition: background-color 0.3s ease-in-out; }
 
-/* Color change when the black card is engaged */
+/* Color change when the dark card is engaged */
 .on-dark-bg .luis-logo { color: var(--text-light); } 
 .on-dark-bg .hamburger-menu span { background-color: var(--text-light); } 
 .on-dark-bg .glass-island { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.4); } 
@@ -117,300 +109,140 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
 .content-section {
     position: fixed; bottom: 0; left: 50%; width: var(--final-width-percent); height: var(--final-height-percent);
     transform: translateX(-50%) translateY(100%); 
-    z-index: 5; /* Layer 1 */
-    pointer-events: none; border-radius: var(--initial-border-radius); 
+    z-index: 5; pointer-events: none; border-radius: var(--initial-border-radius); 
     will-change: transform, border-radius, opacity; overflow: hidden;
     opacity: 0; 
     transition: none;
 }
-
 .black-overlay { position: absolute; inset: 0; background-color: var(--dark-bg); }
 
 /* 1. Main Content (Top-Left) */
 .section-content {
-    position: absolute; 
-    top: 15%; 
-    left: var(--spacing-lg); /* 80px */
-    transform: none; 
+    position: absolute; top: 15%; left: var(--spacing-lg); transform: none; 
     text-align: left; z-index: 6; color: #fff; font-family: 'Athletics', sans-serif; 
-    font-weight: 400; 
-    font-size: clamp(1.2rem, 3.5vw, 2.5rem); 
-    line-height: 1.4; 
-    padding-right: var(--spacing-lg); /* 80px */
-    opacity: 1; 
-    max-width: 800px; pointer-events: auto;
+    font-weight: 400; font-size: clamp(1.2rem, 3.5vw, 2.5rem); line-height: 1.4; 
+    padding-right: var(--spacing-lg); opacity: 1; max-width: 800px; pointer-events: auto;
 }
-.section-content h1 {
-    font-size: 1.5em; font-weight: 500; margin-bottom: 10px;
-}
+.section-content h1 { font-size: 1.5em; font-weight: 500; margin-bottom: 10px; }
 
-/* BUTTON STYLING (Used for both black and white cards) */
+/* BUTTON STYLING */
 .card-button {
-    display: inline-block;
-    background-color: var(--text-light); /* Default: White background for Black Card */
-    color: var(--text-dark); /* Default: Black text */
-    text-decoration: none;
-    font-weight: 500;
-    
-    /* Pinaliit na Font Size */
-    font-size: 1.1rem;
-    
-    padding: 15px 40px;
-    border-radius: var(--border-radius-lg); /* Highly rounded */
-    margin-top: 30px; /* Space from text */
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.1s ease;
-    border: none;
-    font-family: 'Athletics', sans-serif;
-    letter-spacing: 0.02em;
+    display: inline-block; background-color: var(--text-light); color: var(--text-dark); 
+    text-decoration: none; font-weight: 500; font-size: 1.1rem; padding: 15px 40px;
+    border-radius: var(--border-radius-lg); margin-top: 30px; cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease; border: none;
+    font-family: 'Athletics', sans-serif; letter-spacing: 0.02em;
 }
-
-.card-button:hover {
-    background-color: #f0f0f0;
-    transform: translateY(-1px);
-}
-
-/* Dark Button Style for White Card (Para mag-pop) */
-.card-button.dark {
-    background-color: var(--dark-bg); /* Black background */
-    color: var(--text-light); /* White text */
-}
-
-.card-button.dark:hover {
-    background-color: #333; /* Darker on hover */
-    transform: translateY(-1px);
-}
-/* END NEW BUTTON STYLING */
+.card-button:hover { background-color: #f0f0f0; transform: translateY(-1px); }
+.card-button.dark { background-color: var(--dark-bg); color: var(--text-light); }
+.card-button.dark:hover { background-color: #333; transform: translateY(-1px); }
+/* END BUTTON STYLING */
 
 /* 2. Footer Text (Bottom-Right) */
 .section-footer-text {
-    position: absolute;
-    bottom: var(--spacing-xl-footer); /* 120px */
-    right: var(--spacing-xl-footer); /* 120px */
-    text-align: right;
-    z-index: 6;
-    color: #fff;
-    font-family: 'Athletics', sans-serif;
-    font-weight: 400;
-    font-size: clamp(1.1rem, 2.5vw, 1.8rem); /* Increased Font Size */
-    opacity: 1; 
-    max-width: 400px;
-    pointer-events: auto;
+    position: absolute; bottom: var(--spacing-xl-footer); right: var(--spacing-xl-footer); 
+    text-align: right; z-index: 6; color: #fff; font-family: 'Athletics', sans-serif;
+    font-weight: 400; font-size: clamp(1.1rem, 2.5vw, 1.8rem); opacity: 1; 
+    max-width: 400px; pointer-events: auto;
 }
 
-/* IDINAGDAG: WHITE CARD SECTION */
+/* WHITE CARD SECTION */
 .white-section {
-    position: fixed; 
-    bottom: 0; 
-    left: 50%; 
-    width: var(--final-width-percent); 
-    height: var(--final-height-percent);
-    transform: translateX(-50%) translateY(100%); 
-    z-index: 7; /* Layer 2: Mas mataas kaysa black card */
-    pointer-events: none; 
-    border-radius: var(--initial-border-radius); 
-    will-change: transform, border-radius, opacity;
-    overflow: hidden;
-    opacity: 0; 
-    transition: none;
+    position: fixed; bottom: 0; left: 50%; width: var(--final-width-percent); height: var(--final-height-percent);
+    transform: translateX(-50%) translateY(100%); z-index: 7; 
+    pointer-events: none; border-radius: var(--initial-border-radius); 
+    will-change: transform, border-radius, opacity; overflow: hidden;
+    opacity: 0; transition: none;
 }
+.white-overlay { position: absolute; inset: 0; background-color: var(--bg-light); }
 
-.white-overlay {
-    position: absolute; 
-    inset: 0; 
-    background-color: var(--bg-light); /* White background */
-}
-
-/* FINAL ADJUSTMENT: Kaunting liit pa sa text */
 .white-section-content {
-    position: absolute;
-    top: 15%; 
-    left: 10%; /* NEW: Mas malawak ang espasyo sa kaliwa (10%) */
-    transform: none; 
-    text-align: left; 
-    z-index: 8; 
-    color: var(--text-dark); 
-    font-family: 'Athletics', sans-serif;
-    font-weight: 400; 
-    
-    /* *** NEW: Saktong Font Size (Desktop: 2.0rem max) *** */
-    font-size: clamp(1.1rem, 2.8vw, 2.0rem); 
-    
-    line-height: 1.3;
-    
-    /* NEW: Mas malawak na max-width para hindi masikip */
-    max-width: 1200px; 
-    
-    padding-right: 10%; /* NEW: Espasyo sa kanan (10%) */
-    pointer-events: auto;
+    position: absolute; top: 15%; left: 10%; transform: none; text-align: left; 
+    z-index: 8; color: var(--text-dark); font-family: 'Athletics', sans-serif;
+    font-weight: 400; font-size: clamp(1.1rem, 2.8vw, 2.0rem); line-height: 1.3;
+    max-width: 1200px; padding-right: 10%; pointer-events: auto;
 }
-
 .white-tag {
-    display: inline-block;
-    border: 1px solid var(--text-dark);
-    border-radius: var(--border-radius-lg);
-    padding: 8px 25px;
-    font-size: 1rem;
-    font-weight: 400;
-    margin-bottom: 30px;
+    display: inline-block; border: 1px solid var(--text-dark); border-radius: var(--border-radius-lg);
+    padding: 8px 25px; font-size: 1rem; font-weight: 400; margin-bottom: 30px;
 }
 /* END WHITE CARD SECTION */
 
+/* ================================================= */
+/* 3. ARTWORKS GALLERY SECTION STYLING (The content below stacking)         */
+/* ================================================= */
 
-/* Footer Spacer (Crucial for Scroll Distance) */
-.footer-spacer { 
-    /* Dinedoble ang scroll range para sa stacking effect */
-    height: 450vh; 
-    background-color: transparent; 
-    z-index: 4; 
+.artworks-section {
+    /* Ito ang magiging huling content ng page, lalabas pagkatapos ng White Card */
+    position: relative; 
+    margin-top: calc(100vh * 3); /* Dapat ito ang total scroll height ng stacking (1.5x + 1.5x) */
+    padding: var(--artworks-padding) 0 200px 0; 
+    width: 100%; 
+    background-color: var(--bg-light); 
+    z-index: 10; 
+    pointer-events: auto; 
+    min-height: 120vh;
+}
+.artworks-header { padding: 0 var(--spacing-lg); margin-bottom: 80px; }
+.artworks-title {
+    font-size: clamp(4rem, 15vw, 18rem); font-weight: 500; letter-spacing: -0.05em;
+    line-height: 0.8; color: var(--text-dark); margin-bottom: 20px;
 }
 
+/* Footer Spacer (Gagamitin na lang ito para i-hold ang scroll space) */
+.scroll-holder { height: 300vh; background-color: transparent; }
+
+/* FULLSCREEN HAMBURGER MENU STYLING */
+.fullscreen-menu {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: var(--dark-bg); 
+    z-index: 500; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.5s ease-in-out; padding: 100px 20px; 
+}
+.menu-header { position: absolute; top: 30px; left: var(--spacing-md); z-index: 510; }
+.menu-header .luis-logo { color: var(--text-light); }
+.fullscreen-menu.is-open { opacity: 1; pointer-events: auto; }
+.menu-links { list-style: none; text-align: center; width: 100%; max-width: none; }
+.menu-links li { margin: 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 0 var(--spacing-md); }
+.menu-links li:first-child { border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.menu-links a {
+    color: var(--text-light); text-decoration: none; font-size: clamp(2rem, 5vw, 3.5rem); 
+    font-weight: 500; line-height: 1.5; letter-spacing: -0.04em; display: block; 
+    padding: 20px 0; transition: color 0.3s ease;
+}
+.menu-close-btn { position: absolute; top: 30px; right: 30px; width: 40px; height: 40px; cursor: pointer; z-index: 510; }
+.menu-close-btn::before, .menu-close-btn::after {
+    content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px;
+    background-color: var(--text-light); transition: transform 0.3s ease;
+}
+.menu-close-btn::before { transform: rotate(45deg); }
+.menu-close-btn::after { transform: rotate(-45deg); }
+
+
+/* --- Responsive Adjustments --- */
 @media (max-width:900px){
     :root { 
         --final-top-radius: 20px; 
         --spacing-lg: 40px; 
         --spacing-md: 20px; 
         --spacing-xl-footer: 40px; 
+        --artworks-padding: 50px;
     }
-    .section-content { 
-        font-size: clamp(1rem, 5vw, 1.8rem); 
-        top: 10%; 
-        left: var(--spacing-md); 
-        padding-right: var(--spacing-md);
-    }
-    .section-footer-text {
-        bottom: var(--spacing-md);
-        right: var(--spacing-md);
-        font-size: clamp(0.9rem, 3.5vw, 1.2rem); 
-    }
+    .section-content { font-size: clamp(1rem, 5vw, 1.8rem); top: 10%; left: var(--spacing-md); padding-right: var(--spacing-md); }
+    .section-footer-text { bottom: var(--spacing-md); right: var(--spacing-md); font-size: clamp(0.9rem, 3.5vw, 1.2rem); }
     .luis-title { font-size: clamp(10rem, 30vw, 30rem); }
     .navbar { padding: 0 var(--spacing-md); }
     .glass-island { display: none; }
-    
-    /* Mobile Menu - I-hide ang hamburger icon kapag bukas */
-    .menu-open .hamburger-menu {
-        pointer-events: none; 
-        opacity: 0;
-    }
-    
-    /* Mobile White Card Spacing */
-    .white-section-content {
-        /* Inadjust din para sa mobile view */
-        font-size: clamp(1.1rem, 4.5vw, 1.8rem); 
-        max-width: 95vw;
-        left: var(--spacing-md); /* Use smaller mobile spacing */
-        padding-right: var(--spacing-md);
-    }
-    
-    /* Mobile Button Adjustment (both cards) */
-    .card-button {
-        font-size: 1.1rem;
-        padding: 12px 30px;
-        margin-top: 20px;
-    }
+    .menu-open .hamburger-menu { pointer-events: none; opacity: 0; }
+    .white-section-content { font-size: clamp(1.1rem, 4.5vw, 1.8rem); max-width: 95vw; left: var(--spacing-md); padding-right: var(--spacing-md); }
+    .card-button { font-size: 1.1rem; padding: 12px 30px; margin-top: 20px; }
+    .scroll-holder { height: 300vh; }
+    .artworks-section { margin-top: calc(100vh * 3); }
 }
 
-
-/* ================================================= */
-/* 3. FULLSCREEN HAMBURGER MENU STYLING (UPDATED)   */
-/* ================================================= */
-
-.fullscreen-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: var(--dark-bg); /* Black background */
-    z-index: 500; 
-    display: flex;
-    flex-direction: column;
-    justify-content: center; 
-    align-items: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s ease-in-out;
-    padding: 100px 20px; 
-}
-
-/* Menu header para sa logo */
-.menu-header {
-    position: absolute;
-    top: 30px;
-    left: var(--spacing-md); 
-    z-index: 510;
-}
-.menu-header .luis-logo {
-    color: var(--text-light); 
-}
-
-.fullscreen-menu.is-open {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.menu-links {
-    list-style: none;
-    text-align: center;
-    width: 100%; 
-    max-width: none; 
-}
-
-.menu-links li {
-    margin: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
-    padding: 0 var(--spacing-md); 
-}
-
-.menu-links li:first-child {
-    border-top: 1px solid rgba(255, 255, 255, 0.1); 
-}
-
-
-.menu-links a {
-    color: var(--text-light);
-    text-decoration: none;
-    font-size: clamp(2rem, 5vw, 3.5rem); 
-    font-weight: 500;
-    line-height: 1.5;
-    letter-spacing: -0.04em;
-    display: block; 
-    padding: 20px 0; 
-    transition: color 0.3s ease;
-}
-
-.menu-links a:hover {
-    color: #999; 
-}
-
-.menu-close-btn {
-    position: absolute;
-    top: 30px;
-    right: 30px;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    z-index: 510; 
-}
-/* X icon styling (same as before) */
-.menu-close-btn::before, .menu-close-btn::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: var(--text-light);
-    transition: transform 0.3s ease;
-}
-
-.menu-close-btn::before {
-    transform: rotate(45deg);
-}
-.menu-close-btn::after {
-    transform: rotate(-45deg);
-}
-
+    /* ****************************************************** */
+    /* REMOVED ARTWORKS GALLERY STYLES FROM index.html */
+    /* They are now only in portfolio.html */
+    /* ****************************************************** */
     </style>
 </head>
 <body>
@@ -419,7 +251,7 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
         
         <nav class="glass-island">
             <a href="#home">Home</a> 
-            <a href="#portfolio">Portfolio</a> 
+            <a href="portfolio.html">Portfolio</a> 
             <a href="#commissions">Commissions</a> 
             <a href="#about">About</a> 
             <a href="#contact">Contact</a> 
@@ -442,7 +274,7 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
 
         <ul class="menu-links">
             <li><a href="#home">Home</a></li>
-            <li><a href="#portfolio">Portfolio</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
             <li><a href="#commissions">Commissions</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
@@ -456,6 +288,8 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
         <div class="scroll-indicator"><span>Scroll</span></div> 
     </div>
 
+    <div class="scroll-holder"></div>
+
     <div class="content-section" id="intro-section">
         <div class="black-overlay"></div>
         
@@ -463,7 +297,7 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
             <h1>The Kai Collection</h1>
             <p>My art. My rules. Browse the portfolio or get a commissioned piece, made by me, Luis.</p>
             
-            <a href="#portfolio" class="card-button">View Portfolio</a>
+            <a href="portfolio.html" class="card-button">View Portfolio</a>
             
         </div>
 
@@ -486,11 +320,24 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
         </div>
         
     </div>
-    <div class="footer-spacer"></div>
+    
+    <section style="
+        position: relative; 
+        padding: 100px 50px; 
+        min-height: 100vh; 
+        z-index: 10; 
+        background-color: #fbfbfb;
+    " id="commissions">
+        <h2 style="font-size: 3rem; margin-bottom: 20px; font-weight: 500;">Commissions & Contact</h2>
+        <p style="font-size: 1.5rem; max-width: 800px;">
+            This is the rest of your main page content. You can add your commission form, about section, and contact details here.
+        </p>
+    </section>
+
 
     <script>
 /*
- * script.js - FINAL VERSION (Stacking Animation: Black up, then White up over Black)
+ * script.js - FINAL VERSION for index.html (Fixed Stacking + Parallax)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -500,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const INTRO_SECTION = document.getElementById('intro-section');
     const WHITE_SECTION = document.getElementById('white-section'); 
     const NAVBAR = document.getElementById('navbar');
-    
+
     // Menu Elements
     const HAMBURGER_OPEN = document.getElementById('hamburger-open');
     const HAMBURGER_CLOSE = document.getElementById('hamburger-close');
@@ -528,7 +375,6 @@ document.addEventListener('DOMContentLoaded', () => {
     HAMBURGER_OPEN.addEventListener('click', openMenu);
     HAMBURGER_CLOSE.addEventListener('click', closeMenu);
     
-    // Auto-close menu
     FULLSCREEN_MENU.querySelectorAll('.menu-links a').forEach(link => {
         link.addEventListener('click', closeMenu);
     });
@@ -577,9 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'artwork-card';
             
-            // Mas malaki ang pics (Base 220 + Math.random()*280)
             const w = Math.floor(220 + Math.random()*280); 
-            
             const h = Math.floor(w * (0.68 + Math.random()*0.48));
             card.style.width = w + 'px';
             card.style.height = h + 'px';
@@ -595,6 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = document.createElement('img');
             img.draggable = false;
             img.alt = 'artwork ' + idx;
+            // Assuming your images are in an 'images' folder (e.g., images/1.jpg)
             img.src = `images/${idx}.jpg`; 
             card.appendChild(img);
             const overlay = document.createElement('div');
@@ -631,7 +476,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function animate(){
-        // Walang return statement
         currentX += (targetX - currentX) * EASE;
         currentY += (targetY - currentY) * EASE;
         currentScale += (targetScale - currentScale) * SCALE_EASE;
@@ -656,6 +500,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- The Crucial Scroll Animation Function (Stacking Cards) ---
     function handleScroll() {
+        if (BODY.classList.contains('menu-open')) return;
+
         const scrollY = window.scrollY;
         const heroHeight = HERO.offsetHeight;
         
@@ -669,29 +515,24 @@ document.addEventListener('DOMContentLoaded', () => {
         // Stage 2: White Card In (1.5x to 3.0x)
         const startWhiteIn = endBlackIn; // Starts where black ends
         const endWhiteIn = endBlackIn + (heroHeight * SCROLL_RANGE_PER_CARD); 
-        // Total scroll distance is 3.0x hero height. (Footer spacer is 450vh)
+        // Total scroll distance is 3.0x hero height. 
 
 
         const translateYStart = 100; // Outside view
         const translateYDiff = 100;
 
-        // --- 1. BLACK CARD LOGIC (In and Hold) ---
+        // 1. BLACK CARD LOGIC (In and Hold)
         let progressBlackIn = 0;
-
         if (scrollY >= startBlackIn && scrollY <= endBlackIn) {
             progressBlackIn = (scrollY - startBlackIn) / (endBlackIn - startBlackIn);
         } else if (scrollY > endBlackIn) {
-            progressBlackIn = 1; // Mananatiling naka-full screen
+            progressBlackIn = 1; 
         }
 
         const easedBlackIn = 1 - Math.pow(1 - progressBlackIn, 7);
-
-        // A. VERTICAL POSITION (In and Hold)
         let currentTranslateYBlack = translateYStart - translateYDiff * easedBlackIn;
-
         INTRO_SECTION.style.transform = `translateX(-50%) translateY(${currentTranslateYBlack}%)`;
 
-        // B. BORDER RADIUS & OPACITY (Visible lang kapag umaakyat/naka-hold)
         if (progressBlackIn > 0) {
              const easedRadius = 1 - Math.pow(1 - progressBlackIn, 5);
              const radiusDiff = initialBorderRadius - finalTopRadius;
@@ -704,29 +545,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
 
-        // --- 2. WHITE CARD LOGIC (In and Hold, Over Black Card) ---
+        // 2. WHITE CARD LOGIC (In and Hold, Over Black Card)
         let progressWhiteIn = 0;
-        
         if (scrollY >= startWhiteIn && scrollY <= endWhiteIn) {
             progressWhiteIn = (scrollY - startWhiteIn) / (endWhiteIn - startWhiteIn);
             progressWhiteIn = Math.min(1, Math.max(0, progressWhiteIn));
         } else if (scrollY > endWhiteIn) {
-            progressWhiteIn = 1; // Naka-full screen
+            progressWhiteIn = 1; 
         }
 
-        // Gamitin ang Easing para Dahan-Dahan ang pag-akyat
         const easedWhiteIn = 1 - Math.pow(1 - progressWhiteIn, 7);
-
-        // A. VERTICAL POSITION
         let currentTranslateYWhite = translateYStart;
         if (progressWhiteIn > 0) {
-            // Pag-akyat ng White Card
             currentTranslateYWhite = translateYStart - translateYDiff * easedWhiteIn;
         }
 
         WHITE_SECTION.style.transform = `translateX(-50%) translateY(${currentTranslateYWhite}%)`;
         
-        // B. BORDER RADIUS & OPACITY
         if (progressWhiteIn > 0.01) { 
             const radiusDiff = initialBorderRadius - finalTopRadius;
             const currentTopRadius = initialBorderRadius - radiusDiff * easedWhiteIn;
@@ -737,9 +572,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
 
-        // --- 3. NAVBAR COLOR CHANGE LOGIC ---
-        // Navbar is white on black card, black on white card/hero
-        const isWhiteCardVisible = currentTranslateYWhite < 99; // < 100
+        // 3. NAVBAR COLOR CHANGE LOGIC
+        const isWhiteCardVisible = currentTranslateYWhite < 99; 
         const isBlackCardVisible = currentTranslateYBlack < 99;
 
         if (isBlackCardVisible && !isWhiteCardVisible) { 
@@ -748,7 +582,7 @@ document.addEventListener('DOMContentLoaded', () => {
             NAVBAR.classList.remove('on-dark-bg');
         }
     }
-
+    
     // --- Event Listeners and Initialization ---
     let rebuildTimeout;
     function rebuild(){
@@ -767,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('mousemove', onMouseMove);
 
-    // Touch support 
+    // Touch support for parallax
     let lastTouch = null;
     HERO.addEventListener('touchstart', (e)=> lastTouch = e.touches[0]);
     HERO.addEventListener('touchmove', (e)=>{

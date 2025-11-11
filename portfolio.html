@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>LÜIS | Portfolio</title>
+    <style>
+/* * style.css - Minimal CSS for Portfolio Page
+ * Note: Ideal to move this CSS to a separate linked file (global.css)
+ */
+
+/* ================================================= */
+/* 1. FONT DEFINITIONS (REUSABLE)                     */
+/* ================================================= */
+@font-face { font-family: 'Athletics'; font-style: normal; font-weight: 400; font-display: swap; src: url('./fonts/Athletics Regular.otf') format('opentype'); }
+@font-face { font-family: 'Athletics'; font-style: normal; font-weight: 500; font-display: swap; src: url('./fonts/Athletics Medium.otf') format('opentype'); }
+
+/* ================================================= */
+/* 2. ROOT & BASE STYLING (REUSABLE)                 */
+/* ================================================= */
+
+:root{
+    --bg-light: #fff;
+    --dark-bg: #111;
+    --text-dark: #000;
+    --text-light: #fff;
+    --card-radius: 16px;
+    --border-radius-lg: 50px;
+    --spacing-lg: 80px; 
+    --spacing-md: 40px; 
+    --artworks-padding: 100px; 
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{ 
+    background-color: var(--bg-light); 
+    overflow-x:hidden; 
+    -webkit-font-smoothing:antialiased; 
+    -moz-osx-font-smoothing:grayscale; 
+    font-family: 'Athletics', Arial, sans-serif; 
+}
+.menu-open { overflow: hidden !important; }
+
+/* ================================================= */
+/* 3. NAVIGATION (REUSABLE)                           */
+/* ================================================= */
+
+.navbar { 
+    position: fixed; top: 30px; left: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 var(--spacing-md); z-index: 200; 
+}
+.luis-logo { font-size: 2.5rem; font-weight: 500; color: var(--text-dark); transition: color 0.3s ease-in-out; }
+.glass-island { 
+    display: flex; gap: 30px; padding: 15px 30px; border-radius: var(--border-radius-lg); 
+    background: rgba(255, 255, 255, 0.2); 
+    backdrop-filter: blur(10px) saturate(180%); -webkit-backdrop-filter: blur(10px) saturate(180%); 
+    border: 1px solid rgba(255, 255, 255, 0.4); 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2); 
+    transition: all 0.3s ease; 
+}
+.glass-island a { color: var(--text-dark); text-decoration: none; font-weight: 400; font-size: 1.1rem; transition: color 0.3s ease-in-out; padding: 5px 0; font-family: 'Athletics', sans-serif; }
+.hamburger-menu { width: 30px; height: 30px; display: flex; flex-direction: column; justify-content: space-around; cursor: pointer; padding: 5px 0; }
+.hamburger-menu span { display: block; width: 100%; height: 2px; background-color: var(--text-dark); transition: background-color 0.3s ease-in-out; }
+
+/* FULLSCREEN HAMBURGER MENU STYLING (REUSABLE) */
+.fullscreen-menu {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: var(--dark-bg); 
+    z-index: 500; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.5s ease-in-out; padding: 100px 20px; 
+}
+.menu-header { position: absolute; top: 30px; left: var(--spacing-md); z-index: 510; }
+.menu-header .luis-logo { color: var(--text-light); }
+.fullscreen-menu.is-open { opacity: 1; pointer-events: auto; }
+.menu-links { list-style: none; text-align: center; width: 100%; max-width: none; }
+.menu-links li { margin: 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 0 var(--spacing-md); }
+.menu-links li:first-child { border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.menu-links a {
+    color: var(--text-light); text-decoration: none; font-size: clamp(2rem, 5vw, 3.5rem); 
+    font-weight: 500; line-height: 1.5; letter-spacing: -0.04em; display: block; 
+    padding: 20px 0; transition: color 0.3s ease;
+}
+.menu-close-btn { position: absolute; top: 30px; right: 30px; width: 40px; height: 40px; cursor: pointer; z-index: 510; }
+.menu-close-btn::before, .menu-close-btn::after {
+    content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px;
+    background-color: var(--text-light); transition: transform 0.3s ease;
+}
+.menu-close-btn::before { transform: rotate(45deg); }
+.menu-close-btn::after { transform: rotate(-45deg); }
+
+
+/* ================================================= */
+/* 4. PORTFOLIO PAGE SPECIFIC STYLING                */
+/* ================================================= */
+
+.artworks-section {
+    position: relative; 
+    padding-top: 150px; 
+    padding-bottom: 100px;
+    width: 100%; 
+    min-height: 100vh;
+}
+
+.artworks-header { padding: 0 var(--spacing-lg); margin-bottom: 80px; }
+.artworks-title {
+    font-size: clamp(4rem, 15vw, 18rem); font-weight: 500; letter-spacing: -0.05em;
+    line-height: 0.8; color: var(--text-dark);
+}
+.artworks-subtitle {
+    font-size: clamp(1.5rem, 4vw, 3rem); font-weight: 400; margin-top: 20px;
+    color: #555; max-width: 800px;
+}
+
+/* --- Horizontal Gallery Container --- */
+.gallery-container {
+    display: flex; gap: 30px; padding: 0 var(--spacing-lg); 
+    overflow-x: scroll; 
+    -webkit-overflow-scrolling: touch;
+    cursor: grab; user-select: none;
+    height: 60vh; 
+}
+
+/* Itago ang scrollbar */
+.gallery-container::-webkit-scrollbar { display: none; }
+.gallery-container { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Gallery Item Styling */
+.gallery-container .artwork-item {
+    flex-shrink: 0; height: 100%; width: 400px; 
+    border-radius: var(--card-radius); overflow: hidden;
+    position: relative; background-color: #eee;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+.gallery-container img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform 0.3s ease-in-out;
+}
+.gallery-container .artwork-item:hover img { transform: scale(1.03); }
+.gallery-container.is-dragging { cursor: grabbing; }
+
+
+/* --- Responsive Adjustments --- */
+@media (max-width:900px){
+    :root { 
+        --spacing-lg: 40px; 
+        --spacing-md: 20px; 
+    }
+    .artworks-section { padding-top: 100px; padding-bottom: 50px; }
+    .artworks-header { margin-bottom: 40px; padding: 0 var(--spacing-md); }
+    .artworks-title { font-size: clamp(3rem, 12vw, 8rem); }
+    .artworks-subtitle { font-size: clamp(1.2rem, 3.5vw, 2rem); }
+    .glass-island { display: none; }
+    .gallery-container { padding: 0 var(--spacing-md); height: 50vh; }
+    .gallery-container .artwork-item { width: 300px; }
+}
+    </style>
+</head>
+<body>
+    
+    <header class="navbar" id="navbar">
+        <a href="index.html" class="luis-logo">LÜIS</a> 
+        
+        <nav class="glass-island">
+            <a href="index.html">Home</a> 
+            <a href="portfolio.html">Portfolio</a> 
+            <a href="index.html#commissions">Commissions</a> 
+            <a href="index.html#about">About</a> 
+            <a href="index.html#contact">Contact</a> 
+        </nav>
+        
+        <div class="hamburger-menu" id="hamburger-open">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </header>
+
+    <div class="fullscreen-menu" id="fullscreen-menu">
+        <div class="menu-header">
+            <div class="luis-logo">LÜIS</div>
+        </div>
+        <div class="menu-close-btn" id="hamburger-close"></div>
+        <ul class="menu-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="index.html#commissions">Commissions</a></li>
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+    </div>
+    
+    <section class="artworks-section" id="portfolio">
+        <div class="artworks-header">
+            <h2 class="artworks-title">Portfolio</h2>
+            <p class="artworks-subtitle">A collection of my recent digital and traditional pieces. Swipe or drag to explore the gallery.</p>
+        </div>
+        
+        <div class="gallery-container" id="gallery-container">
+            <div class="artwork-item"><img src="images/1.jpg" alt="Artwork 1"></div>
+            <div class="artwork-item"><img src="images/2.jpg" alt="Artwork 2"></div>
+            <div class="artwork-item"><img src="images/3.jpg" alt="Artwork 3"></div>
+            <div class="artwork-item"><img src="images/4.jpg" alt="Artwork 4"></div>
+            <div class="artwork-item"><img src="images/5.jpg" alt="Artwork 5"></div>
+            <div class="artwork-item"><img src="images/6.jpg" alt="Artwork 6"></div>
+            <div class="artwork-item"><img src="images/7.jpg" alt="Artwork 7"></div>
+            <div class="artwork-item"><img src="images/8.jpg" alt="Artwork 8"></div>
+            <div class="artwork-item"><img src="images/9.jpg" alt="Artwork 9"></div>
+            <div class="artwork-item"><img src="images/10.jpg" alt="Artwork 10"></div>
+            <div class="artwork-item"><img src="images/11.jpg" alt="Artwork 11"></div>
+            <div class="artwork-item"><img src="images/12.jpg" alt="Artwork 12"></div>
+            <div class="artwork-item"><img src="images/13.jpg" alt="Artwork 13"></div>
+            <div class="artwork-item"><img src="images/14.jpg" alt="Artwork 14"></div>
+            <div class="artwork-item"><img src="images/15.jpg" alt="Artwork 15"></div>
+            </div>
+        
+        <footer style="padding: 100px var(--spacing-lg) 50px; text-align: center; color: #aaa; font-family: 'Athletics', sans-serif;">
+            © 2025 LÜIS. All Artworks Reserved.
+        </footer>
+    </section>
+
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- Hamburger Menu Toggle Logic ---
+    const HAMBURGER_OPEN = document.getElementById('hamburger-open');
+    const HAMBURGER_CLOSE = document.getElementById('hamburger-close');
+    const FULLSCREEN_MENU = document.getElementById('fullscreen-menu');
+    const BODY = document.body;
+
+    function openMenu() {
+        FULLSCREEN_MENU.classList.add('is-open');
+        BODY.classList.add('menu-open');
+        BODY.style.overflow = 'hidden'; 
+    }
+
+    function closeMenu() {
+        FULLSCREEN_MENU.classList.remove('is-open');
+        BODY.classList.remove('menu-open');
+        BODY.style.overflow = 'auto'; 
+    }
+
+    HAMBURGER_OPEN.addEventListener('click', openMenu);
+    HAMBURGER_CLOSE.addEventListener('click', closeMenu);
+    
+    FULLSCREEN_MENU.querySelectorAll('.menu-links a').forEach(link => {
+        link.addEventListener('click', closeMenu);
+    });
+
+    // --- Drag-to-Scroll Functionality for Gallery ---
+    const GALLERY_CONTAINER = document.getElementById('gallery-container'); 
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    GALLERY_CONTAINER.addEventListener('mousedown', (e) => {
+        isDown = true;
+        GALLERY_CONTAINER.classList.add('is-dragging');
+        startX = e.pageX - GALLERY_CONTAINER.offsetLeft;
+        scrollLeft = GALLERY_CONTAINER.scrollLeft;
+        e.preventDefault(); 
+    });
+
+    GALLERY_CONTAINER.addEventListener('mouseleave', () => {
+        isDown = false;
+        GALLERY_CONTAINER.classList.remove('is-dragging');
+    });
+
+    GALLERY_CONTAINER.addEventListener('mouseup', () => {
+        isDown = false;
+        GALLERY_CONTAINER.classList.remove('is-dragging');
+    });
+
+    GALLERY_CONTAINER.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - GALLERY_CONTAINER.offsetLeft;
+        const walk = (x - startX) * 2; 
+        GALLERY_CONTAINER.scrollLeft = scrollLeft - walk;
+    });
+
+    // Mobile touch support
+    GALLERY_CONTAINER.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        startX = touch.pageX - GALLERY_CONTAINER.offsetLeft;
+        scrollLeft = GALLERY_CONTAINER.scrollLeft;
+    }, { passive: true }); 
+
+    GALLERY_CONTAINER.addEventListener('touchmove', (e) => {
+        const touch = e.touches[0];
+        const x = touch.pageX - GALLERY_CONTAINER.offsetLeft;
+        const walk = (x - startX) * 2;
+        GALLERY_CONTAINER.scrollLeft = scrollLeft - walk;
+    }, { passive: true });
+});
+    </script>
+</body>
+</html>
