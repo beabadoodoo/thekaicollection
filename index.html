@@ -6,8 +6,8 @@
     <title>LÜIS | Creative Agency</title>
     <style>
 /*
- * style.css - FINAL VERSION for index.html (Stacking Transition + Artworks)
- * Note: Ideal to move this CSS to a separate linked file (global.css)
+ * style.css - FINAL VERSION (Fixed Contact Alignment: Title Left, Content Right, No Lines, Larger Links)
+ * - CONTACT LINK FIX: Nilakihan ang font size ng contact links (2.2rem / 1.9rem).
  */
 
 /* ================================================= */
@@ -34,6 +34,8 @@
     --final-top-radius: 30px; 
     --final-width-percent: 100vw;
     --final-height-percent: 100vh;
+    --card-white: #fff; 
+    --text-on-white: #000; 
 
     /* Spacing */
     --spacing-lg: 80px; 
@@ -42,19 +44,16 @@
     --artworks-padding: 100px;
     
     /* ****************************************************** */
-    /* STACKING CARD 2: WHITE (Mananatili)                    */
-    --card-white: var(--bg-light); /* #fff */
-    --text-on-white: var(--text-dark); /* #000 */
-    
     /* NEW COLORS FOR COMMISSIONS/CONTACT SECTION */
-    --commissions-dark-teal: #17323a; /* I-BASED sa gusto mong kulay */
-    --text-on-dark-teal: #f9efd8; /* I-BASED sa gusto mong kulay */
+    --commissions-dark-teal: #17323a; 
+    --text-on-dark-teal: #f9efd8; 
+    --highlight-color: #ffffff; 
     /* ****************************************************** */
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
 html{ height:100%; }
-body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; font-family: 'Athletics', Arial, sans-serif; }
+body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:antialiased; -moz-osx-osx-smoothing:grayscale; font-family: 'Athletics', Arial, sans-serif; }
 .menu-open { overflow: hidden !important; }
 
 /* --- Hero & Parallax --- */
@@ -91,11 +90,15 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
 
 /* Main Hero Title */
 .luis-title { 
-    position: absolute; left: 50%; top: 55%; 
+    /* GINAWANG FIXED ANG POSITION PARA MADALING I-CONTROL SA JS */
+    position: fixed; 
+    left: 50%; top: 55%; 
     transform: translate(-50%, -50%) translateY(5vh); 
     font-size: clamp(10rem, 25vw, 30rem); font-weight: 500; letter-spacing: -0.05em; 
-    line-height: 0.8; color: rgba(0, 0, 0, 0.95); user-select: none; z-index: 100; 
+    line-height: 0.8; color: rgba(0, 0, 0, 0.95); user-select: none; 
+    z-index: 4; 
     font-family: 'Athletics', sans-serif; 
+    will-change: transform, opacity; /* For smooth animation */
 }
 
 /* Scroll Indicator */
@@ -110,7 +113,7 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
 .scroll-indicator span { margin-bottom: 5px; letter-spacing: 0.05em; font-weight: 500; }
 
 /* Parallax Card Styling */
-.artwork-card { position:absolute; border-radius:var(--card-radius); overflow:hidden; box-shadow: var(--card-shadow); background:#eee; pointer-events:auto; will-change: transform, opacity; transition: transform 350ms cubic-bezier(.2,.9,.2,1), opacity 450ms ease; touch-action: none; }
+.artwork-card { position:absolute; border-radius:var(--card-radius); overflow:hidden; box-shadow: var(--card-shadow); background:#eee; pointer-events:none; will-change: transform, opacity; transition: transform 350ms cubic-bezier(.2,.9,.2,1), opacity 450ms ease; touch-action: none; }
 .artwork-card img{ width: 100%; height: 100%; object-fit: cover; }
 @keyframes drift { 0% { transform: translate(0px, 0px) rotateZ(0deg); } 100% { transform: translate(5px, 10px) rotateZ(1deg); } }
 
@@ -119,9 +122,9 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
 .content-section {
     position: fixed; bottom: 0; left: 50%; width: var(--final-width-percent); height: var(--final-height-percent);
     transform: translateX(-50%) translateY(100%); 
-    z-index: 5; pointer-events: none; border-radius: var(--initial-border-radius); 
-    will-change: transform, border-radius, opacity; overflow: hidden;
-    opacity: 0; 
+    z-index: 5; 
+    pointer-events: none; border-radius: var(--initial-border-radius); 
+    will-change: transform, border-radius; overflow: hidden;
     transition: none;
 }
 .black-overlay { position: absolute; inset: 0; background-color: var(--dark-bg); }
@@ -131,7 +134,8 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
     position: absolute; top: 15%; left: var(--spacing-lg); transform: none; 
     text-align: left; z-index: 6; color: #fff; font-family: 'Athletics', sans-serif; 
     font-weight: 400; font-size: clamp(1.2rem, 3.5vw, 2.5rem); line-height: 1.4; 
-    padding-right: var(--spacing-lg); opacity: 1; max-width: 800px; pointer-events: auto;
+    padding-right: var(--spacing-lg); 
+    max-width: 800px; pointer-events: auto;
 }
 .section-content h1 { font-size: 1.5em; font-weight: 500; margin-bottom: 10px; }
 
@@ -145,24 +149,24 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
 }
 .card-button:hover { background-color: #f0f0f0; transform: translateY(-1px); }
 .card-button.dark { background-color: var(--dark-bg); color: var(--text-light); }
-.card-button.dark:hover { background-color: #333; transform: translateY(-1px); }
+.card-button.dark:hover { background-color: #333; color: var(--highlight-color); transform: translateY(-1px); }
 /* END BUTTON STYLING */
 
 /* 2. Footer Text (Bottom-Right) */
 .section-footer-text {
     position: absolute; bottom: var(--spacing-xl-footer); right: var(--spacing-xl-footer); 
     text-align: right; z-index: 6; color: var(--text-light); font-family: 'Athletics', sans-serif;
-    font-weight: 400; font-size: clamp(1.1rem, 2.5vw, 1.8rem); opacity: 1; 
+    font-weight: 400; font-size: clamp(1.1rem, 2.5vw, 1.8rem); 
     max-width: 400px; pointer-events: auto;
 }
 
 /* WHITE CARD SECTION (Stacking Card 2) */
 .white-section {
     position: fixed; bottom: 0; left: 50%; width: var(--final-width-percent); height: var(--final-height-percent);
-    transform: translateX(-50%) translateY(100%); z-index: 7; 
+    z-index: 7; 
     pointer-events: none; border-radius: var(--initial-border-radius); 
-    will-change: transform, border-radius, opacity; overflow: hidden;
-    opacity: 0; transition: none;
+    will-change: transform, border-radius; overflow: hidden;
+    transition: none;
 }
 /* WHITE OVERLAY (Ito ay White) */
 .white-overlay { position: absolute; inset: 0; background-color: var(--card-white); }
@@ -182,27 +186,6 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
     padding: 8px 25px; font-size: 1rem; font-weight: 400; margin-bottom: 30px;
 }
 /* END WHITE CARD SECTION */
-
-/* ================================================= */
-/* 3. ARTWORKS GALLERY SECTION STYLING (The content below stacking)          */
-/* ================================================= */
-
-.artworks-section {
-    /* Ito ang magiging huling content ng page, lalabas pagkatapos ng White Card */
-    position: relative; 
-    margin-top: calc(100vh * 3); /* Dapat ito ang total scroll height ng stacking (1.5x + 1.5x) */
-    padding: var(--artworks-padding) 0 200px 0; 
-    width: 100%; 
-    background-color: var(--bg-light); 
-    z-index: 10; 
-    pointer-events: auto; 
-    min-height: 120vh;
-}
-.artworks-header { padding: 0 var(--spacing-lg); margin-bottom: 80px; }
-.artworks-title {
-    font-size: clamp(4rem, 15vw, 18rem); font-weight: 500; letter-spacing: -0.05em;
-    line-height: 0.8; color: var(--text-dark); margin-bottom: 20px;
-}
 
 /* Footer Spacer (Gagamitin na lang ito para i-hold ang scroll space) */
 .scroll-holder { height: 300vh; background-color: transparent; }
@@ -233,6 +216,115 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
 .menu-close-btn::after { transform: rotate(-45deg); }
 
 
+/* ****************************************************** */
+/* CUSTOM CSS FOR CONTACT SECTION (Fixed Layout & Design) */
+/* ****************************************************** */
+.contact-section-style {
+    position: relative; 
+    padding: 100px var(--spacing-lg); 
+    min-height: 100vh; 
+    z-index: 10; 
+    background-color: var(--commissions-dark-teal); 
+    color: var(--text-on-dark-teal); 
+    border-top-left-radius: var(--final-top-radius); 
+    border-top-right-radius: var(--final-top-radius); 
+    overflow: hidden; 
+    /* DINALA ANG MAIN ALIGNMENT SA KALIWA (para sa title at wrappers) */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Title is aligned left */
+}
+
+/* ❌ TINANGGAL ANG BACKGROUND PATTERN LINES */
+.contact-section-style::before {
+    content: none; 
+}
+
+.contact-content-wrapper {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0; 
+    padding-top: 40px;
+    z-index: 1; 
+}
+
+.contact-title {
+    font-size: clamp(4rem, 10vw, 12rem);
+    font-weight: 500; 
+    color: var(--text-on-dark-teal);
+    text-align: left; /* ✅ CONTACT TITLE - FIXED SA KALIWA */
+    margin-bottom: 80px; 
+    line-height: 1.1;
+    padding: 0 var(--spacing-lg);
+    width: 100%;
+    max-width: 1400px;
+}
+
+.contact-label {
+    color: rgba(255, 255, 255, 0.4); 
+    font-size: 0.8rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 10px;
+    display: block;
+    text-align: right; /* ✅ LABEL - IBINALIK SA KANAN */
+}
+
+.contact-block {
+    font-size: 1.4rem; 
+    font-weight: 400; 
+    line-height: 1.4;
+    max-width: 450px;
+    /* ✅ CONTACT BLOCK - IBINALIK SA KANAN */
+    margin-left: auto; 
+    margin-right: var(--spacing-lg); 
+    text-align: right; 
+}
+
+.contact-link { 
+    color: var(--text-on-dark-teal); 
+    text-decoration: none;
+    font-weight: 500;
+    /* ✅ NILAKHAN ANG FONT SIZE */
+    font-size: 2.2rem; 
+    transition: color 0.3s ease;
+    display: block; 
+    margin-bottom: 15px; 
+    position: relative;
+    /* ✅ LINK - IBINALIK SA KANAN (padding, margin, width) */
+    padding-right: 35px; 
+    padding-left: 0; 
+    width: fit-content;
+    margin-left: auto; 
+    margin-right: 0;
+}
+
+/* Arrow Icon sa Hyperlink (Arrow sa kanan) */
+.contact-link::after {
+    content: '→'; 
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    font-size: 1em;
+    font-weight: 400;
+}
+.contact-link::before { content: none; }
+
+
+.contact-link:hover {
+    color: var(--highlight-color); 
+}
+
+.contact-link:hover::after {
+    opacity: 1;
+    transform: translate(10px, -50%); 
+}
+
+
 /* --- Responsive Adjustments --- */
 @media (max-width:900px){
     :root { 
@@ -252,24 +344,30 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
     .card-button { font-size: 1.1rem; padding: 12px 30px; margin-top: 20px; }
     .scroll-holder { height: 300vh; }
     .artworks-section { margin-top: calc(100vh * 3); }
-}
 
-    /* ****************************************************** */
-    /* REMOVED ARTWORKS GALLERY STYLES FROM index.html */
-    /* They are now only in portfolio.html */
-    /* ****************************************************** */
-    
-    /* Para maging light ang links sa dark background */
-    .contact-link { 
-        color: var(--text-on-dark-teal); 
-        text-decoration: underline;
-        font-weight: 500;
-        transition: color 0.2s;
+    /* Contact Responsive Fixes */
+    .contact-title {
+        text-align: left; /* Mananatili sa kaliwa */
+        padding: 0 var(--spacing-md);
+        margin-bottom: 40px;
     }
-    .contact-link:hover {
-        color: #fff;
+    .contact-block {
+        margin-left: auto; /* ✅ IBINALIK SA KANAN */
+        margin-right: var(--spacing-md);
+        text-align: right; /* ✅ IBINALIK SA KANAN */
     }
-    </style>
+    .contact-section-style {
+        align-items: flex-start; /* Mananatili sa kaliwa (para sa title) */
+        padding: 50px 0;
+    }
+    .contact-link {
+        /* ✅ NILAKHAN ANG FONT SIZE (Mobile) */
+        font-size: 1.9rem; 
+        margin-left: auto; /* ✅ IBINALIK SA KANAN */
+        margin-right: 0;
+    }
+}
+</style>
 </head>
 <body>
     <header class="navbar" id="navbar">
@@ -278,9 +376,8 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
         <nav class="glass-island">
             <a href="#home">Home</a> 
             <a href="portfolio.html">Portfolio</a> 
-            <a href="#commissions">Commission</a> 
             <a href="#commissions">Request</a> 
-            <a href="#contact">Contact</a> 
+            <a href="#commissions">Contact</a> 
         </nav>
         
         <div class="hamburger-menu" id="hamburger-open">
@@ -301,16 +398,15 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
         <ul class="menu-links">
             <li><a href="#home">Home</a></li>
             <li><a href="portfolio.html">Portfolio</a></li>
-            <li><a href="#commissions">Commission</a></li>
             <li><a href="#commissions">Request</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="#commissions">Contact</a></li>
         </ul>
 
     </div>
     <div id="interactive"></div>
 
     <div class="hero" id="hero">
-        <h1 class="luis-title">LÜIS</h1>
+        <h1 class="luis-title" id="luis-title">LÜIS</h1>
         <div class="scroll-indicator"><span>Scroll</span></div> 
     </div>
 
@@ -347,34 +443,29 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
         
     </div>
     
-    <section style="
-        position: relative; 
-        padding: 100px 50px; 
-        min-height: 100vh; 
-        z-index: 10; 
-        background-color: var(--commissions-dark-teal); /* #17323a */
-        color: var(--text-on-dark-teal); /* #f9efd8 */
-        border-top-left-radius: var(--final-top-radius); 
-        border-top-right-radius: var(--final-top-radius); 
-        overflow: hidden; 
-    " id="commissions">
-        <h2 style="font-size: 3rem; margin-bottom: 30px; font-weight: 500; color: var(--text-on-dark-teal);">Contact & Commissions</h2>
-        <p style="font-size: 1.5rem; max-width: 800px; font-weight: 400; line-height: 1.5;">
-            For inquiries or commission requests, feel free to reach out through **<a href="https://www.facebook.com/profile.php?id=61581185863360" target="_blank" class="contact-link">The Kai Collection</a>** on Facebook or message me on TikTok. 
-        </p>
+    <section class="contact-section-style" id="commissions">
         
-        <div style="margin-top: 40px; font-size: 1.4rem;">
-            <p style="margin-bottom: 10px;">**Facebook Page:** <a href="https://www.facebook.com/profile.php?id=61581185863360" target="_blank" class="contact-link">The Kai Collection</a>
-            </p>
-            <p>**TikTok:** <span style="font-weight: 500; letter-spacing: 0.05em; color: #fff;">@kai_random00</span>
-            </p>
+        <h2 class="contact-title">Contact</h2>
+        
+        <div class="contact-content-wrapper">
+            <div class="contact-block">
+                <span class="contact-label">say hello</span>
+                <p style="margin-bottom: 25px;">
+                    We look forward to hearing from you. By Facebook or TikTok.
+                </p>
+                
+                <a href="https://www.facebook.com/profile.php?id=61581185863360" target="_blank" class="contact-link">The Kai Collection (Facebook)</a>
+                
+                <a href="https://www.tiktok.com/@kai_random00" target="_blank" class="contact-link">@kai_random00 (TikTok)</a>
+                
+            </div>
         </div>
-        </section>
 
+    </section>
 
     <script>
 /*
- * script.js - FINAL VERSION for index.html (Fixed Stacking + Parallax)
+ * script.js - FINAL VERSION (Luis Fade-Out Logic)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -384,6 +475,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const INTRO_SECTION = document.getElementById('intro-section');
     const WHITE_SECTION = document.getElementById('white-section'); 
     const NAVBAR = document.getElementById('navbar');
+    // Kinuha ang Luis Title element
+    const LUIS_TITLE = document.getElementById('luis-title'); 
 
     // Menu Elements
     const HAMBURGER_OPEN = document.getElementById('hamburger-open');
@@ -535,7 +628,7 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(animate);
     }
     
-    // --- The Crucial Scroll Animation Function (Stacking Cards) ---
+    // --- The Crucial Scroll Animation Function (Stacking Cards and Fading Luis Title) ---
     function handleScroll() {
         if (BODY.classList.contains('menu-open')) return;
 
@@ -558,6 +651,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const translateYStart = 100; // Outside view
         const translateYDiff = 100;
 
+        // ******************************************************
+        // LUIS TITLE FADE-OUT LOGIC (FIXED)
+        // ******************************************************
+        const fadeStart = heroHeight * 0.0;
+        const fadeEnd = heroHeight * 0.5; // Mag-fade out sa unang 50% ng hero scroll (mas mabilis)
+
+        let luisTitleOpacity = 1;
+        let luisTitleScale = 1;
+
+        if (scrollY > fadeStart && scrollY < fadeEnd) {
+            let fadeProgress = (scrollY - fadeStart) / (fadeEnd - fadeStart);
+            luisTitleOpacity = 1 - fadeProgress;
+            luisTitleScale = 1 + fadeProgress * 0.2; 
+        } else if (scrollY >= fadeEnd) {
+            luisTitleOpacity = 0;
+            luisTitleScale = 1.2;
+        }
+
+        LUIS_TITLE.style.opacity = luisTitleOpacity;
+        LUIS_TITLE.style.transform = `translate(-50%, -50%) translateY(5vh) scale(${luisTitleScale})`; 
+
+
         // 1. BLACK CARD LOGIC (In and Hold)
         let progressBlackIn = 0;
         if (scrollY >= startBlackIn && scrollY <= endBlackIn) {
@@ -570,15 +685,14 @@ document.addEventListener('DOMContentLoaded', () => {
         let currentTranslateYBlack = translateYStart - translateYDiff * easedBlackIn;
         INTRO_SECTION.style.transform = `translateX(-50%) translateY(${currentTranslateYBlack}%)`;
 
-        if (progressBlackIn > 0) {
+        if (progressBlackIn > 0.01) { 
              const easedRadius = 1 - Math.pow(1 - progressBlackIn, 5);
              const radiusDiff = initialBorderRadius - finalTopRadius;
              const currentTopRadius = initialBorderRadius - radiusDiff * easedRadius;
              INTRO_SECTION.style.borderRadius = `${currentTopRadius}px ${currentTopRadius}px 0px 0px`;
-             INTRO_SECTION.style.opacity = 1;
-
+             INTRO_SECTION.style.pointerEvents = 'auto'; 
         } else {
-             INTRO_SECTION.style.opacity = 0; 
+             INTRO_SECTION.style.pointerEvents = 'none'; 
         }
 
 
@@ -603,30 +717,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const radiusDiff = initialBorderRadius - finalTopRadius;
             const currentTopRadius = initialBorderRadius - radiusDiff * easedWhiteIn;
             WHITE_SECTION.style.borderRadius = `${currentTopRadius}px ${currentTopRadius}px 0px 0px`;
-            WHITE_SECTION.style.opacity = 1;
+            WHITE_SECTION.style.pointerEvents = 'auto'; 
+
         } else {
-            WHITE_SECTION.style.opacity = 0;
+            WHITE_SECTION.style.pointerEvents = 'none'; 
         }
 
 
         // 3. NAVBAR COLOR CHANGE LOGIC
-        // Kailangan i-add ang 'on-dark-bg' kapag ang BLACK card ang visible.
-        // Kailangan i-remove ang 'on-dark-bg' kapag ang WHITE card ang visible.
-        // Kailangan din i-add ang 'on-dark-bg' kapag nakarating na sa Dark Teal Commissions section.
-        const isWhiteCardVisible = currentTranslateYWhite < 99; 
-        const isBlackCardVisible = currentTranslateYBlack < 99;
+        const isWhiteCardVisible = progressWhiteIn > 0.01; 
+        const isBlackCardVisible = progressBlackIn > 0.01;
         const reachedCommissions = scrollY > endWhiteIn - (heroHeight * 0.1); 
 
         if (reachedCommissions) {
-             // Dahil dark teal ang background ng Commissions, kailangan i-white ang text ng navbar
+             // Dark Teal background
              NAVBAR.classList.add('on-dark-bg');
         }
         else if (isWhiteCardVisible) { 
+            // White background
             NAVBAR.classList.remove('on-dark-bg');
         } else if (isBlackCardVisible) {
+            // Black background
             NAVBAR.classList.add('on-dark-bg');
         } else {
-            // Pagbalik sa white hero section, babalik sa dark text ang navbar
+            // White hero section
             NAVBAR.classList.remove('on-dark-bg');
         }
     }
