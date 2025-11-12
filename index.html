@@ -6,18 +6,19 @@
     <title>LÜIS | Creative Agency</title>
     <style>
 /*
- * style.css - FINAL VERSION (Fixed Contact Alignment: Title Left, Content Right, No Lines, Larger Links)
- * - CONTACT LINK FIX: Nilakihan ang font size ng contact links (2.2rem / 1.9rem).
+ * style.css - FINAL FINAL FINAL VERSION (White Card Harang Fix)
+ * BINAGO: Final fix, inalis ang fixed height sa mobile cards container at ginawang padding-bottom 250px.
+ * HULING FIX: Mas pinaliitan pa ang font size ng white card content at contact title/links (naayos na sa nakaraan)
  */
 
 /* ================================================= */
-/* 1. FONT DEFINITIONS                               */
+/* 1. FONT DEFINITIONS                               */
 /* ================================================= */
 @font-face { font-family: 'Athletics'; font-style: normal; font-weight: 400; font-display: swap; src: url('./fonts/Athletics Regular.otf') format('opentype'); }
 @font-face { font-family: 'Athletics'; font-style: normal; font-weight: 500; font-display: swap; src: url('./fonts/Athletics Medium.otf') format('opentype'); }
 
 /* ================================================= */
-/* 2. MAIN STYLING                                   */
+/* 2. MAIN STYLING                                   */
 /* ================================================= */
 
 :root{
@@ -43,12 +44,13 @@
     --spacing-xl-footer: 120px; 
     --artworks-padding: 100px;
     
-    /* ****************************************************** */
     /* NEW COLORS FOR COMMISSIONS/CONTACT SECTION */
     --commissions-dark-teal: #17323a; 
     --text-on-dark-teal: #f9efd8; 
     --highlight-color: #ffffff; 
-    /* ****************************************************** */
+
+    /* BAGONG SPACING VARIABLE para sa White Section Content (Adjusted for Desktop) */
+    --white-content-padding: 120px; /* Dinagdagan ang padding sa left/right para umusog ang content */
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -90,7 +92,6 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
 
 /* Main Hero Title */
 .luis-title { 
-    /* GINAWANG FIXED ANG POSITION PARA MADALING I-CONTROL SA JS */
     position: fixed; 
     left: 50%; top: 55%; 
     transform: translate(-50%, -50%) translateY(5vh); 
@@ -160,7 +161,7 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
     max-width: 400px; pointer-events: auto;
 }
 
-/* WHITE CARD SECTION (Stacking Card 2) */
+/* WHITE CARD SECTION (Stacking Card 2) - BINAGO PARA SA FLEXBOX */
 .white-section {
     position: fixed; bottom: 0; left: 50%; width: var(--final-width-percent); height: var(--final-height-percent);
     z-index: 7; 
@@ -171,21 +172,102 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
 /* WHITE OVERLAY (Ito ay White) */
 .white-overlay { position: absolute; inset: 0; background-color: var(--card-white); }
 
+/* BAGONG WRAPPER para sa Flexbox */
+.white-section-container {
+    position: absolute; 
+    inset: 0;
+    display: flex;
+    align-items: center; /* I-center ang elements vertically */
+    /* BINAGO: Tumaas ang padding sa gilid para mas makita ang cards at lumayo ang text sa kaliwang gilid */
+    padding: 5% var(--spacing-md) 5% var(--white-content-padding); 
+    max-width: 1600px; /* Limitahan ang width ng content */
+    margin: 0 auto;
+    width: 100%; 
+}
+
+/* BINAGO: White Section Content (Kaliwang Bahagi) - NILILITAN ANG FONT SIZE */
 .white-section-content {
-    position: absolute; top: 15%; left: 10%; transform: none; text-align: left; 
+    flex: 0 0 50%; 
+    /* BINAGO: Binawasan ang max-width para magkaroon ng mas maraming space sa kanan */
+    max-width: 45%; 
+    transform: none; text-align: left; 
     z-index: 8; 
-    /* BLACK TEXT ON WHITE CARD */
     color: var(--text-on-white); 
     font-family: 'Athletics', sans-serif;
-    font-weight: 400; font-size: clamp(1.1rem, 2.8vw, 2.0rem); line-height: 1.3;
-    max-width: 1200px; padding-right: 10%; pointer-events: auto;
+    font-weight: 400; 
+    /* BINAGO DITO: Binawasan ang max font size mula 2.0rem to 1.6rem */
+    font-size: clamp(1.1rem, 2.8vw, 1.6rem); 
+    line-height: 1.3;
+    padding-right: 0; 
+    pointer-events: auto;
 }
 .white-tag {
     /* BLACK BORDER ON WHITE CARD */
     display: inline-block; border: 1px solid var(--text-on-white); border-radius: var(--border-radius-lg);
-    padding: 8px 25px; font-size: 1rem; font-weight: 400; margin-bottom: 30px;
+    padding: 8px 25px; font-size: 1rem; font-weight: 400; 
+    /* BINAGO DITO: Pinaliitan ang margin bottom */
+    margin-bottom: 20px; 
 }
 /* END WHITE CARD SECTION */
+
+
+/* ****************************************************** */
+/* FLOATING CARDS IN WHITE SECTION STYLES (Kanang Bahagi) */
+/* ****************************************************** */
+.white-floating-cards {
+    flex: 1; /* Aabutin ang natitirang space */
+    position: relative; 
+    height: 100%; /* Sa desktop lang ito gagamitin */
+    z-index: 7; 
+    pointer-events: none;
+    overflow: hidden; 
+}
+
+/* Base class for floating cards (reused from hero, slightly modified) */
+.floating-card { 
+    position: absolute; 
+    border-radius: var(--card-radius); 
+    overflow: hidden; 
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+    will-change: transform; 
+    transition: transform 0.3s ease;
+    background:#eee;
+    pointer-events: auto; /* Para hindi ma-block ang scroll/click */
+}
+
+.floating-card img {
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    display: block; 
+}
+
+/* Specific positions and sizes for the 3 cards (RELATIVE sa white-floating-cards container) */
+.floating-card.card-1 {
+    width: 250px; 
+    height: 350px;
+    top: 10%; 
+    right: 5%; 
+    transform: rotate(6deg); 
+}
+
+.floating-card.card-2 {
+    width: 300px; 
+    height: 420px;
+    top: 30%; 
+    right: 35%; 
+    transform: rotate(-10deg); 
+}
+
+.floating-card.card-3 {
+    width: 200px; 
+    height: 280px;
+    bottom: 5%; 
+    right: 20%; 
+    transform: rotate(3deg); 
+}
+/* ****************************************************** */
+
 
 /* Footer Spacer (Gagamitin na lang ito para i-hold ang scroll space) */
 .scroll-holder { height: 300vh; background-color: transparent; }
@@ -229,15 +311,9 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
     border-top-left-radius: var(--final-top-radius); 
     border-top-right-radius: var(--final-top-radius); 
     overflow: hidden; 
-    /* DINALA ANG MAIN ALIGNMENT SA KALIWA (para sa title at wrappers) */
     display: flex;
     flex-direction: column;
     align-items: flex-start; /* Title is aligned left */
-}
-
-/* ❌ TINANGGAL ANG BACKGROUND PATTERN LINES */
-.contact-section-style::before {
-    content: none; 
 }
 
 .contact-content-wrapper {
@@ -249,10 +325,11 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
 }
 
 .contact-title {
-    font-size: clamp(4rem, 10vw, 12rem);
+    /* BINAGO DITO: Binawasan ang max font size mula 12rem to 8rem */
+    font-size: clamp(4rem, 10vw, 8rem); 
     font-weight: 500; 
     color: var(--text-on-dark-teal);
-    text-align: left; /* ✅ CONTACT TITLE - FIXED SA KALIWA */
+    text-align: left; 
     margin-bottom: 80px; 
     line-height: 1.1;
     padding: 0 var(--spacing-lg);
@@ -268,7 +345,7 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
     letter-spacing: 0.2em;
     margin-bottom: 10px;
     display: block;
-    text-align: right; /* ✅ LABEL - IBINALIK SA KANAN */
+    text-align: right; 
 }
 
 .contact-block {
@@ -276,7 +353,6 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
     font-weight: 400; 
     line-height: 1.4;
     max-width: 450px;
-    /* ✅ CONTACT BLOCK - IBINALIK SA KANAN */
     margin-left: auto; 
     margin-right: var(--spacing-lg); 
     text-align: right; 
@@ -286,13 +362,12 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
     color: var(--text-on-dark-teal); 
     text-decoration: none;
     font-weight: 500;
-    /* ✅ NILAKHAN ANG FONT SIZE */
-    font-size: 2.2rem; 
+    /* BINAGO DITO: Binawasan ang font size mula 2.2rem to 1.8rem */
+    font-size: 1.8rem; 
     transition: color 0.3s ease;
     display: block; 
     margin-bottom: 15px; 
     position: relative;
-    /* ✅ LINK - IBINALIK SA KANAN (padding, margin, width) */
     padding-right: 35px; 
     padding-left: 0; 
     width: fit-content;
@@ -326,13 +401,14 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
 
 
 /* --- Responsive Adjustments --- */
-@media (max-width:900px){
+@media (max-width: 900px){
     :root { 
         --final-top-radius: 20px; 
         --spacing-lg: 40px; 
         --spacing-md: 20px; 
         --spacing-xl-footer: 40px; 
         --artworks-padding: 50px;
+        --white-content-padding: 20px; 
     }
     .section-content { font-size: clamp(1rem, 5vw, 1.8rem); top: 10%; left: var(--spacing-md); padding-right: var(--spacing-md); }
     .section-footer-text { bottom: var(--spacing-md); right: var(--spacing-md); font-size: clamp(0.9rem, 3.5vw, 1.2rem); }
@@ -340,30 +416,82 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
     .navbar { padding: 0 var(--spacing-md); }
     .glass-island { display: none; }
     .menu-open .hamburger-menu { pointer-events: none; opacity: 0; }
-    .white-section-content { font-size: clamp(1.1rem, 4.5vw, 1.8rem); max-width: 95vw; left: var(--spacing-md); padding-right: var(--spacing-md); }
     .card-button { font-size: 1.1rem; padding: 12px 30px; margin-top: 20px; }
     .scroll-holder { height: 300vh; }
-    .artworks-section { margin-top: calc(100vh * 3); }
+    
+    /* WHITE CARD MOBILE FIXES */
+    .white-section-container {
+        flex-direction: column; 
+        padding: 50px var(--spacing-md); 
+        /* FINAL FIX DITO: Dinagdagan ang padding sa ilalim para di na maputol ang cards */
+        padding-bottom: 250px; 
+        align-items: center; 
+    }
 
-    /* Contact Responsive Fixes */
+    .white-section-content { 
+        flex: 0 0 100%; 
+        max-width: 100%;
+        padding-right: 0; 
+        margin-bottom: 40px; 
+        font-size: clamp(1rem, 4.5vw, 1.6rem); 
+        margin-left: 40px; 
+        padding-right: 40px; 
+    }
+    
+    .white-floating-cards { 
+        flex: 0 0 100%; 
+        width: 100%;
+        /* FINAL FIX DITO: Inalis ang fixed min-height para hindi mag-excess white space */
+        min-height: auto; 
+        position: relative; 
+    }
+
+    /* Floating Cards Responsive Fixes (RELATIVE sa white-floating-cards container) */
+    .floating-card.card-1 {
+        width: 150px; 
+        height: 200px;
+        top: -10px; 
+        right: 5%; 
+        transform: rotate(6deg) scale(0.9); 
+    }
+
+    .floating-card.card-2 {
+        width: 200px; 
+        height: 280px;
+        top: 50px; 
+        right: auto; 
+        left: 30%;
+        transform: rotate(-10deg) scale(0.9); 
+    }
+
+    .floating-card.card-3 {
+        width: 130px; 
+        height: 180px;
+        /* Itinaas pa ang position para makita */
+        bottom: 120px; 
+        right: 5%; 
+        transform: rotate(3deg) scale(0.9); 
+    }
+
+    /* CONTACT SECTION MOBILE FIXES */
     .contact-title {
-        text-align: left; /* Mananatili sa kaliwa */
+        text-align: left; 
         padding: 0 var(--spacing-md);
+        font-size: clamp(4rem, 12vw, 5rem);
         margin-bottom: 40px;
     }
     .contact-block {
-        margin-left: auto; /* ✅ IBINALIK SA KANAN */
+        margin-left: auto; 
         margin-right: var(--spacing-md);
-        text-align: right; /* ✅ IBINALIK SA KANAN */
+        text-align: right; 
     }
     .contact-section-style {
-        align-items: flex-start; /* Mananatili sa kaliwa (para sa title) */
+        align-items: flex-start; 
         padding: 50px 0;
     }
     .contact-link {
-        /* ✅ NILAKHAN ANG FONT SIZE (Mobile) */
-        font-size: 1.9rem; 
-        margin-left: auto; /* ✅ IBINALIK SA KANAN */
+        font-size: 1.5rem; 
+        margin-left: auto; 
         margin-right: 0;
     }
 }
@@ -432,16 +560,25 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
     <div class="white-section" id="white-section">
         <div class="white-overlay"></div>
         
-        <div class="white-section-content">
-            <span class="white-tag">The Kai Collection</span>
-            <h1>Digital and traditional art. Watercolor, realism, anime, cartoons.</h1>
-            <p>Let’s make something memorable.</p>
+        <div class="white-section-container">
             
-            <a href="#commissions" class="card-button dark">Commission an Artwork</a> 
+            <div class="white-section-content">
+                <span class="white-tag">The Kai Collection</span>
+                <h1>Digital and traditional art. Watercolor, realism, anime, cartoons.</h1>
+                <p>Let’s make something memorable.</p>
+                
+                <a href="#commissions" class="card-button dark">Commission an Artwork</a> 
+                
+            </div>
+            
+            <div class="white-floating-cards" id="white-floating-cards">
+                <div class="floating-card card-1"><img src="" alt="Floating Artwork 1" draggable="false"></div>
+                <div class="floating-card card-2"><img src="" alt="Floating Artwork 2" draggable="false"></div>
+                <div class="floating-card card-3"><img src="" alt="Floating Artwork 3" draggable="false"></div>
+            </div>
             
         </div>
-        
-    </div>
+        </div>
     
     <section class="contact-section-style" id="commissions">
         
@@ -465,7 +602,7 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
 
     <script>
 /*
- * script.js - FINAL VERSION (Luis Fade-Out Logic)
+ * script.js - FINAL VERSION (Floating Cards in White Section - using 1-26.jpg)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -475,20 +612,50 @@ document.addEventListener('DOMContentLoaded', () => {
     const INTRO_SECTION = document.getElementById('intro-section');
     const WHITE_SECTION = document.getElementById('white-section'); 
     const NAVBAR = document.getElementById('navbar');
-    // Kinuha ang Luis Title element
     const LUIS_TITLE = document.getElementById('luis-title'); 
+    
+    // Floating Cards Wrapper
+    const FLOATING_CARDS_WRAPPER = document.getElementById('white-floating-cards'); 
 
     // Menu Elements
     const HAMBURGER_OPEN = document.getElementById('hamburger-open');
     const HAMBURGER_CLOSE = document.getElementById('hamburger-close');
     const FULLSCREEN_MENU = document.getElementById('fullscreen-menu');
     const BODY = document.body;
+    
+    // Total count of images from 1.jpg to 26.jpg
+    const TOTAL_IMAGES_AVAILABLE = 26; 
 
+    function getRandomNumbers(max, count) {
+        const numbers = [];
+        while (numbers.length < count) {
+            // Generate a number between 1 and max (inclusive)
+            const randomNum = Math.floor(Math.random() * max) + 1;
+            if (numbers.indexOf(randomNum) === -1) {
+                numbers.push(randomNum);
+            }
+        }
+        return numbers;
+    }
+    
+    function populateFloatingCards() {
+        const cards = FLOATING_CARDS_WRAPPER.querySelectorAll('.floating-card img');
+        if (cards.length > 0) {
+            const selectedIndices = getRandomNumbers(TOTAL_IMAGES_AVAILABLE, cards.length);
+            cards.forEach((imgElement, index) => {
+                const imageIndex = selectedIndices[index];
+                if (imageIndex) {
+                    // Gamitin ang format na images/X.jpg
+                    imgElement.src = `images/${imageIndex}.jpg`; 
+                    imgElement.alt = `Floating Artwork ${imageIndex}`;
+                }
+            });
+        }
+    }
 
-    const initialBorderRadius = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--initial-border-radius').trim());
-    const finalTopRadius = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--final-top-radius').trim());
+    populateFloatingCards(); // Call this immediately to fill the floating cards
 
-    // --- Hamburger Menu Toggle Logic ---
+    // --- Menu Logic ---
     function openMenu() {
         FULLSCREEN_MENU.classList.add('is-open');
         BODY.classList.add('menu-open');
@@ -509,16 +676,19 @@ document.addEventListener('DOMContentLoaded', () => {
         link.addEventListener('click', closeMenu);
     });
 
-    // --- Parallax setup ---
-    const TOTAL_IMAGES_AVAILABLE = 26;
+    // --- Parallax setup (Hero Section) ---
     const SHOW_COUNT = 25;
     const MIN_DISTANCE = 280;
     const PLANE_PADDING = 120;
     const MAX_TRIES = 200;
 
     function getPlaneSize(){ const rect = INTERACTIVE.getBoundingClientRect(); return {w: rect.width, h: rect.height}; }
-    function dist(a,b){ const dx=a.x-b.x; const dy=a.y-b.y; return Math.sqrt(dx*dx+dy*dy); }
-    function pickImageIndices(n){ const pool = Array.from({length: TOTAL_IMAGES_AVAILABLE}, (_, i) => i + 1); for(let i=pool.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [pool[i],pool[j]] = [pool[i],pool[j]]; } return pool.slice(0, n); }
+    function dist(a,b){ const dx=a.x-a.x; const dy=a.y-a.y; return Math.sqrt(dx*dx+dy*dy); } 
+    function pickImageIndices(n){ 
+        const pool = Array.from({length: TOTAL_IMAGES_AVAILABLE}, (_, i) => i + 1); // 1 to 26
+        for(let i=pool.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [pool[i],pool[j]] = [pool[i],pool[j]]; } 
+        return pool.slice(0, n); 
+    }
     function generatePositions(count, planeW, planeH, minDist){
         const positions = [];
         const attemptsLimit = MAX_TRIES;
@@ -558,7 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.style.width = w + 'px';
             card.style.height = h + 'px';
             card.style.left = (p.x - w/2) + 'px';
-            card.style.top  = (p.y - h/2) + 'px';
+            card.style.top  = (p.y - h/2) + 'px';
             const baseRot = (Math.random()*28 - 14).toFixed(2);
             const depth = (Math.random()*0.9 + 0.2).toFixed(3);
             card.dataset.depth = depth;
@@ -569,7 +739,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = document.createElement('img');
             img.draggable = false;
             img.alt = 'artwork ' + idx;
-            // Assuming your images are in an 'images' folder (e.g., images/1.jpg)
             img.src = `images/${idx}.jpg`; 
             card.appendChild(img);
             const overlay = document.createElement('div');
@@ -624,11 +793,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
             card.style.transform = `translate3d(${px}px, ${py}px, 0) rotateZ(${rot}deg)`;
         });
+        
+        // Move Floating Cards in White Section slightly with parallax/scroll
+        const whiteCards = FLOATING_CARDS_WRAPPER.querySelectorAll('.floating-card');
+        const whiteScrollProgress = Math.min(1, Math.max(0, (window.scrollY - HERO.offsetHeight) / (HERO.offsetHeight * 1.5))); // 0 to 1 progress on black card
+        
+        whiteCards.forEach((card, index) => {
+             const offsetFactor = 10 + index * 5; 
+             const tx = currentX * 0.02 * (index % 2 === 0 ? 1 : -1);
+             const ty = currentY * 0.02 * (index % 2 === 0 ? -1 : 1);
+             
+             // Combined Parallax and Scroll Shift
+             const currentTransform = card.style.transform.split(')')[0]; // Get the initial rotation/position transform
+             card.style.transform = `${currentTransform}) translate3d(${tx}px, ${ty - whiteScrollProgress * offsetFactor * 0.5}px, 0)`;
+        });
 
         requestAnimationFrame(animate);
     }
     
-    // --- The Crucial Scroll Animation Function (Stacking Cards and Fading Luis Title) ---
+    // --- The Crucial Scroll Animation Function ---
+    const initialBorderRadius = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--initial-border-radius').trim());
+    const finalTopRadius = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--final-top-radius').trim());
+
     function handleScroll() {
         if (BODY.classList.contains('menu-open')) return;
 
@@ -643,19 +829,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const endBlackIn = heroHeight * SCROLL_RANGE_PER_CARD; 
         
         // Stage 2: White Card In (1.5x to 3.0x)
-        const startWhiteIn = endBlackIn; // Starts where black ends
+        const startWhiteIn = endBlackIn; 
         const endWhiteIn = endBlackIn + (heroHeight * SCROLL_RANGE_PER_CARD); 
-        // Total scroll distance is 3.0x hero height. 
 
 
         const translateYStart = 100; // Outside view
         const translateYDiff = 100;
 
-        // ******************************************************
-        // LUIS TITLE FADE-OUT LOGIC (FIXED)
-        // ******************************************************
+        // LUIS TITLE FADE-OUT LOGIC
         const fadeStart = heroHeight * 0.0;
-        const fadeEnd = heroHeight * 0.5; // Mag-fade out sa unang 50% ng hero scroll (mas mabilis)
+        const fadeEnd = heroHeight * 0.5; 
 
         let luisTitleOpacity = 1;
         let luisTitleScale = 1;
@@ -691,8 +874,10 @@ document.addEventListener('DOMContentLoaded', () => {
              const currentTopRadius = initialBorderRadius - radiusDiff * easedRadius;
              INTRO_SECTION.style.borderRadius = `${currentTopRadius}px ${currentTopRadius}px 0px 0px`;
              INTRO_SECTION.style.pointerEvents = 'auto'; 
+             NAVBAR.classList.add('on-dark-bg');
         } else {
              INTRO_SECTION.style.pointerEvents = 'none'; 
+             NAVBAR.classList.remove('on-dark-bg');
         }
 
 
@@ -709,71 +894,41 @@ document.addEventListener('DOMContentLoaded', () => {
         let currentTranslateYWhite = translateYStart;
         if (progressWhiteIn > 0) {
             currentTranslateYWhite = translateYStart - translateYDiff * easedWhiteIn;
-        }
-
-        WHITE_SECTION.style.transform = `translateX(-50%) translateY(${currentTranslateYWhite}%)`;
-        
-        if (progressWhiteIn > 0.01) { 
-            const radiusDiff = initialBorderRadius - finalTopRadius;
-            const currentTopRadius = initialBorderRadius - radiusDiff * easedWhiteIn;
-            WHITE_SECTION.style.borderRadius = `${currentTopRadius}px ${currentTopRadius}px 0px 0px`;
             WHITE_SECTION.style.pointerEvents = 'auto'; 
-
+            NAVBAR.classList.remove('on-dark-bg'); 
         } else {
             WHITE_SECTION.style.pointerEvents = 'none'; 
         }
-
-
-        // 3. NAVBAR COLOR CHANGE LOGIC
-        const isWhiteCardVisible = progressWhiteIn > 0.01; 
-        const isBlackCardVisible = progressBlackIn > 0.01;
-        const reachedCommissions = scrollY > endWhiteIn - (heroHeight * 0.1); 
-
-        if (reachedCommissions) {
-             // Dark Teal background
+        WHITE_SECTION.style.transform = `translateX(-50%) translateY(${currentTranslateYWhite}%)`;
+        
+        if (progressWhiteIn > 0.01) { 
+             const easedRadius = 1 - Math.pow(1 - progressWhiteIn, 5);
+             const radiusDiff = initialBorderRadius - finalTopRadius;
+             const currentTopRadius = initialBorderRadius - radiusDiff * easedRadius;
+             WHITE_SECTION.style.borderRadius = `${currentTopRadius}px ${currentTopRadius}px 0px 0px`;
+        }
+        
+        // 3. CONTACT SECTION FIX (Kapag nakalabas na ang White Card, i-hold lang ang scrollbar)
+        const totalScrollLength = endWhiteIn + heroHeight * 1.5; 
+        const contactStart = endWhiteIn + heroHeight * 0.2; // Start ng transition to contact section
+        
+        if (scrollY > contactStart) {
              NAVBAR.classList.add('on-dark-bg');
+        } else if (scrollY <= contactStart && progressWhiteIn > 0.01) {
+             NAVBAR.classList.remove('on-dark-bg');
         }
-        else if (isWhiteCardVisible) { 
-            // White background
-            NAVBAR.classList.remove('on-dark-bg');
-        } else if (isBlackCardVisible) {
-            // Black background
-            NAVBAR.classList.add('on-dark-bg');
-        } else {
-            // White hero section
-            NAVBAR.classList.remove('on-dark-bg');
-        }
+        
     }
-    
-    // --- Event Listeners and Initialization ---
-    let rebuildTimeout;
-    function rebuild(){
-        clearTimeout(rebuildTimeout);
-        rebuildTimeout = setTimeout(()=> {
-            createCards();
-            handleScroll();
-        }, 120);
-    }
-    window.addEventListener('resize', rebuild);
-    window.addEventListener('scroll', handleScroll);
 
+    // --- Event Listeners ---
     createCards();
-    animate(); 
-    handleScroll(); 
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', () => { createCards(); handleScroll(); }); 
 
-    document.addEventListener('mousemove', onMouseMove);
-
-    // Touch support for parallax
-    let lastTouch = null;
-    HERO.addEventListener('touchstart', (e)=> lastTouch = e.touches[0]);
-    HERO.addEventListener('touchmove', (e)=>{
-        if(!lastTouch) lastTouch = e.touches[0];
-        const t = e.touches[0];
-        const fakeEvt = { clientX: t.clientX, clientY: t.clientY };
-        onMouseMove(fakeEvt);
-        lastTouch = t;
-    }, {passive:true});
-
+    // Initial calls
+    handleScroll();
+    requestAnimationFrame(animate); 
 });
     </script>
 </body>
