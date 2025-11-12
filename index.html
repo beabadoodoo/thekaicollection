@@ -11,13 +11,13 @@
  */
 
 /* ================================================= */
-/* 1. FONT DEFINITIONS                               */
+/* 1. FONT DEFINITIONS                               */
 /* ================================================= */
 @font-face { font-family: 'Athletics'; font-style: normal; font-weight: 400; font-display: swap; src: url('./fonts/Athletics Regular.otf') format('opentype'); }
 @font-face { font-family: 'Athletics'; font-style: normal; font-weight: 500; font-display: swap; src: url('./fonts/Athletics Medium.otf') format('opentype'); }
 
 /* ================================================= */
-/* 2. MAIN STYLING                                   */
+/* 2. MAIN STYLING                                   */
 /* ================================================= */
 
 :root{
@@ -30,7 +30,7 @@
 
     /* INITIAL ROUNDNESS */
     --initial-border-radius: 100px;
-    /* FINAL ROUNDNESS: Mananatili */
+    /* FINAL ROUNDNESS: Gagamitin din ito sa static section sa baba */
     --final-top-radius: 30px; 
     --final-width-percent: 100vw;
     --final-height-percent: 100vh;
@@ -40,11 +40,21 @@
     --spacing-md: 40px; 
     --spacing-xl-footer: 120px; 
     --artworks-padding: 100px;
+    
+    /* ****************************************************** */
+    /* STACKING CARD 2: WHITE (Mananatili)                    */
+    --card-white: var(--bg-light); /* #fff */
+    --text-on-white: var(--text-dark); /* #000 */
+    
+    /* DARK TEAL FOR COMMISSIONS SECTION */
+    --commissions-dark-teal: #2F4858; 
+    --text-on-dark-teal: #fff;
+    /* ****************************************************** */
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
 html{ height:100%; }
-body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); overflow-x:hidden; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; font-family: 'Athletics', Arial, sans-serif; }
+body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; font-family: 'Athletics', Arial, sans-serif; }
 .menu-open { overflow: hidden !important; }
 
 /* --- Hero & Parallax --- */
@@ -72,7 +82,7 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
 .hamburger-menu { width: 30px; height: 30px; display: flex; flex-direction: column; justify-content: space-around; cursor: pointer; padding: 5px 0; }
 .hamburger-menu span { display: block; width: 100%; height: 2px; background-color: var(--text-dark); transition: background-color 0.3s ease-in-out; }
 
-/* Color change when the dark card is engaged */
+/* Color change when the dark card is engaged (or any dark background) */
 .on-dark-bg .luis-logo { color: var(--text-light); } 
 .on-dark-bg .hamburger-menu span { background-color: var(--text-light); } 
 .on-dark-bg .glass-island { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.4); } 
@@ -146,7 +156,7 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
     max-width: 400px; pointer-events: auto;
 }
 
-/* WHITE CARD SECTION */
+/* WHITE CARD SECTION (Stacking Card 2) */
 .white-section {
     position: fixed; bottom: 0; left: 50%; width: var(--final-width-percent); height: var(--final-height-percent);
     transform: translateX(-50%) translateY(100%); z-index: 7; 
@@ -154,22 +164,27 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
     will-change: transform, border-radius, opacity; overflow: hidden;
     opacity: 0; transition: none;
 }
-.white-overlay { position: absolute; inset: 0; background-color: var(--bg-light); }
+/* WHITE OVERLAY (Ito ay White) */
+.white-overlay { position: absolute; inset: 0; background-color: var(--card-white); }
 
 .white-section-content {
     position: absolute; top: 15%; left: 10%; transform: none; text-align: left; 
-    z-index: 8; color: var(--text-dark); font-family: 'Athletics', sans-serif;
+    z-index: 8; 
+    /* BLACK TEXT ON WHITE CARD */
+    color: var(--text-on-white); 
+    font-family: 'Athletics', sans-serif;
     font-weight: 400; font-size: clamp(1.1rem, 2.8vw, 2.0rem); line-height: 1.3;
     max-width: 1200px; padding-right: 10%; pointer-events: auto;
 }
 .white-tag {
-    display: inline-block; border: 1px solid var(--text-dark); border-radius: var(--border-radius-lg);
+    /* BLACK BORDER ON WHITE CARD */
+    display: inline-block; border: 1px solid var(--text-on-white); border-radius: var(--border-radius-lg);
     padding: 8px 25px; font-size: 1rem; font-weight: 400; margin-bottom: 30px;
 }
 /* END WHITE CARD SECTION */
 
 /* ================================================= */
-/* 3. ARTWORKS GALLERY SECTION STYLING (The content below stacking)         */
+/* 3. ARTWORKS GALLERY SECTION STYLING (The content below stacking)          */
 /* ================================================= */
 
 .artworks-section {
@@ -315,7 +330,7 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
             <h1>Digital and traditional art. Watercolor, realism, anime, cartoons.</h1>
             <p>Let’s make something memorable.</p>
             
-            <a href="#commissions" class="card-button dark">Commission an Artwork</a>
+            <a href="#commissions" class="card-button dark">Commission an Artwork</a> 
             
         </div>
         
@@ -326,10 +341,14 @@ body{ background: linear-gradient(180deg, var(--bg-light) 0%, #fbfbfb 100%); ove
         padding: 100px 50px; 
         min-height: 100vh; 
         z-index: 10; 
-        background-color: #fbfbfb;
+        background-color: var(--commissions-dark-teal); /* DARK TEAL */
+        color: var(--text-on-dark-teal); /* WHITE text */
+        border-top-left-radius: var(--final-top-radius); /* Rounded top-left */
+        border-top-right-radius: var(--final-top-radius); /* Rounded top-right */
+        overflow: hidden; /* Para hindi lumabas ang corner ng body background */
     " id="commissions">
-        <h2 style="font-size: 3rem; margin-bottom: 20px; font-weight: 500;">Commissions & Contact</h2>
-        <p style="font-size: 1.5rem; max-width: 800px;">
+        <h2 style="font-size: 3rem; margin-bottom: 20px; font-weight: 500; color: var(--text-on-dark-teal);">Commissions & Contact</h2>
+        <p style="font-size: 1.5rem; max-width: 800px; font-weight: 400; color: var(--text-on-dark-teal);">
             This is the rest of your main page content. You can add your commission form, about section, and contact details here.
         </p>
     </section>
@@ -428,7 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.style.width = w + 'px';
             card.style.height = h + 'px';
             card.style.left = (p.x - w/2) + 'px';
-            card.style.top  = (p.y - h/2) + 'px';
+            card.style.top  = (p.y - h/2) + 'px';
             const baseRot = (Math.random()*28 - 14).toFixed(2);
             const depth = (Math.random()*0.9 + 0.2).toFixed(3);
             card.dataset.depth = depth;
@@ -573,12 +592,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         // 3. NAVBAR COLOR CHANGE LOGIC
+        // Kailangan i-add ang 'on-dark-bg' kapag ang BLACK card ang visible.
+        // Kailangan i-remove ang 'on-dark-bg' kapag ang WHITE card ang visible.
+        // Kailangan din i-add ang 'on-dark-bg' kapag nakarating na sa Dark Teal Commissions section.
         const isWhiteCardVisible = currentTranslateYWhite < 99; 
         const isBlackCardVisible = currentTranslateYBlack < 99;
+        const reachedCommissions = scrollY > endWhiteIn - (heroHeight * 0.1); 
 
-        if (isBlackCardVisible && !isWhiteCardVisible) { 
+        if (reachedCommissions) {
+             // Dahil dark teal ang background ng Commissions, kailangan i-white ang text ng navbar
+             NAVBAR.classList.add('on-dark-bg');
+        }
+        else if (isWhiteCardVisible) { 
+            NAVBAR.classList.remove('on-dark-bg');
+        } else if (isBlackCardVisible) {
             NAVBAR.classList.add('on-dark-bg');
         } else {
+            // Pagbalik sa white hero section, babalik sa dark text ang navbar
             NAVBAR.classList.remove('on-dark-bg');
         }
     }
