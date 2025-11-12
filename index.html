@@ -46,9 +46,9 @@
     --card-white: var(--bg-light); /* #fff */
     --text-on-white: var(--text-dark); /* #000 */
     
-    /* DARK TEAL FOR COMMISSIONS SECTION */
-    --commissions-dark-teal: #2F4858; 
-    --text-on-dark-teal: #fff;
+    /* NEW COLORS FOR COMMISSIONS/CONTACT SECTION */
+    --commissions-dark-teal: #17323a; /* I-BASED sa gusto mong kulay */
+    --text-on-dark-teal: #f9efd8; /* I-BASED sa gusto mong kulay */
     /* ****************************************************** */
 }
 
@@ -151,7 +151,7 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
 /* 2. Footer Text (Bottom-Right) */
 .section-footer-text {
     position: absolute; bottom: var(--spacing-xl-footer); right: var(--spacing-xl-footer); 
-    text-align: right; z-index: 6; color: #fff; font-family: 'Athletics', sans-serif;
+    text-align: right; z-index: 6; color: var(--text-light); font-family: 'Athletics', sans-serif;
     font-weight: 400; font-size: clamp(1.1rem, 2.5vw, 1.8rem); opacity: 1; 
     max-width: 400px; pointer-events: auto;
 }
@@ -258,6 +258,17 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
     /* REMOVED ARTWORKS GALLERY STYLES FROM index.html */
     /* They are now only in portfolio.html */
     /* ****************************************************** */
+    
+    /* Para maging light ang links sa dark background */
+    .contact-link { 
+        color: var(--text-on-dark-teal); 
+        text-decoration: underline;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+    .contact-link:hover {
+        color: #fff;
+    }
     </style>
 </head>
 <body>
@@ -267,8 +278,8 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
         <nav class="glass-island">
             <a href="#home">Home</a> 
             <a href="portfolio.html">Portfolio</a> 
-            <a href="#commissions">Commissions</a> 
-            <a href="#about">About</a> 
+            <a href="#commissions">Commission</a> 
+            <a href="#commissions">Request</a> 
             <a href="#contact">Contact</a> 
         </nav>
         
@@ -290,8 +301,8 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
         <ul class="menu-links">
             <li><a href="#home">Home</a></li>
             <li><a href="portfolio.html">Portfolio</a></li>
-            <li><a href="#commissions">Commissions</a></li>
-            <li><a href="#about">About</a></li>
+            <li><a href="#commissions">Commission</a></li>
+            <li><a href="#commissions">Request</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
 
@@ -341,17 +352,24 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
         padding: 100px 50px; 
         min-height: 100vh; 
         z-index: 10; 
-        background-color: var(--commissions-dark-teal); /* DARK TEAL */
-        color: var(--text-on-dark-teal); /* WHITE text */
-        border-top-left-radius: var(--final-top-radius); /* Rounded top-left */
-        border-top-right-radius: var(--final-top-radius); /* Rounded top-right */
-        overflow: hidden; /* Para hindi lumabas ang corner ng body background */
+        background-color: var(--commissions-dark-teal); /* #17323a */
+        color: var(--text-on-dark-teal); /* #f9efd8 */
+        border-top-left-radius: var(--final-top-radius); 
+        border-top-right-radius: var(--final-top-radius); 
+        overflow: hidden; 
     " id="commissions">
-        <h2 style="font-size: 3rem; margin-bottom: 20px; font-weight: 500; color: var(--text-on-dark-teal);">Commissions & Contact</h2>
-        <p style="font-size: 1.5rem; max-width: 800px; font-weight: 400; color: var(--text-on-dark-teal);">
-            This is the rest of your main page content. You can add your commission form, about section, and contact details here.
+        <h2 style="font-size: 3rem; margin-bottom: 30px; font-weight: 500; color: var(--text-on-dark-teal);">Contact & Commissions</h2>
+        <p style="font-size: 1.5rem; max-width: 800px; font-weight: 400; line-height: 1.5;">
+            For inquiries or commission requests, feel free to reach out through **<a href="https://www.facebook.com/profile.php?id=61581185863360" target="_blank" class="contact-link">The Kai Collection</a>** on Facebook or message me on TikTok. 
         </p>
-    </section>
+        
+        <div style="margin-top: 40px; font-size: 1.4rem;">
+            <p style="margin-bottom: 10px;">**Facebook Page:** <a href="https://www.facebook.com/profile.php?id=61581185863360" target="_blank" class="contact-link">The Kai Collection</a>
+            </p>
+            <p>**TikTok:** <span style="font-weight: 500; letter-spacing: 0.05em; color: #fff;">@kai_random00</span>
+            </p>
+        </div>
+        </section>
 
 
     <script>
