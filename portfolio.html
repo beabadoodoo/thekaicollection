@@ -73,11 +73,10 @@ body{
     .glass-island { display: flex; }
     .hamburger-menu { display: flex; } 
 }
-/* FULLSCREEN MENU STYLES OMITTED FOR BREVITY */
 
 
 /* ================================================= */
-/* 4. PORTFOLIO GALLERY STYLING (Floating Grid, Rounded Edges, Full View) */
+/* 4. PORTFOLIO GALLERY STYLING (Floating Grid, Rounded Edges) */
 /* ================================================= */
 
 .artworks-section { padding-top: 150px; padding-bottom: 100px; width: 100%; min-height: 100vh; }
@@ -105,83 +104,80 @@ body{
     width: 100%; 
     min-height: 400px; 
     position: relative;
-    
     background-color: var(--bg-light); 
     border-radius: var(--card-radius); 
     overflow: hidden; 
     box-shadow: none; 
-    
-    /* Ibalik ang Floating Animation */
     animation: floating-anim-1 6s ease-in-out infinite alternate;
 }
 
-/* Image Styling (Rounded Edges at No Crop) */
+/* Image Styling */
 .gallery-container img {
     width: 100%; 
     height: 100%; 
     object-fit: cover; 
     display: block;
-    
     border-radius: var(--card-radius); 
-    
     box-shadow: none; 
     background-color: transparent; 
     transition: transform 0.3s ease-in-out;
 }
-
 
 /* Floating Keyframes */
 @keyframes floating-anim-1 {
     0% { transform: translateY(0px); }
     100% { transform: translateY(-10px); }
 }
-
-/* Para sa ibang item, ibahin ang animation delay */
 .gallery-container .artwork-item:nth-child(2n) {
     animation-name: floating-anim-2;
     animation-duration: 5s;
 }
-
 @keyframes floating-anim-2 {
     0% { transform: translateY(0px); }
     100% { transform: translateY(10px); }
 }
 
-/* View Full Button/Icon */
+/* ****************************************************** */
+/* 5. VIEW FULL BUTTON (Pinalitan ng "Enlarge") */
+/* ****************************************************** */
+
 .view-full-btn {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 50px;
-    height: 50px;
-    background-color: var(--dark-bg); /* Itim na bilog */
-    border-radius: 50%;
+    
+    /* New Button Style */
+    padding: 10px 20px;
+    background-color: var(--dark-bg);
+    border-radius: var(--border-radius-lg); 
+    color: var(--text-light);
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    
     opacity: 0; /* Tago muna */
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease; 
     z-index: 10;
 }
 
 .artwork-item:hover .view-full-btn {
     opacity: 1; /* Ipakita pag naka-hover */
+    transform: translate(-50%, -50%) scale(1.05);
 }
 
-/* Icon (Parang expand icon, gumamit lang ng border) */
-.view-full-btn::after {
-    content: '+';
-    color: var(--text-light);
-    font-size: 24px;
-    font-weight: 500;
-    line-height: 1;
-}
+/* ****************************************************** */
+/* 6. FULLSCREEN MODAL/OVERLAY (May Smooth Animation) */
+/* ****************************************************** */
 
-/* Fullscreen Modal/Overlay for Viewing */
 .full-view-modal {
-    display: none; /* Tago muna */
+    display: flex;
     position: fixed;
     top: 0;
     left: 0;
@@ -191,18 +187,34 @@ body{
     z-index: 999;
     align-items: center;
     justify-content: center;
+    
+    /* Animation Start State (Hidden) */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease-out, visibility 0.4s ease-out; 
 }
 
 .full-view-modal.is-active {
-    display: flex; 
+    opacity: 1; 
+    visibility: visible;
 }
 
+/* Image Scale-up Animation (Springy Effect) */
 .full-view-img {
     max-width: 90%;
     max-height: 90%;
     object-fit: contain;
     border-radius: var(--card-radius);
+    
+    transform: scale(0.9); /* Start small */
+    /* Springy transition: cubic-bezier(0.175, 0.885, 0.32, 1.275) */
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
 }
+
+.full-view-modal.is-active .full-view-img {
+    transform: scale(1); /* End state (Normal size) */
+}
+
 
 .modal-close-btn {
     position: absolute;
@@ -211,7 +223,13 @@ body{
     color: var(--text-light);
     font-size: 40px;
     cursor: pointer;
+    transition: transform 0.2s ease;
 }
+
+.modal-close-btn:hover {
+    transform: rotate(90deg);
+}
+
     </style>
 </head>
 <body>
@@ -243,107 +261,106 @@ body{
         <div class="gallery-container" id="gallery-container">
             <div class="artwork-item" data-src="images/1.jpg">
                 <img src="images/1.jpg" alt="Artwork 1">
-                <div class="view-full-btn"></div>
-            </div>
+                <div class="view-full-btn">Enlarge</div> </div>
             <div class="artwork-item" data-src="images/2.jpg">
                 <img src="images/2.jpg" alt="Artwork 2">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/3.jpg">
                 <img src="images/3.jpg" alt="Artwork 3">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/4.jpg">
                 <img src="images/4.jpg" alt="Artwork 4">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/5.jpg">
                 <img src="images/5.jpg" alt="Artwork 5">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/6.jpg">
                 <img src="images/6.jpg" alt="Artwork 6">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/7.jpg">
                 <img src="images/7.jpg" alt="Artwork 7">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/8.jpg">
                 <img src="images/8.jpg" alt="Artwork 8">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/9.jpg">
                 <img src="images/9.jpg" alt="Artwork 9">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/10.jpg">
                 <img src="images/10.jpg" alt="Artwork 10">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/11.jpg">
                 <img src="images/11.jpg" alt="Artwork 11">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/12.jpg">
                 <img src="images/12.jpg" alt="Artwork 12">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/13.jpg">
                 <img src="images/13.jpg" alt="Artwork 13">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/14.jpg">
                 <img src="images/14.jpg" alt="Artwork 14">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/15.jpg">
                 <img src="images/15.jpg" alt="Artwork 15">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/16.jpg">
                 <img src="images/16.jpg" alt="Artwork 16">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/17.jpg">
                 <img src="images/17.jpg" alt="Artwork 17">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/18.jpg">
                 <img src="images/18.jpg" alt="Artwork 18">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/19.jpg">
                 <img src="images/19.jpg" alt="Artwork 19">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/20.jpg">
                 <img src="images/20.jpg" alt="Artwork 20">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/21.jpg">
                 <img src="images/21.jpg" alt="Artwork 21">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/22.jpg">
                 <img src="images/22.jpg" alt="Artwork 22">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/23.jpg">
                 <img src="images/23.jpg" alt="Artwork 23">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/24.jpg">
                 <img src="images/24.jpg" alt="Artwork 24">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/25.jpg">
                 <img src="images/25.jpg" alt="Artwork 25">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
             <div class="artwork-item" data-src="images/26.jpg">
                 <img src="images/26.jpg" alt="Artwork 26">
-                <div class="view-full-btn"></div>
+                <div class="view-full-btn">Enlarge</div>
             </div>
         </div>
         
@@ -359,33 +376,7 @@ body{
 
     <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Menu Logic (Hamburger) ---
     const BODY = document.body;
-    const HAMBURGER_OPEN = document.getElementById('hamburger-open');
-    const HAMBURGER_CLOSE = document.getElementById('hamburger-close');
-    const FULLSCREEN_MENU = document.getElementById('fullscreen-menu');
-
-    function openMenu() {
-        FULLSCREEN_MENU.classList.add('is-open');
-        BODY.classList.add('menu-open');
-        BODY.style.overflow = 'hidden'; 
-    }
-
-    function closeMenu() {
-        FULLSCREEN_MENU.classList.remove('is-open');
-        BODY.classList.remove('menu-open');
-        BODY.style.overflow = 'auto'; 
-    }
-
-    HAMBURGER_OPEN.addEventListener('click', openMenu);
-    
-    if (HAMBURGER_CLOSE) {
-        HAMBURGER_CLOSE.addEventListener('click', closeMenu);
-    }
-    
-    FULLSCREEN_MENU.querySelectorAll('.menu-links a').forEach(link => {
-        link.addEventListener('click', closeMenu);
-    });
     
     // --- Full View Modal Logic ---
     const modal = document.getElementById('full-view-modal');
@@ -399,14 +390,19 @@ document.addEventListener('DOMContentLoaded', () => {
         BODY.style.overflow = 'auto'; // Re-enable scrolling on the body
     }
 
-    // Add click listener to all "View Full" buttons
+    // Function to open the modal
+    function openModal(imgSrc) {
+        modalImg.src = imgSrc;
+        modal.classList.add('is-active');
+        BODY.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+    }
+
+    // Add click listener to all "Enlarge" buttons
     artworkItems.forEach(item => {
         const viewBtn = item.querySelector('.view-full-btn');
         viewBtn.addEventListener('click', () => {
             const imgSrc = item.getAttribute('data-src');
-            modalImg.src = imgSrc;
-            modal.classList.add('is-active');
-            BODY.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+            openModal(imgSrc);
         });
     });
 
@@ -415,7 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Close modal when clicking outside the image (on the dark background)
     modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
+        if (e.target === modal || e.target === closeBtn) {
             closeModal();
         }
     });
@@ -426,6 +422,15 @@ document.addEventListener('DOMContentLoaded', () => {
             closeModal();
         }
     });
+    
+    // Placeholder for menu logic (if needed, adjust based on your external menu code)
+    const HAMBURGER_OPEN = document.getElementById('hamburger-open');
+    if (HAMBURGER_OPEN) {
+        HAMBURGER_OPEN.addEventListener('click', () => {
+             // Example: if you had a full menu, you'd call a function here
+             // console.log("Hamburger clicked");
+        });
+    }
 
 });
     </script>
