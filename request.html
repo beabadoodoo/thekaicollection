@@ -55,7 +55,8 @@
             display: flex; gap: 30px; padding: 15px 30px; border-radius: var(--border-radius-lg); 
             background: rgba(255, 255, 255, 0.7); /* Lighter glass effect */
             backdrop-filter: blur(10px) saturate(180%); -webkit-backdrop-filter: blur(10px) saturate(180%); 
-            border: 1px solid rgba(130, 145, 225, 0.4); /* Border based on secondary accent */
+            /* INALIS ANG PURPLE BORDER: */
+            border: none; 
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
         }
         .glass-island a { color: var(--text-dark); text-decoration: none; font-weight: 400; font-size: 1.1rem; padding: 5px 0; }
@@ -134,7 +135,8 @@
         .options-grid { display: flex; flex-wrap: wrap; gap: 12px; }
         .choice-option {
             background-color: var(--card-base); 
-            border: 2px solid var(--secondary-accent); /* Border with secondary accent color */
+            /* DATING PURPLE BORDER: border: 2px solid var(--secondary-accent); */
+            border: 2px solid var(--text-gray); /* Pinalitan ng gray/default border */
             padding: 12px 20px;
             border-radius: 50px; /* Pill shape */
             cursor: pointer; transition: all 0.2s ease; font-size: 1rem;
@@ -145,7 +147,7 @@
         .choice-option.selected {
             background-color: var(--primary-accent); 
             color: var(--accent-text); 
-            border-color: var(--primary-accent);
+            border-color: var(--primary-accent); /* Green border kapag selected */
             font-weight: 500;
         }
 
@@ -166,7 +168,8 @@
             background-size: 12px;
             cursor: pointer;
         }
-        .styled-select:focus { outline: none; border-color: var(--secondary-accent); }
+        /* INALIS ANG FOCUS BORDER COLOR */
+        .styled-select:focus { outline: none; border-color: #333; } 
         .input-group label { display: block; margin-bottom: 8px; font-weight: 500; }
 
 
@@ -207,9 +210,12 @@
             font-family: 'Athletics', sans-serif; margin-bottom: 20px; resize: vertical;
             border-radius: 8px; transition: border-color 0.3s;
         }
-        .form-input:focus { outline: none; border-color: var(--secondary-accent); } 
+        /* INALIS ANG FOCUS BORDER COLOR */
+        .form-input:focus { outline: none; border-color: #333; } 
+        
         .file-upload-wrapper {
-            border: 1px dashed var(--secondary-accent); /* Dashed border with accent color */
+            /* DATING PURPLE BORDER: border: 1px dashed var(--secondary-accent); */
+            border: 1px dashed var(--text-dark); /* Pinalitan ng itim na dashed border */
             padding: 15px; border-radius: 8px; margin-bottom: 20px;
             text-align: center; cursor: pointer;
         }
@@ -427,7 +433,10 @@
                         <div class="receipt-area">
                             <div class="receipt-loading">Your receipt is printing, please wait...</div>
                             <div class="final-receipt-paper" id="final-receipt-content" style="display: none;">
-                                </div>
+                            </div>
+                            <button type="button" id="download-receipt-btn" class="nav-button" style="display: none; margin-top: 20px;">
+                                Download Receipt (TXT)
+                            </button>
                         </div>
                     </div>
                     
@@ -435,7 +444,6 @@
                 
                 <div class="navigation">
                     <button type="button" id="prev-btn" class="nav-button" disabled>← Previous</button>
-                    <div style="font-size: 1.1rem; align-self: center;">Step <span id="step-number">1</span></div>
                     <button type="submit" id="next-btn" class="nav-button">Next →</button>
                 </div>
                 
@@ -452,14 +460,14 @@
         'Realistic': 1000, 'Anime': 200, 'Cartoon': 200, 'Chibi': 150,
         'A3_ADDON': 50, 
         
-        // Extra Character Base Price (Composition is calculated by function below)
+        // Extra Character Base Price 
         'Extra_Base': 150, 
         
         // Finish Prices
         'Colored': 100, 'Shaded': 50,
 
         // Digital Art Rules
-        'Poster': 3000, 'Logo': 1000 // ✅ BINAGO NA SA 3000 PESOS
+        'Poster': 3000, 'Logo': 1000 
     };
     
     let selections = {
@@ -479,9 +487,8 @@
     const totalSteps = 10; 
     let currentStep = 1;
 
-    // DOM Elements (Initialized later in the script)
+    // DOM Elements
     const steps = document.querySelectorAll('.step');
-    const stepNumberSpan = document.getElementById('step-number');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const allOptions = document.querySelectorAll('.choice-option');
@@ -498,15 +505,15 @@
     const finalReceiptPaper = document.getElementById('final-receipt-content');
     const finalPriceDisplay = document.getElementById('final-price-value');
     const extraCharSelect = document.getElementById('extra-char-select');
+    const downloadReceiptBtn = document.getElementById('download-receipt-btn');
 
 
-    // --- Core Functions ---
+    // --- Core Calculation Functions ---
     
     function getTraditionalBasePrice() {
         return priceRules['Traditional_Base'];
     }
 
-    // 🟢 NEW FUNCTION: Direct calculation for Composition Prices
     function getPriceForComposition(comp, isRealistic) {
         if (comp === 'Headshot') return 0;
         if (comp === 'Bust') return isRealistic ? 300 : 200;
@@ -524,7 +531,7 @@
         
         const isRealistic = (selections.style === 'Realistic');
         
-        // Uses the new direct function for composition price
+        // Composition Add-on price (Bust, Half, Full)
         const compAddOn = getPriceForComposition(compType, isRealistic);
         
         const basePrice = priceRules['Extra_Base'];
@@ -556,7 +563,7 @@
             const paperSize = selections.paper_size;
             if (paperSize === 'A3') {
                 const price = priceRules['A3_ADDON'];
-                items.push({ name: `Paper Size: A3 (+A5 is standard)`, price: price });
+                items.push({ name: `Paper Size: A3`, price: price });
                 total += price;
             } else if (paperSize === 'A5') {
                 items.push({ name: `Paper Size: A5 (Standard)`, price: 0 });
@@ -592,13 +599,13 @@
             items.push({ name: `Background: ${bgName}`, price: bgPrice });
             total += bgPrice;
 
-            // 7. Extra Character Price - USES NEW FUNCTION
+            // 7. Extra Character Price 
             const extraCharPrice = calculateExtraCharPrice(); 
             if (extraCharPrice > 0) {
                 const parts = selections.extra_char_type_count.split('_');
                 const compType = parts[0];
                 const count = parts[1];
-                items.push({ name: `Extra Character(s) x${count} (${compType})`, price: extraCharPrice });
+                items.push({ name: `Extra Character(s) x${count} (${compType} + Base)`, price: extraCharPrice });
                 total += extraCharPrice;
             }
             
@@ -621,10 +628,9 @@
         finalPriceDisplay.textContent = `₱${totalPrice.toLocaleString()}`;
     }
     
-    // 🟢 NEW FUNCTION: Ensures the prices are displayed correctly on the buttons
+    // Updates the labels for composition options based on Style selection
     function updateCompositionPrices() {
         if (selections.medium !== 'Traditional' || selections.style === null) {
-            // Reset to default labels if no selection
             document.querySelectorAll('#composition-options .choice-option').forEach(opt => {
                 const compType = opt.dataset.value;
                 if (compType === 'Headshot') opt.textContent = 'Headshot (Free)';
@@ -645,7 +651,7 @@
         });
     }
     
-    // 🟢 NEW FUNCTION: Ensures extra character dropdown updates accordingly
+    // Updates the extra character dropdown labels
     function updateExtraCharSelectPrices() {
         if (selections.medium !== 'Traditional' || selections.style === null) return;
         
@@ -654,7 +660,7 @@
         const extra_base = priceRules['Extra_Base'];
         
         const compPrices = {
-            'Headshot': 0,
+            'Headshot': getPriceForComposition('Headshot', isRealistic),
             'Bust': getPriceForComposition('Bust', isRealistic),
             'Half Body': getPriceForComposition('Half Body', isRealistic),
             'Full Body': getPriceForComposition('Full Body', isRealistic)
@@ -662,258 +668,347 @@
         
         for (let i = 1; i < select.options.length; i++) {
             const option = select.options[i];
-            const [compType, count] = option.value.split('_');
-            const finalPrice = parseInt(count) * (extra_base + compPrices[compType]);
-            option.textContent = `${count} Extra Character(s) (${compType}) (+₱${finalPrice.toLocaleString()})`;
+            const parts = option.value.split('_');
+            const compType = parts[0];
+            const count = parseInt(parts[1]);
+            
+            const totalPerChar = compPrices[compType] + extra_base;
+            const totalPrice = count * totalPerChar;
+            
+            option.textContent = `${count} Extra Character (${compType} Total: ₱${totalPrice.toLocaleString()})`;
         }
     }
 
+    // --- Receipt Functions ---
 
-    function createReceiptHTML(items, total) {
-        let itemsHTML = items.map(item => `
+    function generateReceiptHTML(items, total, paymentMethod, notes, referenceFile) {
+        let itemsHtml = items.map(item => `
             <div class="receipt-item">
                 <span class="receipt-item-title">${item.name}</span>
                 <span class="receipt-item-price">₱${item.price.toLocaleString()}</span>
             </div>
         `).join('');
 
-        // Calculate PayPal fee if selected
-        let paypalFee = 0;
+        // Handle PayPal Fee
         let finalTotal = total;
-        if (selections.payment === 'PayPal') {
-            // Standard PayPal fee (approx 4.4% + flat fee) - Using a simple 5% for estimate
-            paypalFee = Math.round(total * 0.05);
-            finalTotal = total + paypalFee;
-            itemsHTML += `
-                <div class="receipt-item" style="margin-top: 10px;">
-                    <span class="receipt-item-title" style="font-style: italic;">PayPal Fee (Est. 5%)</span>
-                    <span class="receipt-item-price" style="font-style: italic;">+₱${paypalFee.toLocaleString()}</span>
+        let paypalFeeHtml = '';
+        if (paymentMethod === 'PayPal') {
+            // Approx 5% approximation for calculator
+            const fee = Math.round(total * 0.05); 
+            finalTotal += fee;
+            paypalFeeHtml = `
+                <div class="receipt-item" style="color: red;">
+                    <span class="receipt-item-title">PayPal Transaction Fee (est. 5%)</span>
+                    <span class="receipt-item-price">+₱${fee.toLocaleString()}</span>
                 </div>
             `;
         }
 
-        const noteBox = selections.notes ? `<div class="receipt-note-box">Note: ${selections.notes}</div>` : '';
+        // Add Notes and Reference Info
+        let noteBoxHtml = '';
+        if (notes || referenceFile) {
+            noteBoxHtml = '<div class="receipt-note-box">';
+            if (notes) {
+                // Truncate long notes for receipt display
+                noteBoxHtml += `<strong>Notes:</strong> ${notes.substring(0, 150)} ${notes.length > 150 ? '...' : ''}`;
+            }
+            if (referenceFile) {
+                noteBoxHtml += `<br><strong>Reference:</strong> ${referenceFile.name} attached.`;
+            }
+            noteBoxHtml += '</div>';
+        }
 
         return `
-            <div class="receipt-header">LÜIS Commission Receipt</div>
-            ${itemsHTML}
+            <div class="receipt-header">Commission Receipt</div>
+            ${itemsHtml}
+            ${paypalFeeHtml}
             <div class="receipt-total">
                 <div class="receipt-item">
-                    <span>TOTAL ESTIMATE</span>
-                    <span style="color: var(--secondary-accent);">₱${finalTotal.toLocaleString()}</span>
+                    <span>FINAL ESTIMATED PRICE:</span>
+                    <strong style="color: var(--secondary-accent);">₱${finalTotal.toLocaleString()}</strong>
                 </div>
             </div>
-            ${noteBox}
-            <div class="receipt-note-box" style="margin-top: 20px; font-size: 0.8rem; border-left: 3px solid var(--primary-accent);">
-                This is only an estimate. Final price may vary slightly after consultation.
-                <br>Payment Method: <strong>${selections.payment || 'Not Selected'}</strong>
-            </div>
-            <a href="mailto:luis@commission.com?subject=Commission Request - Total ₱${finalTotal.toLocaleString()}" style="display: block; margin-top: 20px; text-decoration: none;">
-                <button class="nav-button" style="width: 100%; background-color: var(--primary-accent); border-color: var(--primary-accent); color: var(--accent-text);">SUBMIT REQUEST</button>
-            </a>
+            <p style="margin-top: 10px; font-size: 0.9rem;">Payment Method: <strong>${paymentMethod || 'Not Selected'}</strong></p>
+            ${noteBoxHtml}
+            <p style="margin-top: 20px; font-size: 0.8rem; color: #777;">*Final price confirmed upon review of full details. Thank you!</p>
         `;
     }
 
-    // --- Navigation and State Management ---
+    function downloadReceipt(items, total, paymentMethod, notes, referenceFile) {
+        let receiptText = '--- LÜIS Commission Price Calculation ---\n\n';
+        receiptText += 'ITEMIZED BREAKDOWN:\n';
+
+        let finalTotal = total;
+        items.forEach(item => {
+            receiptText += `- ${item.name.padEnd(50)} ₱${item.price.toLocaleString()}\n`;
+        });
+
+        let paypalFee = 0;
+        if (paymentMethod === 'PayPal') {
+            paypalFee = Math.round(total * 0.05); 
+            finalTotal += paypalFee;
+            receiptText += `- PayPal Transaction Fee (est. 5%)\n`.padEnd(50) + ` +₱${paypalFee.toLocaleString()}\n`;
+        }
+
+        receiptText += `\n--- TOTAL ESTIMATED PRICE ---\n`;
+        receiptText += `TOTAL PRICE: ${' '.repeat(38)} ₱${finalTotal.toLocaleString()}\n`;
+        receiptText += `Payment Method: ${paymentMethod || 'Not Selected'}\n`;
+        
+        if (notes.trim()) {
+            receiptText += `\nNOTES/DESCRIPTION:\n${notes.trim()}\n`;
+        }
+        if (referenceFile) {
+            receiptText += `\nREFERENCE FILE: ${referenceFile.name} attached.\n`;
+        }
+        receiptText += '\n*Note: Final price subject to artist review. Thank you for your interest!';
+
+        const blob = new Blob([receiptText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'luis_commission_receipt.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // --- Step Navigation Functions ---
 
     function getNextStep(current, medium) {
-        if (current === 1) {
-            return medium === 'Digital' ? 3 : 2; // Digital skips to Step 3
-        }
-        if (current === 2) return 4; // Traditional: 2 (Paper Size) -> 4 (Art Style)
-        if (current === 3) return 9; // Digital: 3 (Digital Type) -> 9 (Final Details)
-        if (current >= 4 && current < 9) return current + 1; // 4 to 8: Normal flow
-        if (current === 9) return 10; // 9 (Final Details) -> 10 (Receipt)
-        return totalSteps; // Safety fallback
-    }
-
-    function getPrevStep(current, medium) {
-        if (current === 1) return 1;
-        if (current === 3 && medium === 'Digital') return 1; // Digital 3 -> 1
-        if (current === 2) return 1; // Traditional 2 -> 1
-        if (current === 4) return 2; // Traditional 4 -> 2
-        if (current === 9 && medium === 'Traditional') return 8; // Traditional 9 -> 8
-        if (current === 9 && medium === 'Digital') return 3; // Digital 9 -> 3
-        if (current === 10) return 9; // 10 (Receipt) -> 9 (Final Details)
-        if (current > 1) return current - 1; 
-        return 1; // Safety fallback
-    }
-
-    function updateNavButtons(current, medium) {
-        prevBtn.disabled = current === 1 || current === 10;
+        if (current === 1 && medium === 'Digital') return 3;
+        if (current === 1 && medium === 'Traditional') return 2;
         
-        // Final button text
-        if (current === 9) {
-            nextBtn.textContent = 'Generate Receipt →';
-        } else if (current === 10) {
-            nextBtn.textContent = 'Done';
-            nextBtn.disabled = true; // No next step after receipt
-        } else {
-            nextBtn.textContent = 'Next →';
-            // Disable Next if no selection is made in the current step
-            let isSelectionMade = true;
-            const activeStepElement = document.querySelector(`.step.active`);
-            const type = activeStepElement.querySelector('.choice-option, .styled-select').dataset.type;
-            
-            if (type === 'medium' && selections.medium === null) isSelectionMade = false;
-            if (type === 'paper_size' && selections.paper_size === null) isSelectionMade = false;
-            if (type === 'digital_type' && selections.digital_type === null) isSelectionMade = false;
-            if (type === 'style' && selections.style === null) isSelectionMade = false;
-            if (type === 'comp' && selections.comp === null) isSelectionMade = false;
-            if (type === 'finish' && selections.finish === null) isSelectionMade = false;
-            if (type === 'bg' && selections.bg === null) isSelectionMade = false;
-            
-            nextBtn.disabled = !isSelectionMade;
-        }
+        // Traditional path: 1 -> 2 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
+        if (current === 2 && medium === 'Traditional') return 4;
+        
+        // Digital path: 1 -> 3 -> 9 -> 10
+        if (current === 3 && medium === 'Digital') return 9;
+
+        // Default path (Traditional or continuing after step 4)
+        return current + 1;
     }
-    
-    function showStep(stepNumber, direction = 'next') {
-        const currentActiveStep = document.querySelector('.step.active');
-        const nextStep = document.querySelector(`.step[data-step="${stepNumber}"]`);
 
-        if (currentActiveStep) {
-            // Apply slide-out animation to current step
-            currentActiveStep.classList.remove('active');
-            if (direction === 'next') {
-                currentActiveStep.style.transform = 'translateX(-100%)'; // Slide left out
-            } else {
-                currentActiveStep.style.transform = 'translateX(100%)'; // Slide right out
-            }
-            currentActiveStep.style.opacity = '0';
+    function getPreviousStep(current, medium) {
+        if (current === 9 && medium === 'Digital') return 3;
+        if (current === 4 && medium === 'Traditional') return 2;
+        if (current === 3 && medium === 'Digital') return 1;
+        if (current === 2 && medium === 'Traditional') return 1;
+
+        // Default path
+        return current - 1;
+    }
+
+    function checkStepValidity(stepIndex) {
+        const stepElement = document.querySelector(`.step[data-step="${stepIndex}"]`);
+        if (!stepElement) return true; // Should not happen
+
+        if (stepIndex === 1 && selections.medium === null) return false;
+        
+        if (selections.medium === 'Traditional') {
+            if (stepIndex === 2 && selections.paper_size === null) return false;
+            if (stepIndex === 4 && selections.style === null) return false;
+            if (stepIndex === 5 && selections.comp === null) return false;
+            if (stepIndex === 6 && selections.finish === null) return false;
+            if (stepIndex === 7 && selections.bg === null) return false;
         }
 
-        if (nextStep) {
-            // Prepare next step position based on direction
-            if (direction === 'next') {
-                nextStep.style.transform = 'translateX(100%)'; // Start from right
+        if (selections.medium === 'Digital') {
+            if (stepIndex === 3 && selections.digital_type === null) return false;
+        }
+
+        // Only enforce payment selection on step 9 for submission readiness
+        if (stepIndex === 9 && nextBtn.textContent === 'Get Final Price →' && selections.payment === null) return false;
+        
+        return true;
+    }
+
+    function showStep(stepIndex, direction = 'next') {
+        const targetStepElement = document.querySelector(`.step[data-step="${stepIndex}"]`);
+        if (!targetStepElement) return;
+
+        const currentStepElement = document.querySelector(`.step.active`);
+        if (currentStepElement) {
+            // Apply animation class to current step before removing 'active'
+            if (direction === 'next' && stepIndex > currentStep) {
+                currentStepElement.classList.add('slide-out-left');
+                currentStepElement.classList.remove('active');
+            } else if (direction === 'prev' && stepIndex < currentStep) {
+                // To slide in from the left, the new step needs to start off-screen left.
+                // Reset the active step's class immediately.
+                currentStepElement.classList.remove('active');
+                currentStepElement.classList.remove('slide-out-left'); // Remove any lingering slide-out
             } else {
-                nextStep.style.transform = 'translateX(-100%)'; // Start from left
+                 // No direction change or jump, just remove active
+                 currentStepElement.classList.remove('active');
             }
-            nextStep.style.opacity = '0';
-            nextStep.style.visibility = 'hidden';
+        }
+
+        // Set the new step up for animation
+        targetStepElement.classList.remove('slide-out-left');
+        targetStepElement.classList.add('active');
+        
+        // This brief timeout ensures the old step's transition has a moment to start
+        setTimeout(() => {
+            currentStep = stepIndex;
+            // Removed stepNumberSpan update
             
-            // Wait for transition to finish before changing position and applying slide-in
-            setTimeout(() => {
-                nextStep.classList.add('active');
-                // Apply slide-in animation to next step
-                nextStep.style.transform = 'translateX(0)'; // Slide to center
-                nextStep.style.opacity = '1';
-                nextStep.style.visibility = 'visible';
-                
-                currentStep = stepNumber;
-                stepNumberSpan.textContent = currentStep;
-                updateNavButtons(currentStep, selections.medium);
+            // Update UI/State for the new step
+            updateNavigation();
+
+            // Special logic for Step 9 (Final Details) and 10 (Receipt)
+            if (currentStep === 9) {
                 updateTotalPriceDisplay();
+                nextBtn.textContent = 'Get Final Price →';
+            } else if (currentStep === 10) {
+                nextBtn.textContent = 'Confirm Order';
+                
+                // Generate and display receipt
+                const { items, total } = calculateItemizedPrices();
+                finalReceiptPaper.innerHTML = generateReceiptHTML(
+                    items, 
+                    total, 
+                    selections.payment, 
+                    notesInput.value, 
+                    selections.referenceFile
+                );
+                
+                // Animate receipt and show download button
+                receiptLoading.style.display = 'block';
+                finalReceiptPaper.style.display = 'none';
+                downloadReceiptBtn.style.display = 'none'; 
+                
+                setTimeout(() => {
+                    receiptLoading.style.display = 'none';
+                    finalReceiptPaper.style.display = 'block';
+                    // SHOW DOWNLOAD BUTTON 
+                    downloadReceiptBtn.style.display = 'inline-block'; 
+                }, 1000); 
 
-                // Special step logic
-                if (currentStep === 9) {
-                    updateTotalPriceDisplay();
-                } else if (currentStep === 10) {
-                    generateReceipt();
+            } else {
+                nextBtn.textContent = 'Next →';
+                downloadReceiptBtn.style.display = 'none'; // Ensure hidden on other steps
+            }
+
+            // Ensure all steps start with default transform for the next transition
+            steps.forEach(step => {
+                if (step !== targetStepElement) {
+                    step.classList.remove('slide-out-left');
+                    step.style.transform = `translateX(${stepIndex > currentStep ? '-100%' : '100%'})`;
                 }
-            }, 50); // Small delay to ensure CSS applies correctly
+            });
+
+        }, 0); 
+    }
+
+    function updateNavigation() {
+        // Update Previous Button
+        const prevStep = getPreviousStep(currentStep, selections.medium);
+        prevBtn.disabled = (prevStep < 1 || currentStep === 1 || currentStep === 10);
+        
+        // Update Next Button (Enable/Disable based on selection completion)
+        const isCurrentStepValid = checkStepValidity(currentStep);
+        if (currentStep !== 10) {
+            nextBtn.disabled = !isCurrentStepValid;
+        } else {
+            nextBtn.disabled = true; // Final step is a dead end
+        }
+        
+        // Special button text for the final confirmation button
+        if (currentStep === 9) {
+             nextBtn.textContent = 'Confirm & View Receipt →';
+        } else if (currentStep === 10) {
+            nextBtn.textContent = 'Order Complete';
         }
     }
 
-    // --- Event Listeners and Initial Setup ---
 
-    // Option Clicks
+    // --- Event Handlers ---
+
+    // Handles all standard choice pill clicks
     allOptions.forEach(option => {
         option.addEventListener('click', function() {
             const type = this.dataset.type;
             const value = this.dataset.value;
-            const price = this.dataset.price ? parseInt(this.dataset.price) : null;
+            const price = parseFloat(this.dataset.price || 0);
 
-            // Clear existing selection for this type
+            // Deselect all others of the same type
             document.querySelectorAll(`.choice-option[data-type="${type}"]`).forEach(opt => {
                 opt.classList.remove('selected');
             });
 
-            // Set new selection
+            // Select current option
             this.classList.add('selected');
-            selections[type] = value;
-
-            // Update complex selections
-            if (type === 'medium') {
-                selections.paper_size = null; 
-                selections.digital_type = null;
-                // Reset Traditional-specific choices if switching to Digital
-                if (value === 'Digital') {
-                    selections.style = null;
-                    selections.comp = 'Headshot';
-                    selections.finish = 'Lineart';
-                    selections.bg = 'None';
-                    selections.extra_char_type_count = '0';
-                    selections.pet_object = false;
-                }
-                
-            } else if (type === 'bg') {
-                if (value === 'Detailed') {
-                    bgSliderGroup.style.display = 'block';
-                    selections.bg_detailed_price = parseInt(bgSlider.value);
-                } else {
-                    bgSliderGroup.style.display = 'none';
-                    selections.bg_detailed_price = 250; // Reset
-                }
-            } else if (type === 'extra_pet') {
-                if (selections.pet_object === true) {
-                    // Deselecting the option (toggle off)
-                    selections.pet_object = false;
-                    this.classList.remove('selected');
-                    petSliderGroup.style.display = 'none';
-                } else {
-                    // Selecting the option (toggle on)
-                    selections.pet_object = true;
-                    this.classList.add('selected');
-                    petSliderGroup.style.display = 'block';
-                    selections.pet_object_price = parseInt(petSlider.value);
-                }
-            } else if (type === 'style') {
-                updateCompositionPrices(); // Update comp prices based on new style
-                updateExtraCharSelectPrices(); // Update extra char prices
-            }
             
+            // Update selections object
+            selections[type] = value;
+            
+            // Handle special logic based on selection type
+            if (type === 'medium') {
+                 // Reset dependent traditional/digital selections when medium changes
+                selections.paper_size = null;
+                selections.digital_type = null;
+            } else if (type === 'style') {
+                // Update dependent compositions based on realistic/non-realistic style
+                updateCompositionPrices();
+                updateExtraCharSelectPrices();
+                // Ensure composition price updates by re-selecting the current comp
+                if (selections.comp) {
+                    selections.comp = document.querySelector(`.choice-option[data-type="comp"].selected`)?.dataset.value || 'Headshot';
+                }
+            } else if (type === 'bg') {
+                // Toggle BG slider visibility
+                bgSliderGroup.style.display = (value === 'Detailed') ? 'block' : 'none';
+                if (value !== 'Detailed') selections.bg_detailed_price = 0; // Reset price if not detailed
+            } else if (type === 'extra_pet') {
+                const isSelected = this.classList.contains('selected');
+                selections.pet_object = isSelected;
+                petSliderGroup.style.display = isSelected ? 'block' : 'none';
+                if (!isSelected) selections.pet_object_price = 0;
+            }
+
             updateTotalPriceDisplay();
-            updateNavButtons(currentStep, selections.medium); // Check if Next can be enabled
+            updateNavigation();
         });
     });
 
-    // Slider Listeners
-    bgSlider.addEventListener('input', function() {
-        bgSliderValue.textContent = this.value;
-        selections.bg_detailed_price = parseInt(this.value);
-        updateTotalPriceDisplay();
-    });
-
-    petSlider.addEventListener('input', function() {
-        petSliderValue.textContent = this.value;
-        selections.pet_object_price = parseInt(this.value);
-        updateTotalPriceDisplay();
-    });
-
-    // Dropdown Listener (Extra Character)
-    extraCharSelect.addEventListener('change', function() {
-        selections.extra_char_type_count = this.value;
-        updateTotalPriceDisplay();
-    });
-
-    // Navigation Button Actions
+    // Handle Previous Button
     prevBtn.addEventListener('click', () => {
-        const prevStep = getPrevStep(currentStep, selections.medium);
-        showStep(prevStep, 'prev');
-    });
-
-    nextBtn.addEventListener('click', () => {
-        if (nextBtn.textContent === 'Generate Receipt →') {
-            generateReceipt();
-            showStep(10, 'next');
-        } else {
-            const nextStep = getNextStep(currentStep, selections.medium);
-            showStep(nextStep, 'next');
+        const prevStep = getPreviousStep(currentStep, selections.medium);
+        if (prevStep >= 1) {
+            showStep(prevStep, 'prev');
         }
     });
 
-    // File Upload Handler (for visual feedback)
+    // Handle Sliders (Detailed BG)
+    if (bgSlider) {
+        bgSlider.addEventListener('input', function() {
+            bgSliderValue.textContent = this.value;
+            selections.bg_detailed_price = parseFloat(this.value);
+            updateTotalPriceDisplay();
+        });
+    }
+
+    // Handle Sliders (Pet/Object)
+    if (petSlider) {
+        petSlider.addEventListener('input', function() {
+            petSliderValue.textContent = this.value;
+            selections.pet_object_price = parseFloat(this.value);
+            updateTotalPriceDisplay();
+        });
+    }
+
+    // Handle Extra Character Dropdown
+    extraCharSelect.addEventListener('change', function() {
+        selections.extra_char_type_count = this.value;
+        updateTotalPriceDisplay();
+        updateNavigation();
+    });
+
+    // Handle File Upload Display
+    document.querySelector('.file-upload-wrapper').addEventListener('click', () => {
+        referenceUpload.click();
+    });
     referenceUpload.addEventListener('change', function() {
         if (this.files.length > 0) {
             uploadLabel.textContent = `File selected: ${this.files[0].name}`;
@@ -923,38 +1018,32 @@
             selections.referenceFile = null;
         }
     });
-
+    // Handle Notes Input
     notesInput.addEventListener('input', function() {
         selections.notes = this.value;
     });
 
-    function generateReceipt() {
-        // Hide loading, show receipt paper
-        receiptLoading.style.display = 'block';
-        finalReceiptPaper.style.display = 'none';
-        finalReceiptPaper.innerHTML = '';
-        
-        setTimeout(() => {
-            const { items, total } = calculateItemizedPrices();
-            const receiptHTML = createReceiptHTML(items, total);
-            
-            receiptLoading.style.display = 'none';
-            finalReceiptPaper.innerHTML = receiptHTML;
-            finalReceiptPaper.style.display = 'block';
-            
-            // Re-apply animation class to trigger print animation
-            finalReceiptPaper.classList.remove('printAnimation'); 
-            void finalReceiptPaper.offsetWidth; // Trigger reflow
-            finalReceiptPaper.classList.add('printAnimation');
-        }, 800); 
-    }
-
-    // Initial load setup
-    document.addEventListener('DOMContentLoaded', () => {
-        showStep(1, 'next'); // Initialize step 1
-        updateCompositionPrices(); // Initialize composition prices (will use default Non-Realistic/Non-Style until selected)
-        updateExtraCharSelectPrices(); // Initialize extra char dropdown prices
+    // Handle Download Receipt Button
+    downloadReceiptBtn.addEventListener('click', () => {
+        const { items, total } = calculateItemizedPrices();
+        downloadReceipt(
+            items, 
+            total, 
+            selections.payment, 
+            notesInput.value, 
+            selections.referenceFile
+        );
     });
+
+    // --- Initial Setup ---
+    function init() {
+        updateNavigation(); // Initial button states
+        updateCompositionPrices(); // Set initial composition labels
+        updateExtraCharSelectPrices(); // Set initial extra character labels
+    }
+    
+    init();
+
     </script>
 </body>
 </html>
