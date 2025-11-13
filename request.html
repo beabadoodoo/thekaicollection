@@ -275,6 +275,51 @@
         .receipt-total { border-top: 2px solid var(--text-dark); margin-top: 15px; padding-top: 10px; font-size: 1.4rem; font-weight: 500; }
         .receipt-note-box { background: var(--gray-light); padding: 10px; border-radius: 5px; margin-top: 15px; font-size: 0.9rem; text-align: left; }
 
+        /* Style for the Instructions Box (English/Card Style - Font Fixed) */
+        .contact-instruction-card {
+            background-color: var(--card-base); 
+            padding: 20px;
+            border-radius: 16px; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); 
+            max-width: 400px;
+            width: 100%;
+            text-align: left;
+            margin-top: 30px; 
+            display: none; 
+            /* FIXED FONT: Use the calculator's primary font */
+            font-family: 'Athletics', Arial, sans-serif; 
+        }
+
+        .contact-instruction-card .heading {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 500; /* Adjusted for Athletics font */
+        }
+        
+        .contact-instruction-card .message {
+            font-size: 1.2rem; 
+            color: #000;
+            line-height: 1.4;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .contact-instruction-card .links-area {
+            border-top: 1px solid var(--gray-light);
+            padding-top: 10px;
+        }
+
+        .contact-instruction-card a {
+            color: var(--secondary-accent);
+            text-decoration: underline;
+            font-weight: 500;
+            display: block; 
+            margin-top: 5px;
+            font-size: 0.95rem;
+        }
+
+
         /* Responsive Design */
         @media (max-width: 900px) {
             :root { --spacing-lg: 30px; --spacing-md: 20px; }
@@ -449,9 +494,30 @@
                             <div class="receipt-loading">Preparing your summary...</div>
                             <div class="final-receipt-paper" id="final-receipt-content" style="display: none;">
                             </div>
-                            <button type="button" id="copy-and-go-btn" class="nav-button" style="display: none; margin-top: 20px;">
-                                Copy Details & Go to FB Messenger
+                            
+                            <button type="button" id="copy-details-btn" class="nav-button" style="display: none; margin-top: 20px; background-color: var(--primary-accent); border-color: var(--primary-accent); color: var(--accent-text);">
+                                COPY DETAILS
                             </button>
+
+                            <div id="contact-instruction-card" class="contact-instruction-card">
+                                <div class="heading">
+                                    Your Contact Person:
+                                </div>
+                                <div class="message">
+                                    The Kai Collection will contact you shortly after receiving your order details. See you then.
+                                </div>
+                                
+                                <div class="links-area">
+                                    <p style="font-weight: 500; margin-bottom: 5px;">Send the copied details to:</p>
+                                    <a href="https://www.facebook.com/profile.php?id=61581185863360" target="_blank">
+                                        The Kai Collection (Facebook)
+                                    </a>
+                                    <a href="https://www.tiktok.com/@kai_random00" target="_blank">
+                                        @kai_random00 (TikTok)
+                                    </a>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                     
@@ -521,7 +587,9 @@
     const finalPriceDisplay = document.getElementById('final-price-value');
     const extraCharSelect = document.getElementById('extra-char-select');
     // Renamed button
-    const copyAndGoBtn = document.getElementById('copy-and-go-btn'); 
+    const copyDetailsBtn = document.getElementById('copy-details-btn'); 
+    // NEW ELEMENT: Instruction Box
+    const contactInstructionCard = document.getElementById('contact-instruction-card');
 
 
     // --- Core Calculation Functions ---
@@ -695,7 +763,7 @@
         }
     }
 
-    // --- Receipt HTML Generation ---
+    // --- Receipt HTML Generation (For Display Only) ---
 
     function generateReceiptHTML(items, total, paymentMethod, notes, referenceFile) {
         let itemsHtml = items.map(item => `
@@ -746,7 +814,7 @@
             </div>
             <p style="margin-top: 10px; font-size: 0.9rem;">Payment Method: <strong>${paymentMethod || 'Not Selected'}</strong></p>
             ${noteBoxHtml}
-            <p style="margin-top: 20px; font-size: 0.8rem; color: #777;">*Copy all details below and send to The Kai Collection.</p>
+            <p style="margin-top: 20px; font-size: 0.8rem; color: #777;">Click the COPY DETAILS button below to copy the summary. Do not forget to send the details and the reference file to The Kai Collection.</p>
         `;
     }
 
@@ -781,13 +849,19 @@
         if (referenceFile) {
             receiptText += `\n5. REFERENCE FILE: ${referenceFile.name} (Please send this file directly to The Kai Collection)\n`;
         }
-
-        receiptText += '\n--- END OF DETAILS ---';
+        
+        receiptText += '\n--- END OF DETAILS ---\n\n';
+        
+        // Add Contact Instructions to the copied text (for completeness)
+        receiptText += '*** CONTACT INSTRUCTIONS ***\n';
+        receiptText += 'The Kai Collection will contact you shortly after receiving your order details. Send your details here:\n';
+        receiptText += 'Facebook: https://www.facebook.com/profile.php?id=61581185863360\n';
+        receiptText += 'TikTok: https://www.tiktok.com/@kai_random00';
         
         return receiptText;
     }
 
-    function copyDetailsAndPrompt() {
+    function copyDetailsAndShowInstructions() {
         const { items, total } = calculateItemizedPrices();
         const copyText = generateCopyText(
             items, 
@@ -799,20 +873,22 @@
 
         // Copy text to clipboard
         navigator.clipboard.writeText(copyText).then(() => {
-            // Success alert with instructions
-            alert(
-                "✅ SUCCESS! Ang commission details ay na-copy na sa clipboard mo (Copy-Paste)!\n\n" +
-                "Ipadala ang details na ito sa The Kai Collection para sa final confirmation at pagbabayad:\n\n" +
-                "A. FACEBOOK MESSENGER:\n" +
-                "   -> Link: https://www.facebook.com/profile.php?id=61581185863360\n\n" +
-                "B. TIKTOK:\n" +
-                "   -> User: @kai_random00\n" +
-                "   -> Link: https://www.tiktok.com/@kai_random00\n\n" +
-                "Huwag kalimutang isama ang Reference File, kung nag-upload ka. Maraming Salamat!"
-            );
+            // Success: Change button text temporarily and show instructions box
+            // REMOVED EMOJI FROM SUCCESS MESSAGE
+            copyDetailsBtn.textContent = 'COPIED TO CLIPBOARD!'; 
+            copyDetailsBtn.disabled = true;
+            contactInstructionCard.style.display = 'block';
+
+            // Reset button text after 3 seconds
+            setTimeout(() => {
+                copyDetailsBtn.textContent = 'COPY DETAILS'; // Reset without emoji
+                copyDetailsBtn.disabled = false;
+            }, 3000);
+
         }).catch(err => {
             // Fallback for failed copy (e.g., non-secure context)
-            alert("❌ COPY FAILED. Paki-copy na lang mano-mano ang lahat ng detalye sa screen at i-send. Salamat!");
+            alert("COPY FAILED. Please manually copy all details from the screen and send them. Thank you!");
+            contactInstructionCard.style.display = 'none'; // Ensure instructions are hidden if copy failed
         });
     }
 
@@ -935,18 +1011,20 @@
                 // Animate receipt and show copy button
                 receiptLoading.style.display = 'block';
                 finalReceiptPaper.style.display = 'none';
-                copyAndGoBtn.style.display = 'none'; 
-                
+                copyDetailsBtn.style.display = 'none'; 
+                contactInstructionCard.style.display = 'none'; // Ensure instructions are hidden on entry
+
                 setTimeout(() => {
                     receiptLoading.style.display = 'none';
                     finalReceiptPaper.style.display = 'block';
                     // SHOW COPY BUTTON 
-                    copyAndGoBtn.style.display = 'inline-block'; 
+                    copyDetailsBtn.style.display = 'inline-block'; 
                 }, 1000); 
 
             } else {
                 nextBtn.textContent = 'Next →';
-                copyAndGoBtn.style.display = 'none'; // Ensure hidden on other steps
+                copyDetailsBtn.style.display = 'none'; // Ensure hidden on other steps
+                contactInstructionCard.style.display = 'none'; // Ensure hidden on other steps
             }
         }, 0); 
     }
@@ -1074,8 +1152,8 @@
         selections.notes = this.value;
     });
 
-    // Handle Copy & Go Button
-    copyAndGoBtn.addEventListener('click', copyDetailsAndPrompt);
+    // Handle Copy Details Button (Calls the new function)
+    copyDetailsBtn.addEventListener('click', copyDetailsAndShowInstructions);
 
     // --- Initial Setup ---
     function init() {
