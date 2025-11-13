@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>LÜIS | Commission Price Calculator</title>
+    
+    <style>
+        /* ================================================= */
+        /* BASE STYLING & COLOR VARIABLES */
+        /* ================================================= */
+        :root {
+            /* --- COLOR PALETTE (Requested: White Background + #d4ff79 & #8291e1) --- */
+            --primary-accent: #d4ff79; /* Light Green - Buttons, Highlights */
+            --secondary-accent: #8291e1; /* Light Blue/Violet - Text/Borders/Secondary Highlights */
+            
+            --bg-base: #fff; /* Main Page Background */
+            --card-base: #fff; /* Card/Panel remains white */
+            --text-dark: #000;
+            --text-light: #fff;
+            --text-gray: #4a4a4a;
+            --gray-light: #f4f4f4; /* Light background for unselected options */
+
+            --card-radius: 16px;
+            --border-radius-lg: 50px;
+            --spacing-lg: 80px;
+            --spacing-md: 40px;
+            
+            --accent-text: #000; /* Black text on primary accent background (#d4ff79) */
+            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* FONTS */
+        /* (Assuming font files are available in ./fonts/) */
+        @font-face { font-family: 'Athletics'; font-style: normal; font-weight: 400; font-display: swap; src: url('./fonts/Athletics Regular.otf') format('opentype'); }
+        @font-face { font-family: 'Athletics'; font-style: normal; font-weight: 500; font-display: swap; src: url('./fonts/Athletics Medium.otf') format('opentype'); }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--bg-base); /* White Background */
+            font-family: 'Athletics', Arial, sans-serif;
+            color: var(--text-dark); 
+            min-height: 100vh;
+        }
+        a { text-decoration: none; color: var(--text-dark); transition: color 0.3s ease; }
+
+        /* NAVBAR STYLING - Adjusted for White Background */
+        .navbar { 
+            position: sticky; top: 30px; left: 0; width: 100%; display: flex; 
+            justify-content: space-between; align-items: center; padding: 0 var(--spacing-md); z-index: 200; 
+        }
+        /* LOGO COLOR CHANGED TO BLACK as requested */
+        .luis-logo { font-size: 2.5rem; font-weight: 500; color: var(--text-dark); } 
+        
+        .glass-island { 
+            display: flex; gap: 30px; padding: 15px 30px; border-radius: var(--border-radius-lg); 
+            background: rgba(255, 255, 255, 0.7); /* Lighter glass effect */
+            backdrop-filter: blur(10px) saturate(180%); -webkit-backdrop-filter: blur(10px) saturate(180%); 
+            border: 1px solid rgba(130, 145, 225, 0.4); /* Border based on secondary accent */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+        }
+        .glass-island a { color: var(--text-dark); text-decoration: none; font-weight: 400; font-size: 1.1rem; padding: 5px 0; }
+        .hamburger-menu { width: 30px; height: 30px; display: flex; flex-direction: column; justify-content: space-around; cursor: pointer; padding: 5px 0; }
+        .hamburger-menu span { display: block; width: 100%; height: 2px; background-color: var(--text-dark); } /* Black burger lines */
+        
+        /* CALCULATOR LAYOUT & CONTAINER */
+        .request-container { max-width: 1000px; margin: 0 auto; padding: 80px var(--spacing-lg) var(--spacing-lg); }
+        .right-panel { 
+            width: 100%; padding: 40px; border-radius: 25px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Stronger shadow for floating effect on white BG */
+            background: var(--card-base); 
+            border: none; /* Removed border */
+            display: flex; flex-direction: column;
+        }
+
+        /* --- Calculator Specific Styles --- */
+        .header { margin-bottom: var(--spacing-md); }
+        .header h1 { font-size: 2.2rem; font-weight: 500; color: var(--text-dark); margin-bottom: 5px; }
+        .header p { color: var(--text-gray); font-size: 1.1rem; }
+
+        .step-container { 
+            position: relative; min-height: 350px; flex-grow: 1; padding-bottom: var(--spacing-md); 
+        }
+        
+        .step { 
+            position: absolute; width: 100%; top: 0; left: 0; opacity: 0; 
+            visibility: hidden; transition: opacity 0.4s ease-in-out, visibility 0s 0.4s; 
+            padding: var(--spacing-md) 0; 
+        }
+        .step.active { 
+            opacity: 1; visibility: visible; transition: opacity 0.4s ease-in-out; 
+            position: relative; 
+        }
+
+        .step h3 { font-size: 1.5rem; font-weight: 500; margin-bottom: var(--spacing-md); }
+        
+        /* Choice Options - PILL STYLE (Lostly/Clou.ch inspired) */
+        .options-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+        .choice-option {
+            background-color: var(--card-base); 
+            border: 2px solid var(--secondary-accent); /* Border with secondary accent color */
+            padding: 12px 20px;
+            border-radius: 50px; /* Pill shape */
+            cursor: pointer; transition: all 0.2s ease; font-size: 1rem;
+            font-weight: 400; user-select: none;
+            color: var(--text-dark);
+        }
+        .choice-option:hover { background-color: var(--gray-light); } /* Slight hover effect */
+        .choice-option.selected {
+            background-color: var(--primary-accent); 
+            color: var(--accent-text); 
+            border-color: var(--primary-accent);
+            font-weight: 500;
+        }
+
+        /* Dropdown/Select Styling */
+        .styled-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333333'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 12px;
+            cursor: pointer;
+        }
+        .styled-select:focus { outline: none; border-color: var(--secondary-accent); }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 500; }
+
+
+        /* Navigation & Price Display */
+        .navigation { 
+            display: flex; justify-content: space-between; margin-top: auto; 
+            padding-top: var(--spacing-md); border-top: 1px solid var(--gray-light); width: 100%; 
+        }
+        .nav-button {
+            background-color: var(--primary-accent); 
+            color: var(--accent-text); 
+            border: none; padding: 12px 25px; border-radius: 50px; cursor: pointer;
+            font-size: 1rem; font-weight: 500; transition: background 0.2s;
+        }
+        .nav-button:hover { background-color: #c0ea6f; } 
+        .nav-button:disabled { background-color: #ccc; cursor: not-allowed; color: #555; }
+
+        .total-price-display { text-align: center; padding: 30px 0; }
+        #final-price-value {
+            font-size: 3rem; font-weight: 500; color: var(--secondary-accent); /* Use secondary accent for total price */
+            display: block; margin-bottom: 20px;
+        }
+        
+        /* Input Styles */
+        .form-input {
+            width: 100%; border: 1px solid #ccc; padding: 15px; font-size: 1rem;
+            font-family: 'Athletics', sans-serif; margin-bottom: 20px; resize: vertical;
+            border-radius: 8px; transition: border-color 0.3s;
+        }
+        .form-input:focus { outline: none; border-color: var(--secondary-accent); } 
+        .file-upload-wrapper {
+            border: 1px dashed var(--secondary-accent); /* Dashed border with accent color */
+            padding: 15px; border-radius: 8px; margin-bottom: 20px;
+            text-align: center; cursor: pointer;
+        }
+        .file-upload-wrapper:hover { border-color: var(--primary-accent); } /* Primary accent on hover */
+
+        /* RECEIPT ANIMATION STYLES */
+        @keyframes printAnimation {
+            0% { transform: translateY(100%); opacity: 0; }
+            50% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        .receipt-area {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 50px 0; text-align: center;
+        }
+
+        .receipt-loading {
+            font-size: 1.5rem; font-weight: 500; color: var(--secondary-accent); 
+            animation: pulse 1.5s infinite; margin-bottom: 30px;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .final-receipt-paper {
+            background: var(--card-base); border: 1px solid #eee; border-radius: 8px;
+            width: 100%; max-width: 400px;
+            padding: 30px; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(100%); opacity: 0;
+            animation: printAnimation 1.5s ease-out forwards;
+        }
+        .receipt-header {
+            font-size: 1.5rem; font-weight: 500; border-bottom: 2px dashed #ccc;
+            padding-bottom: 10px; margin-bottom: 15px;
+        }
+        .receipt-item { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 1rem; }
+        .receipt-item-title { font-weight: 400; color: #555; }
+        .receipt-total { border-top: 2px solid var(--text-dark); margin-top: 15px; padding-top: 10px; font-size: 1.4rem; font-weight: 500; }
+        .receipt-note-box { background: var(--gray-light); padding: 10px; border-radius: 5px; margin-top: 15px; font-size: 0.9rem; text-align: left; }
+
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            :root { --spacing-lg: 30px; --spacing-md: 20px; }
+            .navbar { padding: 20px var(--spacing-md); }
+            .request-container { padding: 20px var(--spacing-lg) 40px; }
+            .right-panel { padding: 20px; }
+            .navigation { flex-direction: column; gap: 10px; }
+            .nav-button { width: 100%; text-align: center; }
+            .receipt-area { padding: 20px 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="luis-logo">LÜIS</div>
+        <nav class="glass-island">
+            <a href="index.html">Home</a> 
+            <a href="portfolio.html">Portfolio</a> 
+            <a href="request.html">Request</a> 
+            <a href="#footer">Contact</a> 
+        </nav>
+        <div class="hamburger-menu" id="hamburger-open">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </header>
+
+    <div class="request-container">
+        
+        <div class="right-panel">
+            
+            <div class="header">
+                <h1>Commission Calculator</h1>
+                <p>Find out how much your custom artwork will cost before ordering.</p>
+            </div>
+        
+            <form id="price-calculator-form" onsubmit="event.preventDefault(); showStep(getNextStep(currentStep, selections.medium));">
+                <div class="step-container">
+                    
+                    <div class="step active" data-step="1">
+                        <h3>1. Choose Medium</h3>
+                        <div class="options-grid">
+                            <div class="choice-option" data-type="medium" data-value="Digital">Digital Art (Graphic Design)</div>
+                            <div class="choice-option" data-type="medium" data-value="Traditional">Traditional Art (Drawing)</div>
+                        </div>
+                    </div>
+
+                    <div class="step" data-step="2">
+                        <h3>2. Paper Size (Acid-Free Paper)</h3>
+                        <div class="options-grid">
+                            <div class="choice-option" data-type="paper_size" data-value="A5" data-price="0">A5 (Standard, No additional cost)</div>
+                            <div class="choice-option" data-type="paper_size" data-value="A3" data-price="50">A3 (+₱50)</div>
+                        </div>
+                    </div>
+
+                    <div class="step" data-step="3">
+                        <h3>3. Digital Art Type (Brutalist)</h3>
+                        <p style="margin-bottom: 20px; color: var(--text-gray);">Delivery via Google Drive. Pure Graphic Design/Vector.</p>
+                        <div class="options-grid">
+                            <div class="choice-option" data-type="digital_type" data-value="Poster" data-price="1000">Poster (₱1,000)</div>
+                            <div class="choice-option" data-type="digital_type" data-value="Logo" data-price="1000">Logo (₱1,000)</div>
+                        </div>
+                    </div>
+        
+                    <div class="step" data-step="4">
+                        <h3>4. Art Style (Select an Art Style)</h3>
+                        <div class="options-grid">
+                            <div class="choice-option" data-type="style" data-value="Realistic" data-price="1000">Realistic (+₱1,000)</div>
+                            <div class="choice-option" data-type="style" data-value="Anime" data-price="200">Anime (+₱200)</div>
+                            <div class="choice-option" data-type="style" data-value="Cartoon" data-price="200">Cartoon (+₱200)</div>
+                            <div class="choice-option" data-type="style" data-value="Chibi" data-price="150">Chibi (+₱150)</div>
+                        </div>
+                    </div>
+        
+                    <div class="step" data-step="5">
+                        <h3>5. Composition (Body Shot)</h3>
+                        <div class="options-grid" id="composition-options">
+                            <div class="choice-option" data-type="comp" data-value="Headshot">Headshot (Free)</div>
+                            <div class="choice-option" data-type="comp" data-value="Bust">Bust (+Price Varies)</div>
+                            <div class="choice-option" data-type="comp" data-value="Half Body">Half Body (+Price Varies)</div>
+                            <div class="choice-option" data-type="comp" data-value="Full Body">Full Body (+Price Varies)</div>
+                        </div>
+                    </div>
+        
+                    <div class="step" data-step="6">
+                        <h3>6. Finish</h3>
+                        <div class="options-grid">
+                            <div class="choice-option" data-type="finish" data-value="Lineart" data-price="0">Lineart (Free)</div>
+                            <div class="choice-option" data-type="finish" data-value="Shaded" data-price="50">Shaded (+₱50)</div>
+                            <div class="choice-option" data-type="finish" data-value="Colored" data-price="100">Colored (+₱100)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="step" data-step="7">
+                        <h3>7. Background</h3>
+                        <div class="options-grid">
+                            <div class="choice-option" data-type="bg" data-value="None" data-price="0">No Background / Solid (Free)</div>
+                            <div class="choice-option" data-type="bg" data-value="Simple" data-price="150">Simple (+₱150)</div>
+                            <div class="choice-option" data-type="bg" data-value="Detailed">Detailed (+₱250 to ₱450)</div>
+                        </div>
+                        
+                        <div id="bg-slider-group" class="input-group" style="display:none; margin-top: 20px;">
+                            <label for="bg-slider">Choose Detailed BG Price:</label>
+                            <input type="range" id="bg-slider" min="250" max="450" step="50" value="250">
+                            <div style="text-align: center; font-weight: 500;">Current Cost: ₱<span id="bg-slider-value">250</span></div>
+                        </div>
+                    </div>
+        
+                    <div class="step" data-step="8">
+                        <h3>8. Extras</h3>
+                        
+                        <div class="input-group" style="margin-bottom: 20px;">
+                            <label for="extra-char-select">Extra Character(s) Composition (Base Price Varies)</label>
+                            <select id="extra-char-select" class="styled-select" data-type="extra_char_comp">
+                                <option value="0" selected>0 (No Extra Character)</option>
+                                <option value="Headshot_1">1 Extra Character (Headshot)</option>
+                                <option value="Bust_1">1 Extra Character (Bust)</option>
+                                <option value="Half Body_1">1 Extra Character (Half Body)</option>
+                                <option value="Full Body_1">1 Extra Character (Full Body)</option>
+                                <option value="Headshot_2">2 Extra Characters (Headshot)</option>
+                                <option value="Bust_2">2 Extra Characters (Bust)</option>
+                                <option value="Half Body_2">2 Extra Characters (Half Body)</option>
+                                <option value="Full Body_2">2 Extra Characters (Full Body)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Pet / Object (+₱100 to ₱200)</label>
+                            <div class="options-grid">
+                                <div class="choice-option" data-type="extra_pet" data-value="Pet_Object_Base" data-price="100">Yes, with Pet/Object (+₱100)</div>
+                            </div>
+                            <div id="pet-slider-group" class="input-group" style="display:none; margin-top: 20px;">
+                                <label for="pet-slider">Choose Pet/Object Price (Complexity):</label>
+                                <input type="range" id="pet-slider" min="100" max="200" step="25" value="100">
+                                <div style="text-align: center; font-weight: 500;">Current Cost: ₱<span id="pet-slider-value">100</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step" data-step="9">
+                        <h3>9. Final Details & Payment</h3>
+                        
+                        <div class="total-price-display">
+                            <span style="font-size: 1.2rem; display: block;">Current Estimated Price:</span>
+                            <strong id="final-price-value">₱0</strong>
+                        </div>
+                        
+                        <label style="font-weight: 500;">Mode of Payment</label>
+                        <div class="options-grid" style="margin-bottom: 20px;">
+                            <div class="choice-option" data-type="payment" data-value="GCash">GCash (Local)</div>
+                            <div class="choice-option" data-type="payment" data-value="PayPal">PayPal (International, may additional fee)</div>
+                        </div>
+                        
+                        <label style="font-weight: 500;">Reference Image Upload (Optional)</label>
+                        <div class="file-upload-wrapper">
+                            <input type="file" id="reference-upload" class="form-input" style="display: none;" accept="image/*, .zip, .rar">
+                            <p id="upload-label">Click here to upload reference file</p>
+                        </div>
+                        
+                        <label for="notes" style="font-weight: 500;">Notes / Description (Optional)</label>
+                        <textarea id="notes" class="form-input" placeholder="Please describe your character, pose, color details, and any other notes." rows="5"></textarea>
+                    </div>
+
+                    <div class="step" data-step="10">
+                        <h3>Commission Confirmation</h3>
+                        <div class="receipt-area">
+                            <div class="receipt-loading">Your receipt is printing, please wait...</div>
+                            <div class="final-receipt-paper" id="final-receipt-content" style="display: none;">
+                                </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <div class="navigation">
+                    <button type="button" id="prev-btn" class="nav-button" disabled>← Previous</button>
+                    <div style="font-size: 1.1rem; align-self: center;">Step <span id="step-number">1</span></div>
+                    <button type="submit" id="next-btn" class="nav-button">Next →</button>
+                </div>
+                
+            </form>
+
+        </div>
+        
+    </div>
+    
+    <script>
+        const priceRules = {
+            // Traditional Art Rules
+            'Traditional_Base': 0, 
+            'Realistic': 1000, 'Anime': 200, 'Cartoon': 200, 'Chibi': 150,
+            'A3_ADDON': 50, 
+            
+            // Composition Prices (These values are used by the JS)
+            // Non-Realistic (NR) Styles: Anime, Cartoon, Chibi
+            'Bust_NR': 200, 'Half Body_NR': 300, 'Full Body_NR': 500,
+            
+            // Realistic (R) Styles
+            'Bust_R': 300, 'Half Body_R': 400, 'Full Body_R': 800,
+            
+            // Extra Character Composition Prices (Same as main composition price, plus 150 base per extra char)
+            'Extra_Base': 150, // Base price for any extra character
+            'Extra_Bust_NR': 200, 'Extra_Half_Body_NR': 300, 'Extra_Full_Body_NR': 500,
+            'Extra_Bust_R': 300, 'Extra_Half_Body_R': 400, 'Extra_Full_Body_R': 800,
+            
+            // Finish Prices (Colored > Shaded)
+            'Colored': 100, 'Shaded': 50,
+
+            // Digital Art Rules
+            'Poster': 1000, 'Logo': 1000
+        };
+        
+        let selections = {
+            medium: null, 
+            paper_size: null, 
+            digital_type: null, 
+            // Traditional Art Selections
+            style: null, comp: 'Headshot', finish: 'Lineart', bg: 'None', 
+            bg_detailed_price: 250, 
+            // Extra Character changed to dropdown value
+            extra_char_type_count: '0', // Format: Headshot_1, Bust_2, or 0
+            pet_object: false, pet_object_price: 100,
+            // Final Steps
+            payment: null, notes: '', referenceFile: null
+        };
+        
+        // **IMPORTANT:** Updated to match the maximum step number in the HTML
+        const totalSteps = 10; 
+        let currentStep = 1;
+
+        // DOM Elements (Simplified access)
+        const steps = document.querySelectorAll('.step');
+        const stepNumberSpan = document.getElementById('step-number');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const allOptions = document.querySelectorAll('.choice-option');
+        const bgSliderGroup = document.getElementById('bg-slider-group');
+        const bgSlider = document.getElementById('bg-slider');
+        const bgSliderValue = document.getElementById('bg-slider-value');
+        const petSliderGroup = document.getElementById('pet-slider-group');
+        const petSlider = document.getElementById('pet-slider');
+        const petSliderValue = document.getElementById('pet-slider-value');
+        const referenceUpload = document.getElementById('reference-upload');
+        const uploadLabel = document.getElementById('upload-label');
+        const notesInput = document.getElementById('notes');
+        const receiptLoading = document.querySelector('.receipt-loading');
+        const finalReceiptPaper = document.getElementById('final-receipt-content');
+        const finalPriceDisplay = document.getElementById('final-price-value');
+        const extraCharSelect = document.getElementById('extra-char-select');
+
+
+        // --- Core Functions ---
+        
+        function getTraditionalBasePrice() {
+            return priceRules['Traditional_Base'];
+        }
+
+        function getPriceForComposition(comp, isRealistic) {
+            if (comp === 'Headshot') return 0;
+            const suffix = isRealistic ? '_R' : '_NR';
+            const ruleKey = comp.replace(/\s/g, '_') + suffix;
+            return priceRules[ruleKey] || 0;
+        }
+
+        function calculateExtraCharPrice() {
+            if (selections.extra_char_type_count === '0') return 0;
+
+            const parts = selections.extra_char_type_count.split('_');
+            const compType = parts[0]; 
+            const count = parseInt(parts[1]); 
+            
+            const isRealistic = (selections.style === 'Realistic');
+            let compAddOn = 0;
+
+            if (compType !== 'Headshot') {
+                // Use the main composition price as the add-on for the extra character
+                compAddOn = isRealistic ? getPriceForComposition(compType, true) : getPriceForComposition(compType, false);
+            }
+
+            const basePrice = priceRules['Extra_Base'];
+            // Price = Count * (Base Price + Composition Add-on)
+            return count * (basePrice + compAddOn); 
+        }
+
+        function calculateItemizedPrices() {
+            const items = [];
+            let total = 0;
+
+            if (selections.medium === 'Digital') {
+                const type = selections.digital_type;
+                if (type && priceRules[type]) {
+                    const price = priceRules[type];
+                    items.push({ name: `Digital Art: ${type} (Brutalist)`, price: price });
+                    total += price;
+                }
+            } else if (selections.medium === 'Traditional') {
+                // 1. Base Price 
+                const basePrice = getTraditionalBasePrice();
+                items.push({ name: 'Traditional Art Base', price: basePrice });
+                total += basePrice;
+                
+                const styleType = selections.style;
+                const isRealistic = (styleType === 'Realistic');
+
+                // 2. Paper Size Add-on
+                const paperSize = selections.paper_size;
+                if (paperSize === 'A3') {
+                    const price = priceRules['A3_ADDON'];
+                    items.push({ name: `Paper Size: A3 (+A5 is standard)`, price: price });
+                    total += price;
+                } else if (paperSize === 'A5') {
+                    items.push({ name: `Paper Size: A5 (Standard)`, price: 0 });
+                }
+                
+                // 3. Style Add-on
+                if (styleType && priceRules[styleType]) {
+                    const price = priceRules[styleType];
+                    items.push({ name: `Style: ${styleType}`, price: price });
+                    total += price;
+                }
+
+                // 4. Composition Price (Main Character)
+                if (selections.style) { // Only calculate composition if style is selected
+                    const compPrice = getPriceForComposition(selections.comp, isRealistic);
+                    items.push({ name: `Main Composition: ${selections.comp}`, price: compPrice });
+                    total += compPrice;
+                }
+                
+                // 5. Finish Price
+                let finishPrice = 0;
+                let finishName = selections.finish;
+                if (selections.finish === 'Colored') finishPrice = priceRules['Colored'];
+                else if (selections.finish === 'Shaded') finishPrice = priceRules['Shaded'];
+                items.push({ name: `Finish: ${finishName}`, price: finishPrice });
+                total += finishPrice;
+
+                // 6. Background Price
+                let bgPrice = 0;
+                let bgName = selections.bg;
+                if (selections.bg === 'Simple') bgPrice = 150;
+                else if (selections.bg === 'Detailed') bgPrice = selections.bg_detailed_price;
+                items.push({ name: `Background: ${bgName}`, price: bgPrice });
+                total += bgPrice;
+
+                // 7. Extra Character Price
+                const extraCharPrice = calculateExtraCharPrice();
+                if (extraCharPrice > 0) {
+                    const parts = selections.extra_char_type_count.split('_');
+                    const compType = parts[0];
+                    const count = parts[1];
+                    items.push({ name: `Extra Character(s) x${count} (${compType})`, price: extraCharPrice });
+                    total += extraCharPrice;
+                }
+                
+                // 8. Pet/Object Price
+                if (selections.pet_object) {
+                    items.push({ name: 'Pet / Object', price: selections.pet_object_price });
+                    total += selections.pet_object_price;
+                }
+            }
+
+            return { items, total };
+        }
+        
+        function calculateTotalPrice() {
+             return calculateItemizedPrices().total;
+        }
+        
+        function updateTotalPriceDisplay() {
+            const totalPrice = calculateTotalPrice();
+            finalPriceDisplay.textContent = `₱${totalPrice.toLocaleString()}`;
+        }
+        
+        // FUNCTION TO UPDATE COMPOSITION OPTION TEXT (Step 5)
+        function updateCompositionPrices() {
+            const isRealistic = (selections.style === 'Realistic');
+            const options = document.querySelectorAll('#composition-options .choice-option');
+            
+            options.forEach(opt => {
+                const compType = opt.dataset.value;
+                const price = getPriceForComposition(compType, isRealistic);
+                
+                if (price > 0) {
+                    opt.textContent = `${compType} (+₱${price})`;
+                } else {
+                    opt.textContent = `${compType} (Free)`;
+                }
+            });
+        }
+        
+        // FUNCTION TO UPDATE EXTRA CHARACTER PRICES (Step 8 Dropdown)
+        function updateExtraCharSelectPrices() {
+            const isRealistic = (selections.style === 'Realistic');
+            const select = document.getElementById('extra-char-select');
+
+            const extra_base = priceRules['Extra_Base'];
+            const compPrices = {
+                'Headshot': 0,
+                'Bust': getPriceForComposition('Bust', isRealistic),
+                'Half Body': getPriceForComposition('Half Body', isRealistic),
+                'Full Body': getPriceForComposition('Full Body', isRealistic)
+            };
+            
+            for (let i = 1; i < select.options.length; i++) {
+                const option = select.options[i];
+                const parts = option.value.split('_');
+                const compType = parts[0]; 
+                const count = parseInt(parts[1]); 
+                
+                const finalPrice = count * (extra_base + compPrices[compType]);
+
+                option.textContent = `${count} Extra Character(s) (${compType}) (+₱${finalPrice})`;
+            }
+        }
+
+        function createReceiptHTML(items, total) {
+            let itemsHTML = items.map(item => `
+                <div class="receipt-item">
+                    <span class="receipt-item-title">${item.name}</span>
+                    <span class="receipt-item-price">₱${item.price.toLocaleString()}</span>
+                </div>
+            `).join('');
+
+            const paymentMethod = selections.payment || 'Not Selected';
+            const notes = selections.notes.trim() || 'No special instructions.';
+            const referenceFile = selections.referenceFile ? selections.referenceFile.name : 'None provided.';
+            
+            let html = `
+                <div class="receipt-header">ESTIMATED PRICE</div>
+                ${itemsHTML}
+                <div class="receipt-total">
+                    <span>TOTAL ESTIMATE</span>
+                    <span>₱${total.toLocaleString()}</span>
+                </div>
+                <div class="receipt-note-box">
+                    <p style="font-weight: 500; margin-bottom: 5px;">Payment Method: ${paymentMethod}</p>
+                    <p style="font-weight: 500; margin-bottom: 5px;">Reference File: ${referenceFile}</p>
+                    <p>Notes: ${notes}</p>
+                    <p style="margin-top: 10px; font-weight: bold;">(This is an estimate. Final price will be confirmed upon review of details.)</p>
+                </div>
+            `;
+            return html;
+        }
+
+        // --- Navigation Logic ---
+
+        // FIX: Inayos ang logic para sa tamang pag-skip ng steps
+        function getNextStep(current, medium) {
+            if (current === 1) {
+                if (medium === 'Digital') return 3; 
+                if (medium === 'Traditional') return 2;
+            }
+            // Digital flow: Step 3 (Digital Type) -> Step 9 (Final Details)
+            if (medium === 'Digital' && current === 3) return 9; 
+
+            // Traditional flow: Step 2 (Paper Size) -> Step 4 (Style)
+            if (medium === 'Traditional' && current === 2) return 4;
+            
+            if (current < totalSteps) return current + 1;
+            return totalSteps;
+        }
+
+        // FIX: Inayos ang logic para sa tamang pag-skip ng steps pabalik
+        function getPrevStep(current, medium) {
+            // Reverse from Digital Final Details to Digital Art Type
+            if (current === 9 && medium === 'Digital') return 3; 
+
+            // Reverse from Paper Size to Choose Medium
+            if (current === 2 && medium === 'Traditional') return 1; 
+
+            // Reverse from Digital Art Type to Choose Medium
+            if (current === 3 && medium === 'Digital') return 1; 
+            
+            // Standard reverse
+            if (current > 1) return current - 1;
+            return 1;
+        }
+        
+        function showStep(stepIndex) {
+            steps.forEach(step => {
+                const stepNum = parseInt(step.dataset.step);
+                step.classList.remove('active');
+                if (stepNum === stepIndex) {
+                    step.classList.add('active');
+                }
+            });
+
+            currentStep = stepIndex;
+            stepNumberSpan.textContent = currentStep;
+            
+            // Special initialization for steps
+            if (currentStep === 5) { // Composition step
+                updateCompositionPrices();
+            }
+            if (currentStep === 8) { // Extras step
+                 updateExtraCharSelectPrices();
+            }
+            if (currentStep === 9) { // Final Details & Price Display
+                updateTotalPriceDisplay();
+                selections.notes = notesInput.value; 
+            }
+            if (currentStep === 10) { // Confirmation / Receipt step
+                receiptLoading.style.display = 'block';
+                finalReceiptPaper.style.display = 'none';
+                
+                setTimeout(() => {
+                    receiptLoading.style.display = 'none';
+                    finalReceiptPaper.style.display = 'block';
+                    const { items, total } = calculateItemizedPrices();
+                    finalReceiptPaper.innerHTML = createReceiptHTML(items, total);
+                }, 1000); 
+            }
+            
+            updateNavigation();
+        }
+
+        function updateNavigation() {
+            const currentStepDiv = document.querySelector(`.step[data-step="${currentStep}"]`);
+            let isSelected = false;
+
+            if (!currentStepDiv) {
+                 nextBtn.disabled = true;
+                 prevBtn.disabled = currentStep <= 1;
+                 return;
+            }
+
+            // Check for Choice Options (.choice-option)
+            const activeChoices = currentStepDiv.querySelectorAll('.choice-option');
+            if (activeChoices.length > 0) {
+                isSelected = currentStepDiv.querySelector('.choice-option.selected') !== null;
+            }
+
+            // Check for Dropdown Selections (Select fields) - Mainly Step 8 (Extra Character)
+            const activeSelects = currentStepDiv.querySelectorAll('select.styled-select');
+            activeSelects.forEach(select => {
+                // If there's a dropdown, we consider it "selected" if its value is not the default "0" or empty,
+                // BUT we ensure the choice-option check is prioritized for the main selections.
+            });
+
+            // Special case handling
+            if (currentStep === 8 && (isSelected || selections.extra_char_type_count === '0')) {
+                isSelected = true; // Always allow moving from Step 8 (Extras)
+            }
+             
+            if (currentStep === 9) {
+                isSelected = selections.payment !== null; // Requires payment method selection
+            }
+             // For the final receipt step, Next is disabled
+            if (currentStep === 10) {
+                 isSelected = false;
+            }
+            
+            // Update Next Button State
+            if (currentStep < totalSteps) {
+                nextBtn.disabled = !isSelected;
+            } else {
+                nextBtn.disabled = true;
+            }
+
+            // Update Previous Button State
+            prevBtn.disabled = currentStep <= 1;
+            
+            // Update Step Number Display
+            stepNumberSpan.textContent = currentStep;
+        }
+
+        // --- Event Listeners ---
+
+        // 1. Choice Options (Pill buttons)
+        allOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const type = this.dataset.type;
+                const value = this.dataset.value;
+                
+                // Unselect all other options of the same type
+                document.querySelectorAll(`.choice-option[data-type="${type}"]`).forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+
+                // Select the current option
+                this.classList.add('selected');
+
+                // Update selections object
+                if (type === 'bg') {
+                    selections.bg = value;
+                    bgSliderGroup.style.display = (value === 'Detailed') ? 'block' : 'none';
+                } else if (type === 'extra_pet') {
+                    // Re-evaluate pet_object based on final class list
+                    const isSelected = this.classList.contains('selected');
+                    selections.pet_object = isSelected;
+                    petSliderGroup.style.display = isSelected ? 'block' : 'none';
+
+                    // If Pet is unselected (because clicking again removes 'selected' if toggle is intended), set price back to 0
+                    if (!isSelected) {
+                         selections.pet_object_price = 0;
+                    } else {
+                         selections.pet_object_price = parseInt(petSlider.value);
+                    }
+                } else {
+                    selections[type] = value;
+                }
+
+                updateTotalPriceDisplay();
+
+                // ** IMPORTANT FIX: Update Next Button state **
+                updateNavigation();
+
+                if (type === 'style' && selections.medium === 'Traditional') {
+                    updateCompositionPrices();
+                    updateExtraCharSelectPrices();
+                }
+            });
+        });
+        
+        // 2. Navigation Buttons
+        prevBtn.addEventListener('click', () => {
+            showStep(getPrevStep(currentStep, selections.medium));
+        });
+
+        // 3. Slider Inputs (Detailed BG and Pet/Object)
+        bgSlider.addEventListener('input', function() {
+            selections.bg_detailed_price = parseInt(this.value);
+            bgSliderValue.textContent = this.value;
+            updateTotalPriceDisplay();
+        });
+        petSlider.addEventListener('input', function() {
+            selections.pet_object_price = parseInt(this.value);
+            petSliderValue.textContent = this.value;
+            // Ensure pet_object is true if slider is moved
+            if (selections.pet_object === false) {
+                 selections.pet_object = true;
+            }
+            updateTotalPriceDisplay();
+        });
+
+        // 4. Dropdown Select (Extra Character)
+        extraCharSelect.addEventListener('change', function() {
+            selections.extra_char_type_count = this.value;
+            updateTotalPriceDisplay();
+            updateNavigation();
+        });
+        
+        // 5. File Upload Display
+        document.querySelector('.file-upload-wrapper').addEventListener('click', () => {
+            referenceUpload.click();
+        });
+        referenceUpload.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                selections.referenceFile = this.files[0];
+                uploadLabel.textContent = `File Selected: ${this.files[0].name}`;
+            } else {
+                selections.referenceFile = null;
+                uploadLabel.textContent = 'Click here to upload reference file';
+            }
+        });
+        
+        // 6. Notes Input
+        notesInput.addEventListener('input', function() {
+            selections.notes = this.value; 
+        });
+
+        // Initialize the calculator state
+        showStep(1); 
+    </script>
+</body>
+</html>

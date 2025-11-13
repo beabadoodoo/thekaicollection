@@ -6,9 +6,9 @@
     <title>LÜIS | Creative Agency</title>
     <style>
 /*
- * style.css - FINAL FINAL FINAL VERSION (White Card Harang Fix)
- * BINAGO: Final fix, inalis ang fixed height sa mobile cards container at ginawang padding-bottom 250px.
- * HULING FIX: Mas pinaliitan pa ang font size ng white card content at contact title/links (naayos na sa nakaraan)
+ * style.css - FINAL FINAL FINAL FINAL VERSION (White Card Harang Fix - Desktop Zoom Out)
+ * BINAGO: Final fix, inalis ang fixed height sa white-floating-cards container sa desktop at nag-dagdag ng padding-bottom para hindi ma-cutoff.
+ * TANGGALIN NA NATIN ANG WHITE HARANG!
  */
 
 /* ================================================= */
@@ -177,14 +177,14 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
     position: absolute; 
     inset: 0;
     display: flex;
-    align-items: center; /* I-center ang elements vertically */
-    /* BINAGO: Tumaas ang padding sa gilid para mas makita ang cards at lumayo ang text sa kaliwang gilid */
-    padding: 5% var(--spacing-md) 5% var(--white-content-padding); 
-    max-width: 1600px; /* Limitahan ang width ng content */
+    align-items: flex-start; 
+    /* BINAGO DITO: Bawasan ang '10%' o alisin na lang muna */
+    /* original: padding: 5% var(--spacing-md) 10% var(--white-content-padding); */
+    padding: 5% var(--spacing-md) 0% var(--white-content-padding); /* Bawasan ang bottom padding sa 5% */
+    max-width: 1600px; 
     margin: 0 auto;
     width: 100%; 
 }
-
 /* BINAGO: White Section Content (Kaliwang Bahagi) - NILILITAN ANG FONT SIZE */
 .white-section-content {
     flex: 0 0 50%; 
@@ -195,7 +195,7 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
     color: var(--text-on-white); 
     font-family: 'Athletics', sans-serif;
     font-weight: 400; 
-    /* BINAGO DITO: Binawasan ang max font size mula 2.0rem to 1.6rem */
+    /* Binawasan ang max font size mula 2.0rem to 1.6rem */
     font-size: clamp(1.1rem, 2.8vw, 1.6rem); 
     line-height: 1.3;
     padding-right: 0; 
@@ -205,7 +205,7 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
     /* BLACK BORDER ON WHITE CARD */
     display: inline-block; border: 1px solid var(--text-on-white); border-radius: var(--border-radius-lg);
     padding: 8px 25px; font-size: 1rem; font-weight: 400; 
-    /* BINAGO DITO: Pinaliitan ang margin bottom */
+    /* Pinaliitan ang margin bottom */
     margin-bottom: 20px; 
 }
 /* END WHITE CARD SECTION */
@@ -217,9 +217,12 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
 .white-floating-cards {
     flex: 1; /* Aabutin ang natitirang space */
     position: relative; 
-    height: 100%; /* Sa desktop lang ito gagamitin */
+    /* FIX DITO: Inalis ang height: 100% para hindi ma-stretch sa buong viewport height */
+    height: auto; 
+    min-height: 80vh; /* Nag-dagdag ng min-height para may space ang cards */
     z-index: 7; 
     pointer-events: none;
+    /* Temporary overflow hidden para sa desktop, pero ang padding fix ang solusyon sa cutoff */
     overflow: hidden; 
 }
 
@@ -262,6 +265,7 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
 .floating-card.card-3 {
     width: 200px; 
     height: 280px;
+    /* Ito ang pinakamababang card, itinaas ang bottom margin */
     bottom: 5%; 
     right: 20%; 
     transform: rotate(3deg); 
@@ -325,7 +329,7 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
 }
 
 .contact-title {
-    /* BINAGO DITO: Binawasan ang max font size mula 12rem to 8rem */
+    /* Binawasan ang max font size mula 12rem to 8rem */
     font-size: clamp(4rem, 10vw, 8rem); 
     font-weight: 500; 
     color: var(--text-on-dark-teal);
@@ -362,7 +366,7 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
     color: var(--text-on-dark-teal); 
     text-decoration: none;
     font-weight: 500;
-    /* BINAGO DITO: Binawasan ang font size mula 2.2rem to 1.8rem */
+    /* Binawasan ang font size mula 2.2rem to 1.8rem */
     font-size: 1.8rem; 
     transition: color 0.3s ease;
     display: block; 
@@ -504,7 +508,7 @@ body{ background: var(--bg-light); overflow-x:hidden; -webkit-font-smoothing:ant
         <nav class="glass-island">
             <a href="#home">Home</a> 
             <a href="portfolio.html">Portfolio</a> 
-            <a href="#commissions">Request</a> 
+            <a href="request.html">Request</a>
             <a href="#commissions">Contact</a> 
         </nav>
         
