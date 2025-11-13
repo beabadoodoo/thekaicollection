@@ -49,7 +49,7 @@
             position: sticky; top: 30px; left: 0; width: 100%; display: flex; 
             justify-content: space-between; align-items: center; padding: 0 var(--spacing-md); z-index: 200; 
         }
-        /* LOGO COLOR CHANGED TO BLACK as requested */
+        /* LOGO COLOR CHANGED TO BLACK */
         .luis-logo { font-size: 2.5rem; font-weight: 500; color: var(--text-dark); } 
         
         .glass-island { 
@@ -396,482 +396,508 @@
     </div>
     
     <script>
-        const priceRules = {
-            // Traditional Art Rules
-            'Traditional_Base': 0, 
-            'Realistic': 1000, 'Anime': 200, 'Cartoon': 200, 'Chibi': 150,
-            'A3_ADDON': 50, 
-            
-            // Composition Prices (These values are used by the JS)
-            // Non-Realistic (NR) Styles: Anime, Cartoon, Chibi
-            'Bust_NR': 200, 'Half Body_NR': 300, 'Full Body_NR': 500,
-            
-            // Realistic (R) Styles
-            'Bust_R': 300, 'Half Body_R': 400, 'Full Body_R': 800,
-            
-            // Extra Character Composition Prices (Same as main composition price, plus 150 base per extra char)
-            'Extra_Base': 150, // Base price for any extra character
-            'Extra_Bust_NR': 200, 'Extra_Half_Body_NR': 300, 'Extra_Full_Body_NR': 500,
-            'Extra_Bust_R': 300, 'Extra_Half_Body_R': 400, 'Extra_Full_Body_R': 800,
-            
-            // Finish Prices (Colored > Shaded)
-            'Colored': 100, 'Shaded': 50,
-
-            // Digital Art Rules
-            'Poster': 1000, 'Logo': 1000
-        };
+    // Price rules for non-composition items (Style, Finish, Extras Base)
+    const priceRules = {
+        'Traditional_Base': 0, 
+        'Realistic': 1000, 'Anime': 200, 'Cartoon': 200, 'Chibi': 150,
+        'A3_ADDON': 50, 
         
-        let selections = {
-            medium: null, 
-            paper_size: null, 
-            digital_type: null, 
-            // Traditional Art Selections
-            style: null, comp: 'Headshot', finish: 'Lineart', bg: 'None', 
-            bg_detailed_price: 250, 
-            // Extra Character changed to dropdown value
-            extra_char_type_count: '0', // Format: Headshot_1, Bust_2, or 0
-            pet_object: false, pet_object_price: 100,
-            // Final Steps
-            payment: null, notes: '', referenceFile: null
-        };
+        // Extra Character Base Price (Composition is calculated by function below)
+        'Extra_Base': 150, 
         
-        // **IMPORTANT:** Updated to match the maximum step number in the HTML
-        const totalSteps = 10; 
-        let currentStep = 1;
+        // Finish Prices
+        'Colored': 100, 'Shaded': 50,
 
-        // DOM Elements (Simplified access)
-        const steps = document.querySelectorAll('.step');
-        const stepNumberSpan = document.getElementById('step-number');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const allOptions = document.querySelectorAll('.choice-option');
-        const bgSliderGroup = document.getElementById('bg-slider-group');
-        const bgSlider = document.getElementById('bg-slider');
-        const bgSliderValue = document.getElementById('bg-slider-value');
-        const petSliderGroup = document.getElementById('pet-slider-group');
-        const petSlider = document.getElementById('pet-slider');
-        const petSliderValue = document.getElementById('pet-slider-value');
-        const referenceUpload = document.getElementById('reference-upload');
-        const uploadLabel = document.getElementById('upload-label');
-        const notesInput = document.getElementById('notes');
-        const receiptLoading = document.querySelector('.receipt-loading');
-        const finalReceiptPaper = document.getElementById('final-receipt-content');
-        const finalPriceDisplay = document.getElementById('final-price-value');
-        const extraCharSelect = document.getElementById('extra-char-select');
+        // Digital Art Rules
+        'Poster': 1000, 'Logo': 1000
+    };
+    
+    let selections = {
+        medium: null, 
+        paper_size: null, 
+        digital_type: null, 
+        // Traditional Art Selections
+        style: null, comp: 'Headshot', finish: 'Lineart', bg: 'None', 
+        bg_detailed_price: 250, 
+        // Extra Character changed to dropdown value
+        extra_char_type_count: '0', 
+        pet_object: false, pet_object_price: 100,
+        // Final Steps
+        payment: null, notes: '', referenceFile: null
+    };
+    
+    const totalSteps = 10; 
+    let currentStep = 1;
+
+    // DOM Elements (Initialized later in the script)
+    const steps = document.querySelectorAll('.step');
+    const stepNumberSpan = document.getElementById('step-number');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const allOptions = document.querySelectorAll('.choice-option');
+    const bgSliderGroup = document.getElementById('bg-slider-group');
+    const bgSlider = document.getElementById('bg-slider');
+    const bgSliderValue = document.getElementById('bg-slider-value');
+    const petSliderGroup = document.getElementById('pet-slider-group');
+    const petSlider = document.getElementById('pet-slider');
+    const petSliderValue = document.getElementById('pet-slider-value');
+    const referenceUpload = document.getElementById('reference-upload');
+    const uploadLabel = document.getElementById('upload-label');
+    const notesInput = document.getElementById('notes');
+    const receiptLoading = document.querySelector('.receipt-loading');
+    const finalReceiptPaper = document.getElementById('final-receipt-content');
+    const finalPriceDisplay = document.getElementById('final-price-value');
+    const extraCharSelect = document.getElementById('extra-char-select');
 
 
-        // --- Core Functions ---
+    // --- Core Functions ---
+    
+    function getTraditionalBasePrice() {
+        return priceRules['Traditional_Base'];
+    }
+
+    // 🟢 NEW FUNCTION: Direct calculation for Composition Prices
+    function getPriceForComposition(comp, isRealistic) {
+        if (comp === 'Headshot') return 0;
+        if (comp === 'Bust') return isRealistic ? 300 : 200;
+        if (comp === 'Half Body') return isRealistic ? 400 : 300; // FIX: Half Body prices confirmed
+        if (comp === 'Full Body') return isRealistic ? 600 : 450; // FIX: Full Body prices confirmed
+        return 0; // fallback
+    }
+
+    function calculateExtraCharPrice() {
+        if (selections.extra_char_type_count === '0') return 0;
+
+        const parts = selections.extra_char_type_count.split('_');
+        const compType = parts[0]; 
+        const count = parseInt(parts[1]); 
         
-        function getTraditionalBasePrice() {
-            return priceRules['Traditional_Base'];
-        }
+        const isRealistic = (selections.style === 'Realistic');
+        
+        // Uses the new direct function for composition price
+        const compAddOn = getPriceForComposition(compType, isRealistic);
+        
+        const basePrice = priceRules['Extra_Base'];
+        // Price = Count * (Base Price + Composition Add-on)
+        return count * (basePrice + compAddOn); 
+    }
 
-        function getPriceForComposition(comp, isRealistic) {
-            if (comp === 'Headshot') return 0;
-            const suffix = isRealistic ? '_R' : '_NR';
-            const ruleKey = comp.replace(/\s/g, '_') + suffix;
-            return priceRules[ruleKey] || 0;
-        }
+    function calculateItemizedPrices() {
+        const items = [];
+        let total = 0;
 
-        function calculateExtraCharPrice() {
-            if (selections.extra_char_type_count === '0') return 0;
-
-            const parts = selections.extra_char_type_count.split('_');
-            const compType = parts[0]; 
-            const count = parseInt(parts[1]); 
+        if (selections.medium === 'Digital') {
+            const type = selections.digital_type;
+            if (type && priceRules[type]) {
+                const price = priceRules[type];
+                items.push({ name: `Digital Art: ${type} (Brutalist)`, price: price });
+                total += price;
+            }
+        } else if (selections.medium === 'Traditional') {
+            // 1. Base Price 
+            const basePrice = getTraditionalBasePrice();
+            items.push({ name: 'Traditional Art Base', price: basePrice });
+            total += basePrice;
             
-            const isRealistic = (selections.style === 'Realistic');
-            let compAddOn = 0;
+            const styleType = selections.style;
+            const isRealistic = (styleType === 'Realistic');
 
-            if (compType !== 'Headshot') {
-                // Use the main composition price as the add-on for the extra character
-                compAddOn = isRealistic ? getPriceForComposition(compType, true) : getPriceForComposition(compType, false);
+            // 2. Paper Size Add-on
+            const paperSize = selections.paper_size;
+            if (paperSize === 'A3') {
+                const price = priceRules['A3_ADDON'];
+                items.push({ name: `Paper Size: A3 (+A5 is standard)`, price: price });
+                total += price;
+            } else if (paperSize === 'A5') {
+                items.push({ name: `Paper Size: A5 (Standard)`, price: 0 });
+            }
+            
+            // 3. Style Add-on
+            if (styleType && priceRules[styleType]) {
+                const price = priceRules[styleType];
+                items.push({ name: `Style: ${styleType}`, price: price });
+                total += price;
             }
 
-            const basePrice = priceRules['Extra_Base'];
-            // Price = Count * (Base Price + Composition Add-on)
-            return count * (basePrice + compAddOn); 
-        }
-
-        function calculateItemizedPrices() {
-            const items = [];
-            let total = 0;
-
-            if (selections.medium === 'Digital') {
-                const type = selections.digital_type;
-                if (type && priceRules[type]) {
-                    const price = priceRules[type];
-                    items.push({ name: `Digital Art: ${type} (Brutalist)`, price: price });
-                    total += price;
-                }
-            } else if (selections.medium === 'Traditional') {
-                // 1. Base Price 
-                const basePrice = getTraditionalBasePrice();
-                items.push({ name: 'Traditional Art Base', price: basePrice });
-                total += basePrice;
-                
-                const styleType = selections.style;
-                const isRealistic = (styleType === 'Realistic');
-
-                // 2. Paper Size Add-on
-                const paperSize = selections.paper_size;
-                if (paperSize === 'A3') {
-                    const price = priceRules['A3_ADDON'];
-                    items.push({ name: `Paper Size: A3 (+A5 is standard)`, price: price });
-                    total += price;
-                } else if (paperSize === 'A5') {
-                    items.push({ name: `Paper Size: A5 (Standard)`, price: 0 });
-                }
-                
-                // 3. Style Add-on
-                if (styleType && priceRules[styleType]) {
-                    const price = priceRules[styleType];
-                    items.push({ name: `Style: ${styleType}`, price: price });
-                    total += price;
-                }
-
-                // 4. Composition Price (Main Character)
-                if (selections.style) { // Only calculate composition if style is selected
-                    const compPrice = getPriceForComposition(selections.comp, isRealistic);
-                    items.push({ name: `Main Composition: ${selections.comp}`, price: compPrice });
-                    total += compPrice;
-                }
-                
-                // 5. Finish Price
-                let finishPrice = 0;
-                let finishName = selections.finish;
-                if (selections.finish === 'Colored') finishPrice = priceRules['Colored'];
-                else if (selections.finish === 'Shaded') finishPrice = priceRules['Shaded'];
-                items.push({ name: `Finish: ${finishName}`, price: finishPrice });
-                total += finishPrice;
-
-                // 6. Background Price
-                let bgPrice = 0;
-                let bgName = selections.bg;
-                if (selections.bg === 'Simple') bgPrice = 150;
-                else if (selections.bg === 'Detailed') bgPrice = selections.bg_detailed_price;
-                items.push({ name: `Background: ${bgName}`, price: bgPrice });
-                total += bgPrice;
-
-                // 7. Extra Character Price
-                const extraCharPrice = calculateExtraCharPrice();
-                if (extraCharPrice > 0) {
-                    const parts = selections.extra_char_type_count.split('_');
-                    const compType = parts[0];
-                    const count = parts[1];
-                    items.push({ name: `Extra Character(s) x${count} (${compType})`, price: extraCharPrice });
-                    total += extraCharPrice;
-                }
-                
-                // 8. Pet/Object Price
-                if (selections.pet_object) {
-                    items.push({ name: 'Pet / Object', price: selections.pet_object_price });
-                    total += selections.pet_object_price;
-                }
+            // 4. Composition Price (Main Character) - USES NEW FUNCTION
+            if (selections.style) { 
+                const compPrice = getPriceForComposition(selections.comp, isRealistic);
+                items.push({ name: `Main Composition: ${selections.comp}`, price: compPrice });
+                total += compPrice;
             }
-
-            return { items, total };
-        }
-        
-        function calculateTotalPrice() {
-             return calculateItemizedPrices().total;
-        }
-        
-        function updateTotalPriceDisplay() {
-            const totalPrice = calculateTotalPrice();
-            finalPriceDisplay.textContent = `₱${totalPrice.toLocaleString()}`;
-        }
-        
-        // FUNCTION TO UPDATE COMPOSITION OPTION TEXT (Step 5)
-        function updateCompositionPrices() {
-            const isRealistic = (selections.style === 'Realistic');
-            const options = document.querySelectorAll('#composition-options .choice-option');
             
-            options.forEach(opt => {
+            // 5. Finish Price
+            let finishPrice = 0;
+            let finishName = selections.finish;
+            if (selections.finish === 'Colored') finishPrice = priceRules['Colored'];
+            else if (selections.finish === 'Shaded') finishPrice = priceRules['Shaded'];
+            items.push({ name: `Finish: ${finishName}`, price: finishPrice });
+            total += finishPrice;
+
+            // 6. Background Price
+            let bgPrice = 0;
+            let bgName = selections.bg;
+            if (selections.bg === 'Simple') bgPrice = 150;
+            else if (selections.bg === 'Detailed') bgPrice = selections.bg_detailed_price;
+            items.push({ name: `Background: ${bgName}`, price: bgPrice });
+            total += bgPrice;
+
+            // 7. Extra Character Price - USES NEW FUNCTION
+            const extraCharPrice = calculateExtraCharPrice(); 
+            if (extraCharPrice > 0) {
+                const parts = selections.extra_char_type_count.split('_');
+                const compType = parts[0];
+                const count = parts[1];
+                items.push({ name: `Extra Character(s) x${count} (${compType})`, price: extraCharPrice });
+                total += extraCharPrice;
+            }
+            
+            // 8. Pet/Object Price
+            if (selections.pet_object) {
+                items.push({ name: 'Pet / Object', price: selections.pet_object_price });
+                total += selections.pet_object_price;
+            }
+        }
+
+        return { items, total };
+    }
+    
+    function calculateTotalPrice() {
+        return calculateItemizedPrices().total;
+    }
+    
+    function updateTotalPriceDisplay() {
+        const totalPrice = calculateTotalPrice();
+        finalPriceDisplay.textContent = `₱${totalPrice.toLocaleString()}`;
+    }
+    
+    // 🟢 NEW FUNCTION: Ensures the prices are displayed correctly on the buttons
+    function updateCompositionPrices() {
+        if (selections.medium !== 'Traditional' || selections.style === null) {
+            // Reset to default labels if no selection
+            document.querySelectorAll('#composition-options .choice-option').forEach(opt => {
                 const compType = opt.dataset.value;
-                const price = getPriceForComposition(compType, isRealistic);
-                
-                if (price > 0) {
-                    opt.textContent = `${compType} (+₱${price})`;
-                } else {
-                    opt.textContent = `${compType} (Free)`;
-                }
+                if (compType === 'Headshot') opt.textContent = 'Headshot (Free)';
+                else opt.textContent = `${compType} (+Price Varies)`;
             });
+            return;
         }
-        
-        // FUNCTION TO UPDATE EXTRA CHARACTER PRICES (Step 8 Dropdown)
-        function updateExtraCharSelectPrices() {
-            const isRealistic = (selections.style === 'Realistic');
-            const select = document.getElementById('extra-char-select');
 
-            const extra_base = priceRules['Extra_Base'];
-            const compPrices = {
-                'Headshot': 0,
-                'Bust': getPriceForComposition('Bust', isRealistic),
-                'Half Body': getPriceForComposition('Half Body', isRealistic),
-                'Full Body': getPriceForComposition('Full Body', isRealistic)
-            };
-            
-            for (let i = 1; i < select.options.length; i++) {
-                const option = select.options[i];
-                const parts = option.value.split('_');
-                const compType = parts[0]; 
-                const count = parseInt(parts[1]); 
-                
-                const finalPrice = count * (extra_base + compPrices[compType]);
-
-                option.textContent = `${count} Extra Character(s) (${compType}) (+₱${finalPrice})`;
+        const isRealistic = (selections.style === 'Realistic');
+        document.querySelectorAll('#composition-options .choice-option').forEach(opt => {
+            const compType = opt.dataset.value;
+            const price = getPriceForComposition(compType, isRealistic);
+            if (price > 0) {
+                opt.textContent = `${compType} (+₱${price.toLocaleString()})`;
+            } else {
+                opt.textContent = `${compType} (Free)`;
             }
+        });
+    }
+    
+    // 🟢 NEW FUNCTION: Ensures extra character dropdown updates accordingly
+    function updateExtraCharSelectPrices() {
+        if (selections.medium !== 'Traditional' || selections.style === null) return;
+        
+        const isRealistic = (selections.style === 'Realistic');
+        const select = extraCharSelect;
+        const extra_base = priceRules['Extra_Base'];
+        
+        const compPrices = {
+            'Headshot': 0,
+            'Bust': getPriceForComposition('Bust', isRealistic),
+            'Half Body': getPriceForComposition('Half Body', isRealistic),
+            'Full Body': getPriceForComposition('Full Body', isRealistic)
+        };
+        
+        for (let i = 1; i < select.options.length; i++) {
+            const option = select.options[i];
+            const [compType, count] = option.value.split('_');
+            const finalPrice = parseInt(count) * (extra_base + compPrices[compType]);
+            option.textContent = `${count} Extra Character(s) (${compType}) (+₱${finalPrice.toLocaleString()})`;
         }
+    }
 
-        function createReceiptHTML(items, total) {
-            let itemsHTML = items.map(item => `
-                <div class="receipt-item">
-                    <span class="receipt-item-title">${item.name}</span>
-                    <span class="receipt-item-price">₱${item.price.toLocaleString()}</span>
-                </div>
-            `).join('');
 
-            const paymentMethod = selections.payment || 'Not Selected';
-            const notes = selections.notes.trim() || 'No special instructions.';
-            const referenceFile = selections.referenceFile ? selections.referenceFile.name : 'None provided.';
-            
-            let html = `
-                <div class="receipt-header">ESTIMATED PRICE</div>
-                ${itemsHTML}
-                <div class="receipt-total">
-                    <span>TOTAL ESTIMATE</span>
-                    <span>₱${total.toLocaleString()}</span>
-                </div>
-                <div class="receipt-note-box">
-                    <p style="font-weight: 500; margin-bottom: 5px;">Payment Method: ${paymentMethod}</p>
-                    <p style="font-weight: 500; margin-bottom: 5px;">Reference File: ${referenceFile}</p>
-                    <p>Notes: ${notes}</p>
-                    <p style="margin-top: 10px; font-weight: bold;">(This is an estimate. Final price will be confirmed upon review of details.)</p>
+    function createReceiptHTML(items, total) {
+        let itemsHTML = items.map(item => `
+            <div class="receipt-item">
+                <span class="receipt-item-title">${item.name}</span>
+                <span class="receipt-item-price">₱${item.price.toLocaleString()}</span>
+            </div>
+        `).join('');
+
+        // Calculate PayPal fee if selected
+        let paypalFee = 0;
+        let finalTotal = total;
+        if (selections.payment === 'PayPal') {
+            // Standard PayPal fee (approx 4.4% + flat fee) - Using a simple 5% for estimate
+            paypalFee = Math.round(total * 0.05);
+            finalTotal = total + paypalFee;
+            itemsHTML += `
+                <div class="receipt-item" style="margin-top: 10px;">
+                    <span class="receipt-item-title" style="font-style: italic;">PayPal Fee (Est. 5%)</span>
+                    <span class="receipt-item-price" style="font-style: italic;">+₱${paypalFee.toLocaleString()}</span>
                 </div>
             `;
-            return html;
         }
 
-        // --- Navigation Logic ---
+        const notesText = selections.notes ? `<div class="receipt-note-box"><strong>Notes:</strong> ${selections.notes}</div>` : '';
+        const referenceText = selections.referenceFile ? `<p style="font-size: 0.9rem; margin-top: 10px;">Reference File: <strong>${selections.referenceFile.name}</strong> uploaded.</p>` : '';
+        
+        return `
+            <div class="receipt-header">Final Order Receipt</div>
+            ${itemsHTML}
+            <div class="receipt-total">
+                <div class="receipt-item">
+                    <span>TOTAL PRICE:</span>
+                    <span>₱${finalTotal.toLocaleString()}</span>
+                </div>
+            </div>
+            <p style="margin-top: 20px;">Payment Method: <strong>${selections.payment}</strong></p>
+            ${referenceText}
+            ${notesText}
+            <p style="font-size: 0.9rem; margin-top: 20px; color: var(--text-gray);">
+                This is an estimated price. Final price may change based on complexity discussed later.
+            </p>
+        `;
+    }
+    
+    
+    // --- Navigation and State Management ---
 
-        // FIX: Inayos ang logic para sa tamang pag-skip ng steps
-        function getNextStep(current, medium) {
-            if (current === 1) {
-                if (medium === 'Digital') return 3; 
-                if (medium === 'Traditional') return 2;
-            }
-            // Digital flow: Step 3 (Digital Type) -> Step 9 (Final Details)
-            if (medium === 'Digital' && current === 3) return 9; 
-
-            // Traditional flow: Step 2 (Paper Size) -> Step 4 (Style)
-            if (medium === 'Traditional' && current === 2) return 4;
-            
-            if (current < totalSteps) return current + 1;
-            return totalSteps;
+    function getNextStep(current, medium) {
+        if (current === 1) {
+            return (medium === 'Traditional') ? 2 : 3;
         }
+        if (current === 2 && medium === 'Traditional') {
+            return 4; // Traditional -> Paper Size -> Art Style
+        }
+        if (current === 3 && medium === 'Digital') {
+            return 9; // Digital -> Digital Type -> Final Details (Skipping 4-8)
+        }
+        if (current >= 4 && current < 9) {
+            return current + 1; // Standard step progression for Traditional (4->5->6->7->8)
+        }
+        if (current === 8 && medium === 'Traditional') {
+            return 9; // Traditional -> Extras -> Final Details
+        }
+        if (current === 9) {
+            return 10; // Final Details -> Confirmation
+        }
+        return current;
+    }
 
-        // FIX: Inayos ang logic para sa tamang pag-skip ng steps pabalik
-        function getPrevStep(current, medium) {
-            // Reverse from Digital Final Details to Digital Art Type
-            if (current === 9 && medium === 'Digital') return 3; 
+    function getPrevStep(current, medium) {
+        if (current === 1) return 1;
+        if (current === 2) return 1; // Paper Size -> Medium
+        if (current === 3) return 1; // Digital Type -> Medium
+        if (current === 4) {
+            return (medium === 'Traditional') ? 2 : 3; // Art Style -> Paper Size (T) or Digital Type (D)
+        }
+        if (current > 4 && current <= 9 && medium === 'Traditional') {
+            return current - 1; // Standard step regression (9->8->7...)
+        }
+        if (current === 9 && medium === 'Digital') {
+            return 3; // Final Details -> Digital Type
+        }
+        if (current === 10) return 9; // Confirmation -> Final Details
+        return current;
+    }
 
-            // Reverse from Paper Size to Choose Medium
-            if (current === 2 && medium === 'Traditional') return 1; 
+    function showStep(stepNumber) {
+        if (stepNumber < 1 || stepNumber > totalSteps) return;
 
-            // Reverse from Digital Art Type to Choose Medium
-            if (current === 3 && medium === 'Digital') return 1; 
-            
-            // Standard reverse
-            if (current > 1) return current - 1;
-            return 1;
+        // Hide all steps first
+        steps.forEach(step => step.classList.remove('active'));
+
+        // Show the target step
+        const targetStep = document.querySelector(`.step[data-step="${stepNumber}"]`);
+        if (targetStep) {
+            targetStep.classList.add('active');
+            currentStep = stepNumber;
+            stepNumberSpan.textContent = currentStep;
         }
         
-        function showStep(stepIndex) {
-            steps.forEach(step => {
-                const stepNum = parseInt(step.dataset.step);
-                step.classList.remove('active');
-                if (stepNum === stepIndex) {
-                    step.classList.add('active');
-                }
-            });
-
-            currentStep = stepIndex;
-            stepNumberSpan.textContent = currentStep;
-            
-            // Special initialization for steps
-            if (currentStep === 5) { // Composition step
-                updateCompositionPrices();
-            }
-            if (currentStep === 8) { // Extras step
-                 updateExtraCharSelectPrices();
-            }
-            if (currentStep === 9) { // Final Details & Price Display
-                updateTotalPriceDisplay();
-                selections.notes = notesInput.value; 
-            }
-            if (currentStep === 10) { // Confirmation / Receipt step
-                receiptLoading.style.display = 'block';
-                finalReceiptPaper.style.display = 'none';
-                
-                setTimeout(() => {
-                    receiptLoading.style.display = 'none';
-                    finalReceiptPaper.style.display = 'block';
-                    const { items, total } = calculateItemizedPrices();
-                    finalReceiptPaper.innerHTML = createReceiptHTML(items, total);
-                }, 1000); 
-            }
-            
-            updateNavigation();
+        // Specific step updates
+        if (currentStep === 9) {
+            updateTotalPriceDisplay();
+            notesInput.value = selections.notes;
         }
 
-        function updateNavigation() {
-            const currentStepDiv = document.querySelector(`.step[data-step="${currentStep}"]`);
-            let isSelected = false;
+        if (currentStep === 10) {
+             receiptLoading.style.display = 'block';
+             finalReceiptPaper.style.display = 'none';
+             const { items, total } = calculateItemizedPrices();
+             setTimeout(() => {
+                 receiptLoading.style.display = 'none';
+                 finalReceiptPaper.innerHTML = createReceiptHTML(items, total);
+                 finalReceiptPaper.style.display = 'block';
+             }, 1000); // Simulate loading time
+        }
 
-            if (!currentStepDiv) {
-                 nextBtn.disabled = true;
-                 prevBtn.disabled = currentStep <= 1;
-                 return;
-            }
+        updateNavigation();
+    }
+    
+    function updateNavigation() {
+        const currentStepDiv = document.querySelector(`.step[data-step="${currentStep}"]`);
+        let isSelected = true;
 
+        // Reset display of dynamic groups
+        bgSliderGroup.style.display = 'none';
+        petSliderGroup.style.display = 'none';
+        
+        if (currentStepDiv) {
             // Check for Choice Options (.choice-option)
             const activeChoices = currentStepDiv.querySelectorAll('.choice-option');
             if (activeChoices.length > 0) {
+                // Tiyakin na may kahit isang option na may 'selected' class
                 isSelected = currentStepDiv.querySelector('.choice-option.selected') !== null;
             }
 
-            // Check for Dropdown Selections (Select fields) - Mainly Step 8 (Extra Character)
-            const activeSelects = currentStepDiv.querySelectorAll('select.styled-select');
+            // Check for Dropdowns (Select elements)
+            const activeSelects = currentStepDiv.querySelectorAll('.styled-select');
             activeSelects.forEach(select => {
-                // If there's a dropdown, we consider it "selected" if its value is not the default "0" or empty,
-                // BUT we ensure the choice-option check is prioritized for the main selections.
+                // If the value is the default/unselected one, require selection
+                if (select.id === 'extra-char-select' && selections.medium === 'Traditional') {
+                    // This is an optional step, so the default '0' is allowed.
+                }
             });
 
-            // Special case handling
-            if (currentStep === 8 && (isSelected || selections.extra_char_type_count === '0')) {
-                isSelected = true; // Always allow moving from Step 8 (Extras)
+            // Specific validation for steps
+            if (currentStep === 7 && selections.bg === 'Detailed') {
+                bgSliderGroup.style.display = 'block';
             }
-             
-            if (currentStep === 9) {
-                isSelected = selections.payment !== null; // Requires payment method selection
+            if (currentStep === 8 && selections.pet_object) {
+                petSliderGroup.style.display = 'block';
             }
-             // For the final receipt step, Next is disabled
-            if (currentStep === 10) {
-                 isSelected = false;
-            }
-            
-            // Update Next Button State
-            if (currentStep < totalSteps) {
-                nextBtn.disabled = !isSelected;
-            } else {
-                nextBtn.disabled = true;
-            }
+        }
+        
+        prevBtn.disabled = currentStep === 1 || currentStep === 10;
+        nextBtn.disabled = !isSelected;
 
-            // Update Previous Button State
-            prevBtn.disabled = currentStep <= 1;
-            
-            // Update Step Number Display
-            stepNumberSpan.textContent = currentStep;
+        if (currentStep === 9 && selections.payment === null) {
+            nextBtn.disabled = true; // Payment must be selected in the final step
         }
 
-        // --- Event Listeners ---
+        if (currentStep === totalSteps) {
+            nextBtn.textContent = 'Order Now'; // Last step has a final action button
+        } else {
+            nextBtn.textContent = 'Next →';
+        }
+        
+        // Update price displays dynamically if they rely on selection changes
+        updateCompositionPrices();
+        updateExtraCharSelectPrices();
+        updateTotalPriceDisplay();
+    }
+    
+    // --- Event Listeners ---
 
-        // 1. Choice Options (Pill buttons)
-        allOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                const type = this.dataset.type;
-                const value = this.dataset.value;
-                
-                // Unselect all other options of the same type
-                document.querySelectorAll(`.choice-option[data-type="${type}"]`).forEach(opt => {
-                    opt.classList.remove('selected');
-                });
+    // Option Clicks
+    allOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const type = this.dataset.type;
+            const value = this.dataset.value;
 
-                // Select the current option
-                this.classList.add('selected');
-
-                // Update selections object
-                if (type === 'bg') {
-                    selections.bg = value;
-                    bgSliderGroup.style.display = (value === 'Detailed') ? 'block' : 'none';
-                } else if (type === 'extra_pet') {
-                    // Re-evaluate pet_object based on final class list
-                    const isSelected = this.classList.contains('selected');
-                    selections.pet_object = isSelected;
-                    petSliderGroup.style.display = isSelected ? 'block' : 'none';
-
-                    // If Pet is unselected (because clicking again removes 'selected' if toggle is intended), set price back to 0
-                    if (!isSelected) {
-                         selections.pet_object_price = 0;
-                    } else {
-                         selections.pet_object_price = parseInt(petSlider.value);
-                    }
-                } else {
-                    selections[type] = value;
-                }
-
-                updateTotalPriceDisplay();
-
-                // ** IMPORTANT FIX: Update Next Button state **
-                updateNavigation();
-
-                if (type === 'style' && selections.medium === 'Traditional') {
-                    updateCompositionPrices();
-                    updateExtraCharSelectPrices();
-                }
+            // Remove 'selected' from all other options of the same type
+            document.querySelectorAll(`.choice-option[data-type="${type}"]`).forEach(opt => {
+                opt.classList.remove('selected');
             });
-        });
-        
-        // 2. Navigation Buttons
-        prevBtn.addEventListener('click', () => {
-            showStep(getPrevStep(currentStep, selections.medium));
-        });
 
-        // 3. Slider Inputs (Detailed BG and Pet/Object)
-        bgSlider.addEventListener('input', function() {
-            selections.bg_detailed_price = parseInt(this.value);
-            bgSliderValue.textContent = this.value;
-            updateTotalPriceDisplay();
-        });
-        petSlider.addEventListener('input', function() {
-            selections.pet_object_price = parseInt(this.value);
-            petSliderValue.textContent = this.value;
-            // Ensure pet_object is true if slider is moved
-            if (selections.pet_object === false) {
-                 selections.pet_object = true;
+            // Toggle 'selected' on the clicked option
+            this.classList.add('selected');
+            
+            // Update the selections object
+            if (type === 'medium') {
+                selections.medium = value;
+                // Reset dependent selections when medium changes
+                selections.paper_size = null; selections.digital_type = null; 
+            } else if (type === 'paper_size') {
+                selections.paper_size = value;
+            } else if (type === 'digital_type') {
+                selections.digital_type = value;
+            } else if (type === 'style') {
+                selections.style = value;
+            } else if (type === 'comp') {
+                selections.comp = value;
+            } else if (type === 'finish') {
+                selections.finish = value;
+            } else if (type === 'bg') {
+                selections.bg = value;
+            } else if (type === 'payment') {
+                selections.payment = value;
+            } else if (type === 'extra_pet') {
+                selections.pet_object = true;
             }
-            updateTotalPriceDisplay();
-        });
+            
+            // Handle Pet/Object toggle specifically
+            if (type === 'extra_pet' && !this.classList.contains('selected')) {
+                selections.pet_object = false;
+            } else if (type === 'extra_pet' && this.classList.contains('selected')) {
+                 // Ensure pet-object is true if button is selected
+                 selections.pet_object = true; 
+            }
 
-        // 4. Dropdown Select (Extra Character)
-        extraCharSelect.addEventListener('change', function() {
-            selections.extra_char_type_count = this.value;
-            updateTotalPriceDisplay();
+            // If the item is toggled off manually (unlikely with this logic, but safe)
+            if (!this.classList.contains('selected')) {
+                // We assume clicking selects, so no need for complicated toggle logic here
+            }
+
             updateNavigation();
+            updateTotalPriceDisplay();
         });
-        
-        // 5. File Upload Display
-        document.querySelector('.file-upload-wrapper').addEventListener('click', () => {
-            referenceUpload.click();
-        });
-        referenceUpload.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                selections.referenceFile = this.files[0];
-                uploadLabel.textContent = `File Selected: ${this.files[0].name}`;
-            } else {
-                selections.referenceFile = null;
-                uploadLabel.textContent = 'Click here to upload reference file';
-            }
-        });
-        
-        // 6. Notes Input
-        notesInput.addEventListener('input', function() {
-            selections.notes = this.value; 
-        });
+    });
 
-        // Initialize the calculator state
-        showStep(1); 
-    </script>
+    // Navigation Button Handlers
+    prevBtn.addEventListener('click', () => {
+        showStep(getPrevStep(currentStep, selections.medium));
+    });
+
+    // NOTE: nextBtn handler is on the form's onsubmit attribute (type="submit")
+
+    // Slider Handlers
+    bgSlider.addEventListener('input', function() {
+        bgSliderValue.textContent = this.value;
+        selections.bg_detailed_price = parseInt(this.value);
+        updateTotalPriceDisplay();
+    });
+
+    petSlider.addEventListener('input', function() {
+        petSliderValue.textContent = this.value;
+        selections.pet_object_price = parseInt(this.value);
+        updateTotalPriceDisplay();
+    });
+    
+    // Dropdown Handler
+    extraCharSelect.addEventListener('change', function() {
+        selections.extra_char_type_count = this.value;
+        updateTotalPriceDisplay();
+        updateNavigation(); // Re-enable if necessary
+    });
+
+    // File Upload Handler
+    document.querySelector('.file-upload-wrapper').addEventListener('click', () => {
+        referenceUpload.click();
+    });
+
+    referenceUpload.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            uploadLabel.textContent = `File selected: ${this.files[0].name}`;
+            selections.referenceFile = this.files[0];
+        } else {
+            uploadLabel.textContent = 'Click here to upload reference file';
+            selections.referenceFile = null;
+        }
+    });
+
+    // Notes Handler
+    notesInput.addEventListener('input', function() {
+        selections.notes = this.value;
+    });
+
+    // Initialize the calculator
+    showStep(currentStep); 
+</script>
 </body>
 </html>
