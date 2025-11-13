@@ -6,7 +6,7 @@
     <title>LÜIS | Portfolio</title>
     <style>
 /* ****************************************************** */
-/* * style.css - FINAL VERSION (Floating Gallery + Full View) */
+/* * style.css - FINAL VERSION (Slide-Up on Scroll + Full View) */
 /* ****************************************************** */
 
 /* ================================================= */
@@ -62,11 +62,24 @@ body{
 
 /* Hamburger Icon */
 .hamburger-menu { 
-    width: 45px; height: 45px; border-radius: 50%; background-color: var(--dark-bg); 
-    display: flex; flex-direction: column; justify-content: space-around; cursor: pointer; 
-    padding: 15px; box-sizing: border-box; 
+    width: 45px; 
+    height: 45px; 
+    border-radius: 0; /* TINANGGAL ANG BORDER RADIUS */
+    background-color: transparent; /* GINAWANG TRANSPARENT ANG BACKGROUND */
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-around; 
+    cursor: pointer; 
+    padding: 15px 0; /* BINAGO ang padding para bumagay sa transparent background */
+    box-sizing: border-box; 
 }
-.hamburger-menu span { display: block; width: 100%; height: 2px; background-color: var(--text-light); transition: transform 0.3s ease-in-out; }
+.hamburger-menu span { 
+    display: block; 
+    width: 45px; /* Ginawang fixed width para sa guhit */
+    height: 2px; 
+    background-color: var(--text-dark); /* Ginawang dark ang kulay ng guhit */
+    transition: transform 0.3s ease-in-out; 
+}
 
 /* MEDIA QUERY: Tiyakin ang tamang display */
 @media (min-width: 1024px) {
@@ -76,21 +89,47 @@ body{
 
 
 /* ================================================= */
-/* 4. PORTFOLIO GALLERY STYLING (Floating Grid, Rounded Edges) */
+/* 4. PORTFOLIO GALLERY STYLING (Slide-Up Animation) */
 /* ================================================= */
 
 .artworks-section { padding-top: 150px; padding-bottom: 100px; width: 100%; min-height: 100vh; }
-.artworks-header { padding: 0 var(--spacing-lg); margin-bottom: 80px; }
+
+.artworks-header { 
+    padding: 0 var(--spacing-lg); 
+    margin-bottom: 80px; 
+}
 
 .artworks-title {
     font-size: clamp(4rem, 15vw, 18rem); 
-    font-weight: 500; letter-spacing: -0.05em; line-height: 0.8; color: var(--text-dark);
-}
-.artworks-subtitle {
-    font-size: clamp(1.5rem, 4vw, 3rem); font-weight: 400; margin-top: 20px; color: #555; max-width: 800px;
+    font-weight: 500; 
+    letter-spacing: -0.05em; 
+    line-height: 0.8; 
+    color: var(--text-dark);
+    margin-bottom: 30px; 
 }
 
-/* --- Gallery Container: Grid (No Scroll) --- */
+.artworks-subtitle {
+    font-size: clamp(1.2rem, 2.5vw, 2.5rem); 
+    font-weight: 400; 
+    margin-top: 0; 
+    color: #555; 
+    max-width: 100%; 
+    text-align: right; 
+    padding-left: 50%; 
+}
+
+
+/* Responsive adjustment for smaller screens */
+@media (max-width: 768px) {
+    .artworks-subtitle {
+        font-size: 1.5rem; 
+        text-align: left; 
+        padding-left: 0;
+    }
+}
+
+
+/* --- Gallery Container: Grid --- */
 .gallery-container {
     padding: 0 var(--spacing-md); 
     width: 100%;
@@ -99,7 +138,7 @@ body{
     gap: 30px; 
 }
 
-/* Gallery Item Styling (Rounded Edges Container) */
+/* Gallery Item Styling (Initial State and Transition) */
 .gallery-container .artwork-item {
     width: 100%; 
     min-height: 400px; 
@@ -108,7 +147,17 @@ body{
     border-radius: var(--card-radius); 
     overflow: hidden; 
     box-shadow: none; 
-    animation: floating-anim-1 6s ease-in-out infinite alternate;
+    
+    /* --- ANIMATION SETUP --- */
+    opacity: 0; 
+    transform: translateY(40px); 
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out; 
+}
+
+/* State when the item is visible in the viewport */
+.gallery-container .artwork-item.is-visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* Image Styling */
@@ -123,22 +172,9 @@ body{
     transition: transform 0.3s ease-in-out;
 }
 
-/* Floating Keyframes */
-@keyframes floating-anim-1 {
-    0% { transform: translateY(0px); }
-    100% { transform: translateY(-10px); }
-}
-.gallery-container .artwork-item:nth-child(2n) {
-    animation-name: floating-anim-2;
-    animation-duration: 5s;
-}
-@keyframes floating-anim-2 {
-    0% { transform: translateY(0px); }
-    100% { transform: translateY(10px); }
-}
 
 /* ****************************************************** */
-/* 5. VIEW FULL BUTTON (Pinalitan ng "Enlarge") */
+/* 5. VIEW FULL BUTTON */
 /* ****************************************************** */
 
 .view-full-btn {
@@ -162,13 +198,13 @@ body{
     justify-content: center;
     cursor: pointer;
     
-    opacity: 0; /* Tago muna */
+    opacity: 0; 
     transition: opacity 0.3s ease, transform 0.3s ease; 
     z-index: 10;
 }
 
 .artwork-item:hover .view-full-btn {
-    opacity: 1; /* Ipakita pag naka-hover */
+    opacity: 1; 
     transform: translate(-50%, -50%) scale(1.05);
 }
 
@@ -238,11 +274,10 @@ body{
         <a href="index.html" class="luis-logo">LÜIS</a> 
         
         <nav class="glass-island">
-            <a href="index.html">Home</a> 
+             <a href="index.html">Home</a> 
             <a href="portfolio.html">Portfolio</a> 
-            <a href="index.html#commissions">Commissions</a> 
-            <a href="index.html#about">About</a> 
-            <a href="index.html#contact">Contact</a> 
+            <a href="request.html">Request</a> 
+            <a href="index.html#commissions">Contact</a>
         </nav>
         
         <div class="hamburger-menu" id="hamburger-open">
@@ -423,14 +458,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Placeholder for menu logic (if needed, adjust based on your external menu code)
+    // Placeholder for menu logic (if needed)
     const HAMBURGER_OPEN = document.getElementById('hamburger-open');
     if (HAMBURGER_OPEN) {
         HAMBURGER_OPEN.addEventListener('click', () => {
-             // Example: if you had a full menu, you'd call a function here
              // console.log("Hamburger clicked");
         });
     }
+
+
+    // ==========================================================
+    // --- SCROLL ANIMATION LOGIC (Intersection Observer) ---
+    // ==========================================================
+    
+    let lastScrollY = window.scrollY; // Variable para i-track ang huling scroll position
+
+    const options = {
+        root: null, // viewport ang gagamiting root
+        rootMargin: '0px',
+        threshold: 0.2 // Ipakita ang item kapag 20% nito ay nasa viewport na
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            const currentScrollY = window.scrollY;
+            const item = entry.target;
+
+            if (entry.isIntersecting) {
+                // Scroll pababa (o unang beses na nakita)
+                // Gawing visible ang item
+                item.classList.add('is-visible');
+            } else {
+                // Lumabas na sa viewport
+                // Kung nag-s-scroll pataas, itago muli (reverse animation)
+                if (currentScrollY < lastScrollY) {
+                    item.classList.remove('is-visible');
+                }
+            }
+        });
+        
+        lastScrollY = window.scrollY; // Update ang scroll position para sa susunod na check
+    }, options);
+
+    // I-observe ang bawat artwork item
+    artworkItems.forEach(item => {
+        observer.observe(item);
+    });
 
 });
     </script>
