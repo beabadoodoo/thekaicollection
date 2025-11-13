@@ -55,7 +55,6 @@
             display: flex; gap: 30px; padding: 15px 30px; border-radius: var(--border-radius-lg); 
             background: rgba(255, 255, 255, 0.7); /* Lighter glass effect */
             backdrop-filter: blur(10px) saturate(180%); -webkit-backdrop-filter: blur(10px) saturate(180%); 
-            /* INALIS ANG PURPLE BORDER: */
             border: none; 
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
         }
@@ -111,7 +110,7 @@
         .step.active { 
             opacity: 1; 
             visibility: visible; 
-            position: relative; 
+            position: relative; /* Only active element takes up space */
             transform: translateX(0);
         }
         
@@ -121,12 +120,26 @@
             opacity: 0;
             visibility: hidden;
         }
+        
+        /* New class for slide-out right (used when going PREVIOUS) */
+        .step.slide-out-right {
+            transform: translateX(100%);
+            opacity: 0;
+            visibility: hidden;
+        }
 
-        /* Animation class for slide-in right (used when going PREVIOUS) */
-        .step.slide-in-right {
-            transform: translateX(0); /* Reverts to center */
-            opacity: 1;
-            visibility: visible;
+        /* Override default for 'prev' transition, starting off-screen left */
+        .step.slide-in-from-left {
+            transform: translateX(-100%);
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        /* Final state for a previous step coming in */
+        .step.slide-in-from-left.active {
+             transform: translateX(0);
+             opacity: 1;
+             visibility: visible;
         }
 
         .step h3 { font-size: 1.5rem; font-weight: 500; margin-bottom: var(--spacing-md); }
@@ -135,7 +148,6 @@
         .options-grid { display: flex; flex-wrap: wrap; gap: 12px; }
         .choice-option {
             background-color: var(--card-base); 
-            /* DATING PURPLE BORDER: border: 2px solid var(--secondary-accent); */
             border: 2px solid var(--text-gray); /* Pinalitan ng gray/default border */
             padding: 12px 20px;
             border-radius: 50px; /* Pill shape */
@@ -214,7 +226,6 @@
         .form-input:focus { outline: none; border-color: #333; } 
         
         .file-upload-wrapper {
-            /* DATING PURPLE BORDER: border: 1px dashed var(--secondary-accent); */
             border: 1px dashed var(--text-dark); /* Pinalitan ng itim na dashed border */
             padding: 15px; border-radius: 8px; margin-bottom: 20px;
             text-align: center; cursor: pointer;
@@ -823,35 +834,52 @@
         return true;
     }
 
+    // ⭐ F I X E D   S H O W S T E P   F U N C T I O N ⭐
     function showStep(stepIndex, direction = 'next') {
         const targetStepElement = document.querySelector(`.step[data-step="${stepIndex}"]`);
-        if (!targetStepElement) return;
-
         const currentStepElement = document.querySelector(`.step.active`);
-        if (currentStepElement) {
-            // Apply animation class to current step before removing 'active'
-            if (direction === 'next' && stepIndex > currentStep) {
-                currentStepElement.classList.add('slide-out-left');
-                currentStepElement.classList.remove('active');
-            } else if (direction === 'prev' && stepIndex < currentStep) {
-                // To slide in from the left, the new step needs to start off-screen left.
-                // Reset the active step's class immediately.
-                currentStepElement.classList.remove('active');
-                currentStepElement.classList.remove('slide-out-left'); // Remove any lingering slide-out
-            } else {
-                 // No direction change or jump, just remove active
-                 currentStepElement.classList.remove('active');
-            }
+        if (!targetStepElement || !currentStepElement) return;
+
+        // 1. Prepare the CURRENT step for transition (out)
+        currentStepElement.classList.remove('active');
+        currentStepElement.classList.remove('slide-in-from-left');
+
+        if (direction === 'next') {
+            currentStepElement.classList.remove('slide-out-right'); 
+            currentStepElement.classList.add('slide-out-left');
+        } else if (direction === 'prev') {
+            currentStepElement.classList.remove('slide-out-left'); 
+            currentStepElement.classList.add('slide-out-right'); // New class to slide out right
         }
 
-        // Set the new step up for animation
-        targetStepElement.classList.remove('slide-out-left');
+        // 2. Prepare the TARGET step for transition (in)
+        targetStepElement.classList.remove('slide-out-left', 'slide-out-right');
+        
+        if (direction === 'prev') {
+             // Set up position for slide-in from left: Start off-screen left
+            targetStepElement.classList.add('slide-in-from-left');
+        } else {
+             // Reset to default (off-screen right) for slide-in from right
+             targetStepElement.classList.remove('slide-in-from-left');
+        }
+        
+        // Force reflow/re-render before setting active to ensure transition starts from correct position
+        void targetStepElement.offsetWidth;
+
+        // 3. Start the transition (set target to active)
         targetStepElement.classList.add('active');
         
-        // This brief timeout ensures the old step's transition has a moment to start
+        // Timeout to finalize state and update UI after CSS transition starts
         setTimeout(() => {
             currentStep = stepIndex;
-            // Removed stepNumberSpan update
+            
+            // Clean up: Reset position of steps that are not active, and remove temp animation classes
+            steps.forEach(step => {
+                if (step !== targetStepElement) {
+                    step.classList.remove('slide-out-left', 'slide-out-right', 'slide-in-from-left');
+                    step.style.transform = ''; // Let CSS handle the off-screen positioning for inactive steps
+                }
+            });
             
             // Update UI/State for the new step
             updateNavigation();
@@ -889,17 +917,9 @@
                 nextBtn.textContent = 'Next →';
                 downloadReceiptBtn.style.display = 'none'; // Ensure hidden on other steps
             }
-
-            // Ensure all steps start with default transform for the next transition
-            steps.forEach(step => {
-                if (step !== targetStepElement) {
-                    step.classList.remove('slide-out-left');
-                    step.style.transform = `translateX(${stepIndex > currentStep ? '-100%' : '100%'})`;
-                }
-            });
-
         }, 0); 
     }
+    // ⭐ E N D   O F   F I X E D   S H O W S T E P   F U N C T I O N ⭐
 
     function updateNavigation() {
         // Update Previous Button
