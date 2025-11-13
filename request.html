@@ -30,8 +30,7 @@
             --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
-        /* FONTS */
-        /* (Assuming font files are available in ./fonts/) */
+        /* FONTS (Assuming font files are available in ./fonts/) */
         @font-face { font-family: 'Athletics'; font-style: normal; font-weight: 400; font-display: swap; src: url('./fonts/Athletics Regular.otf') format('opentype'); }
         @font-face { font-family: 'Athletics'; font-style: normal; font-weight: 500; font-display: swap; src: url('./fonts/Athletics Medium.otf') format('opentype'); }
 
@@ -72,7 +71,17 @@
             border: none; /* Removed border */
             display: flex; flex-direction: column;
         }
-
+        
+        /* ⭐️ MALAKING GREETING STYLE */
+        .main-greeting {
+            font-size: 4rem; 
+            font-weight: 500; 
+            text-align: center;
+            margin-bottom: 50px;
+            color: var(--secondary-accent);
+            line-height: 1.1;
+        }
+        
         /* --- Calculator Specific Styles --- */
         .header { margin-bottom: var(--spacing-md); }
         .header h1 { font-size: 2.2rem; font-weight: 500; color: var(--text-dark); margin-bottom: 5px; }
@@ -80,21 +89,48 @@
 
         .step-container { 
             position: relative; min-height: 350px; flex-grow: 1; padding-bottom: var(--spacing-md); 
+            overflow: hidden; /* Important for animation */
         }
         
+        /* ⭐️ STEP ANIMATION STYLES (Slide-in/Slide-out) */
         .step { 
-            position: absolute; width: 100%; top: 0; left: 0; opacity: 0; 
-            visibility: hidden; transition: opacity 0.4s ease-in-out, visibility 0s 0.4s; 
+            position: absolute; width: 100%; top: 0; left: 0;
+            visibility: hidden; 
+            transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
             padding: var(--spacing-md) 0; 
         }
+        
+        /* Default state (Hidden, off-screen right) */
+        .step:not(.active) {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+
+        /* Active state (Visible, on-screen center) */
         .step.active { 
-            opacity: 1; visibility: visible; transition: opacity 0.4s ease-in-out; 
+            opacity: 1; 
+            visibility: visible; 
             position: relative; 
+            transform: translateX(0);
+        }
+        
+        /* Animation class for slide-out left (used when going NEXT) */
+        .step.slide-out-left {
+            transform: translateX(-100%);
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Animation class for slide-in right (used when going PREVIOUS) */
+        .step.slide-in-right {
+            transform: translateX(0); /* Reverts to center */
+            opacity: 1;
+            visibility: visible;
         }
 
         .step h3 { font-size: 1.5rem; font-weight: 500; margin-bottom: var(--spacing-md); }
         
-        /* Choice Options - PILL STYLE (Lostly/Clou.ch inspired) */
+        /* Choice Options - PILL STYLE */
         .options-grid { display: flex; flex-wrap: wrap; gap: 12px; }
         .choice-option {
             background-color: var(--card-base); 
@@ -139,14 +175,25 @@
             display: flex; justify-content: space-between; margin-top: auto; 
             padding-top: var(--spacing-md); border-top: 1px solid var(--gray-light); width: 100%; 
         }
+        
+        /* ⭐️ NAVIGATION BUTTON STYLE (Minimalist Black/White) */
         .nav-button {
-            background-color: var(--primary-accent); 
-            color: var(--accent-text); 
-            border: none; padding: 12px 25px; border-radius: 50px; cursor: pointer;
-            font-size: 1rem; font-weight: 500; transition: background 0.2s;
+            background-color: var(--card-base); 
+            color: var(--text-dark); 
+            border: 2px solid var(--text-dark); /* Black border */
+            padding: 12px 25px; border-radius: 50px; cursor: pointer;
+            font-size: 1rem; font-weight: 500; transition: all 0.2s;
         }
-        .nav-button:hover { background-color: #c0ea6f; } 
-        .nav-button:disabled { background-color: #ccc; cursor: not-allowed; color: #555; }
+        .nav-button:hover { 
+            background-color: var(--text-dark); 
+            color: var(--text-light);
+        } 
+        .nav-button:disabled { 
+            background-color: #ccc; 
+            border-color: #ccc; 
+            cursor: not-allowed; 
+            color: #555; 
+        }
 
         .total-price-display { text-align: center; padding: 30px 0; }
         #final-price-value {
@@ -216,6 +263,7 @@
             .navigation { flex-direction: column; gap: 10px; }
             .nav-button { width: 100%; text-align: center; }
             .receipt-area { padding: 20px 0; }
+            .main-greeting { font-size: 2.5rem; margin-bottom: 30px; }
         }
     </style>
 </head>
@@ -238,6 +286,8 @@
 
     <div class="request-container">
         
+        <h2 class="main-greeting">Let's calculate your dream art project.</h2>
+
         <div class="right-panel">
             
             <div class="header">
@@ -245,7 +295,7 @@
                 <p>Find out how much your custom artwork will cost before ordering.</p>
             </div>
         
-            <form id="price-calculator-form" onsubmit="event.preventDefault(); showStep(getNextStep(currentStep, selections.medium));">
+            <form id="price-calculator-form" onsubmit="event.preventDefault(); showStep(getNextStep(currentStep, selections.medium), 'next');">
                 <div class="step-container">
                     
                     <div class="step active" data-step="1">
@@ -409,7 +459,7 @@
         'Colored': 100, 'Shaded': 50,
 
         // Digital Art Rules
-    'Poster': 3000, 'Logo': 1000 // BINAGO NA SA 3000 PESOS
+        'Poster': 3000, 'Logo': 1000 // ✅ BINAGO NA SA 3000 PESOS
     };
     
     let selections = {
@@ -460,8 +510,8 @@
     function getPriceForComposition(comp, isRealistic) {
         if (comp === 'Headshot') return 0;
         if (comp === 'Bust') return isRealistic ? 300 : 200;
-        if (comp === 'Half Body') return isRealistic ? 400 : 300; // FIX: Half Body prices confirmed
-        if (comp === 'Full Body') return isRealistic ? 600 : 450; // FIX: Full Body prices confirmed
+        if (comp === 'Half Body') return isRealistic ? 400 : 300; 
+        if (comp === 'Full Body') return isRealistic ? 600 : 450; 
         return 0; // fallback
     }
 
@@ -642,221 +692,193 @@
             `;
         }
 
-        const notesText = selections.notes ? `<div class="receipt-note-box"><strong>Notes:</strong> ${selections.notes}</div>` : '';
-        const referenceText = selections.referenceFile ? `<p style="font-size: 0.9rem; margin-top: 10px;">Reference File: <strong>${selections.referenceFile.name}</strong> uploaded.</p>` : '';
-        
+        const noteBox = selections.notes ? `<div class="receipt-note-box">Note: ${selections.notes}</div>` : '';
+
         return `
-            <div class="receipt-header">Final Order Receipt</div>
+            <div class="receipt-header">LÜIS Commission Receipt</div>
             ${itemsHTML}
             <div class="receipt-total">
                 <div class="receipt-item">
-                    <span>TOTAL PRICE:</span>
-                    <span>₱${finalTotal.toLocaleString()}</span>
+                    <span>TOTAL ESTIMATE</span>
+                    <span style="color: var(--secondary-accent);">₱${finalTotal.toLocaleString()}</span>
                 </div>
             </div>
-            <p style="margin-top: 20px;">Payment Method: <strong>${selections.payment}</strong></p>
-            ${referenceText}
-            ${notesText}
-            <p style="font-size: 0.9rem; margin-top: 20px; color: var(--text-gray);">
-                This is an estimated price. Final price may change based on complexity discussed later.
-            </p>
+            ${noteBox}
+            <div class="receipt-note-box" style="margin-top: 20px; font-size: 0.8rem; border-left: 3px solid var(--primary-accent);">
+                This is only an estimate. Final price may vary slightly after consultation.
+                <br>Payment Method: <strong>${selections.payment || 'Not Selected'}</strong>
+            </div>
+            <a href="mailto:luis@commission.com?subject=Commission Request - Total ₱${finalTotal.toLocaleString()}" style="display: block; margin-top: 20px; text-decoration: none;">
+                <button class="nav-button" style="width: 100%; background-color: var(--primary-accent); border-color: var(--primary-accent); color: var(--accent-text);">SUBMIT REQUEST</button>
+            </a>
         `;
     }
-    
-    
+
     // --- Navigation and State Management ---
 
     function getNextStep(current, medium) {
         if (current === 1) {
-            return (medium === 'Traditional') ? 2 : 3;
+            return medium === 'Digital' ? 3 : 2; // Digital skips to Step 3
         }
-        if (current === 2 && medium === 'Traditional') {
-            return 4; // Traditional -> Paper Size -> Art Style
-        }
-        if (current === 3 && medium === 'Digital') {
-            return 9; // Digital -> Digital Type -> Final Details (Skipping 4-8)
-        }
-        if (current >= 4 && current < 9) {
-            return current + 1; // Standard step progression for Traditional (4->5->6->7->8)
-        }
-        if (current === 8 && medium === 'Traditional') {
-            return 9; // Traditional -> Extras -> Final Details
-        }
-        if (current === 9) {
-            return 10; // Final Details -> Confirmation
-        }
-        return current;
+        if (current === 2) return 4; // Traditional: 2 (Paper Size) -> 4 (Art Style)
+        if (current === 3) return 9; // Digital: 3 (Digital Type) -> 9 (Final Details)
+        if (current >= 4 && current < 9) return current + 1; // 4 to 8: Normal flow
+        if (current === 9) return 10; // 9 (Final Details) -> 10 (Receipt)
+        return totalSteps; // Safety fallback
     }
 
     function getPrevStep(current, medium) {
         if (current === 1) return 1;
-        if (current === 2) return 1; // Paper Size -> Medium
-        if (current === 3) return 1; // Digital Type -> Medium
-        if (current === 4) {
-            return (medium === 'Traditional') ? 2 : 3; // Art Style -> Paper Size (T) or Digital Type (D)
-        }
-        if (current > 4 && current <= 9 && medium === 'Traditional') {
-            return current - 1; // Standard step regression (9->8->7...)
-        }
-        if (current === 9 && medium === 'Digital') {
-            return 3; // Final Details -> Digital Type
-        }
-        if (current === 10) return 9; // Confirmation -> Final Details
-        return current;
+        if (current === 3 && medium === 'Digital') return 1; // Digital 3 -> 1
+        if (current === 2) return 1; // Traditional 2 -> 1
+        if (current === 4) return 2; // Traditional 4 -> 2
+        if (current === 9 && medium === 'Traditional') return 8; // Traditional 9 -> 8
+        if (current === 9 && medium === 'Digital') return 3; // Digital 9 -> 3
+        if (current === 10) return 9; // 10 (Receipt) -> 9 (Final Details)
+        if (current > 1) return current - 1; 
+        return 1; // Safety fallback
     }
 
-    function showStep(stepNumber) {
-        if (stepNumber < 1 || stepNumber > totalSteps) return;
-
-        // Hide all steps first
-        steps.forEach(step => step.classList.remove('active'));
-
-        // Show the target step
-        const targetStep = document.querySelector(`.step[data-step="${stepNumber}"]`);
-        if (targetStep) {
-            targetStep.classList.add('active');
-            currentStep = stepNumber;
-            stepNumberSpan.textContent = currentStep;
-        }
+    function updateNavButtons(current, medium) {
+        prevBtn.disabled = current === 1 || current === 10;
         
-        // Specific step updates
-        if (currentStep === 9) {
-            updateTotalPriceDisplay();
-            notesInput.value = selections.notes;
-        }
-
-        if (currentStep === 10) {
-             receiptLoading.style.display = 'block';
-             finalReceiptPaper.style.display = 'none';
-             const { items, total } = calculateItemizedPrices();
-             setTimeout(() => {
-                 receiptLoading.style.display = 'none';
-                 finalReceiptPaper.innerHTML = createReceiptHTML(items, total);
-                 finalReceiptPaper.style.display = 'block';
-             }, 1000); // Simulate loading time
-        }
-
-        updateNavigation();
-    }
-    
-    function updateNavigation() {
-        const currentStepDiv = document.querySelector(`.step[data-step="${currentStep}"]`);
-        let isSelected = true;
-
-        // Reset display of dynamic groups
-        bgSliderGroup.style.display = 'none';
-        petSliderGroup.style.display = 'none';
-        
-        if (currentStepDiv) {
-            // Check for Choice Options (.choice-option)
-            const activeChoices = currentStepDiv.querySelectorAll('.choice-option');
-            if (activeChoices.length > 0) {
-                // Tiyakin na may kahit isang option na may 'selected' class
-                isSelected = currentStepDiv.querySelector('.choice-option.selected') !== null;
-            }
-
-            // Check for Dropdowns (Select elements)
-            const activeSelects = currentStepDiv.querySelectorAll('.styled-select');
-            activeSelects.forEach(select => {
-                // If the value is the default/unselected one, require selection
-                if (select.id === 'extra-char-select' && selections.medium === 'Traditional') {
-                    // This is an optional step, so the default '0' is allowed.
-                }
-            });
-
-            // Specific validation for steps
-            if (currentStep === 7 && selections.bg === 'Detailed') {
-                bgSliderGroup.style.display = 'block';
-            }
-            if (currentStep === 8 && selections.pet_object) {
-                petSliderGroup.style.display = 'block';
-            }
-        }
-        
-        prevBtn.disabled = currentStep === 1 || currentStep === 10;
-        nextBtn.disabled = !isSelected;
-
-        if (currentStep === 9 && selections.payment === null) {
-            nextBtn.disabled = true; // Payment must be selected in the final step
-        }
-
-        if (currentStep === totalSteps) {
-            nextBtn.textContent = 'Order Now'; // Last step has a final action button
+        // Final button text
+        if (current === 9) {
+            nextBtn.textContent = 'Generate Receipt →';
+        } else if (current === 10) {
+            nextBtn.textContent = 'Done';
+            nextBtn.disabled = true; // No next step after receipt
         } else {
             nextBtn.textContent = 'Next →';
+            // Disable Next if no selection is made in the current step
+            let isSelectionMade = true;
+            const activeStepElement = document.querySelector(`.step.active`);
+            const type = activeStepElement.querySelector('.choice-option, .styled-select').dataset.type;
+            
+            if (type === 'medium' && selections.medium === null) isSelectionMade = false;
+            if (type === 'paper_size' && selections.paper_size === null) isSelectionMade = false;
+            if (type === 'digital_type' && selections.digital_type === null) isSelectionMade = false;
+            if (type === 'style' && selections.style === null) isSelectionMade = false;
+            if (type === 'comp' && selections.comp === null) isSelectionMade = false;
+            if (type === 'finish' && selections.finish === null) isSelectionMade = false;
+            if (type === 'bg' && selections.bg === null) isSelectionMade = false;
+            
+            nextBtn.disabled = !isSelectionMade;
         }
-        
-        // Update price displays dynamically if they rely on selection changes
-        updateCompositionPrices();
-        updateExtraCharSelectPrices();
-        updateTotalPriceDisplay();
     }
     
-    // --- Event Listeners ---
+    function showStep(stepNumber, direction = 'next') {
+        const currentActiveStep = document.querySelector('.step.active');
+        const nextStep = document.querySelector(`.step[data-step="${stepNumber}"]`);
+
+        if (currentActiveStep) {
+            // Apply slide-out animation to current step
+            currentActiveStep.classList.remove('active');
+            if (direction === 'next') {
+                currentActiveStep.style.transform = 'translateX(-100%)'; // Slide left out
+            } else {
+                currentActiveStep.style.transform = 'translateX(100%)'; // Slide right out
+            }
+            currentActiveStep.style.opacity = '0';
+        }
+
+        if (nextStep) {
+            // Prepare next step position based on direction
+            if (direction === 'next') {
+                nextStep.style.transform = 'translateX(100%)'; // Start from right
+            } else {
+                nextStep.style.transform = 'translateX(-100%)'; // Start from left
+            }
+            nextStep.style.opacity = '0';
+            nextStep.style.visibility = 'hidden';
+            
+            // Wait for transition to finish before changing position and applying slide-in
+            setTimeout(() => {
+                nextStep.classList.add('active');
+                // Apply slide-in animation to next step
+                nextStep.style.transform = 'translateX(0)'; // Slide to center
+                nextStep.style.opacity = '1';
+                nextStep.style.visibility = 'visible';
+                
+                currentStep = stepNumber;
+                stepNumberSpan.textContent = currentStep;
+                updateNavButtons(currentStep, selections.medium);
+                updateTotalPriceDisplay();
+
+                // Special step logic
+                if (currentStep === 9) {
+                    updateTotalPriceDisplay();
+                } else if (currentStep === 10) {
+                    generateReceipt();
+                }
+            }, 50); // Small delay to ensure CSS applies correctly
+        }
+    }
+
+    // --- Event Listeners and Initial Setup ---
 
     // Option Clicks
     allOptions.forEach(option => {
         option.addEventListener('click', function() {
             const type = this.dataset.type;
             const value = this.dataset.value;
+            const price = this.dataset.price ? parseInt(this.dataset.price) : null;
 
-            // Remove 'selected' from all other options of the same type
+            // Clear existing selection for this type
             document.querySelectorAll(`.choice-option[data-type="${type}"]`).forEach(opt => {
                 opt.classList.remove('selected');
             });
 
-            // Toggle 'selected' on the clicked option
+            // Set new selection
             this.classList.add('selected');
-            
-            // Update the selections object
+            selections[type] = value;
+
+            // Update complex selections
             if (type === 'medium') {
-                selections.medium = value;
-                // Reset dependent selections when medium changes
-                selections.paper_size = null; selections.digital_type = null; 
-            } else if (type === 'paper_size') {
-                selections.paper_size = value;
-            } else if (type === 'digital_type') {
-                selections.digital_type = value;
-            } else if (type === 'style') {
-                selections.style = value;
-            } else if (type === 'comp') {
-                selections.comp = value;
-            } else if (type === 'finish') {
-                selections.finish = value;
+                selections.paper_size = null; 
+                selections.digital_type = null;
+                // Reset Traditional-specific choices if switching to Digital
+                if (value === 'Digital') {
+                    selections.style = null;
+                    selections.comp = 'Headshot';
+                    selections.finish = 'Lineart';
+                    selections.bg = 'None';
+                    selections.extra_char_type_count = '0';
+                    selections.pet_object = false;
+                }
+                
             } else if (type === 'bg') {
-                selections.bg = value;
-            } else if (type === 'payment') {
-                selections.payment = value;
+                if (value === 'Detailed') {
+                    bgSliderGroup.style.display = 'block';
+                    selections.bg_detailed_price = parseInt(bgSlider.value);
+                } else {
+                    bgSliderGroup.style.display = 'none';
+                    selections.bg_detailed_price = 250; // Reset
+                }
             } else if (type === 'extra_pet') {
-                selections.pet_object = true;
+                if (selections.pet_object === true) {
+                    // Deselecting the option (toggle off)
+                    selections.pet_object = false;
+                    this.classList.remove('selected');
+                    petSliderGroup.style.display = 'none';
+                } else {
+                    // Selecting the option (toggle on)
+                    selections.pet_object = true;
+                    this.classList.add('selected');
+                    petSliderGroup.style.display = 'block';
+                    selections.pet_object_price = parseInt(petSlider.value);
+                }
+            } else if (type === 'style') {
+                updateCompositionPrices(); // Update comp prices based on new style
+                updateExtraCharSelectPrices(); // Update extra char prices
             }
             
-            // Handle Pet/Object toggle specifically
-            if (type === 'extra_pet' && !this.classList.contains('selected')) {
-                selections.pet_object = false;
-            } else if (type === 'extra_pet' && this.classList.contains('selected')) {
-                 // Ensure pet-object is true if button is selected
-                 selections.pet_object = true; 
-            }
-
-            // If the item is toggled off manually (unlikely with this logic, but safe)
-            if (!this.classList.contains('selected')) {
-                // We assume clicking selects, so no need for complicated toggle logic here
-            }
-
-            updateNavigation();
             updateTotalPriceDisplay();
+            updateNavButtons(currentStep, selections.medium); // Check if Next can be enabled
         });
     });
 
-    // Navigation Button Handlers
-    prevBtn.addEventListener('click', () => {
-        showStep(getPrevStep(currentStep, selections.medium));
-    });
-
-    // NOTE: nextBtn handler is on the form's onsubmit attribute (type="submit")
-
-    // Slider Handlers
+    // Slider Listeners
     bgSlider.addEventListener('input', function() {
         bgSliderValue.textContent = this.value;
         selections.bg_detailed_price = parseInt(this.value);
@@ -868,19 +890,30 @@
         selections.pet_object_price = parseInt(this.value);
         updateTotalPriceDisplay();
     });
-    
-    // Dropdown Handler
+
+    // Dropdown Listener (Extra Character)
     extraCharSelect.addEventListener('change', function() {
         selections.extra_char_type_count = this.value;
         updateTotalPriceDisplay();
-        updateNavigation(); // Re-enable if necessary
     });
 
-    // File Upload Handler
-    document.querySelector('.file-upload-wrapper').addEventListener('click', () => {
-        referenceUpload.click();
+    // Navigation Button Actions
+    prevBtn.addEventListener('click', () => {
+        const prevStep = getPrevStep(currentStep, selections.medium);
+        showStep(prevStep, 'prev');
     });
 
+    nextBtn.addEventListener('click', () => {
+        if (nextBtn.textContent === 'Generate Receipt →') {
+            generateReceipt();
+            showStep(10, 'next');
+        } else {
+            const nextStep = getNextStep(currentStep, selections.medium);
+            showStep(nextStep, 'next');
+        }
+    });
+
+    // File Upload Handler (for visual feedback)
     referenceUpload.addEventListener('change', function() {
         if (this.files.length > 0) {
             uploadLabel.textContent = `File selected: ${this.files[0].name}`;
@@ -891,13 +924,37 @@
         }
     });
 
-    // Notes Handler
     notesInput.addEventListener('input', function() {
         selections.notes = this.value;
     });
 
-    // Initialize the calculator
-    showStep(currentStep); 
-</script>
+    function generateReceipt() {
+        // Hide loading, show receipt paper
+        receiptLoading.style.display = 'block';
+        finalReceiptPaper.style.display = 'none';
+        finalReceiptPaper.innerHTML = '';
+        
+        setTimeout(() => {
+            const { items, total } = calculateItemizedPrices();
+            const receiptHTML = createReceiptHTML(items, total);
+            
+            receiptLoading.style.display = 'none';
+            finalReceiptPaper.innerHTML = receiptHTML;
+            finalReceiptPaper.style.display = 'block';
+            
+            // Re-apply animation class to trigger print animation
+            finalReceiptPaper.classList.remove('printAnimation'); 
+            void finalReceiptPaper.offsetWidth; // Trigger reflow
+            finalReceiptPaper.classList.add('printAnimation');
+        }, 800); 
+    }
+
+    // Initial load setup
+    document.addEventListener('DOMContentLoaded', () => {
+        showStep(1, 'next'); // Initialize step 1
+        updateCompositionPrices(); // Initialize composition prices (will use default Non-Realistic/Non-Style until selected)
+        updateExtraCharSelectPrices(); // Initialize extra char dropdown prices
+    });
+    </script>
 </body>
 </html>
