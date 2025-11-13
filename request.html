@@ -232,7 +232,7 @@
         }
         .file-upload-wrapper:hover { border-color: var(--primary-accent); } /* Primary accent on hover */
 
-        /* RECEIPT ANIMATION STYLES */
+        /* RECEIPT ANIMATION STYLING */
         @keyframes printAnimation {
             0% { transform: translateY(100%); opacity: 0; }
             50% { transform: translateY(0); opacity: 1; }
@@ -255,10 +255,15 @@
         }
 
         .final-receipt-paper {
-            background: var(--card-base); border: 1px solid #eee; border-radius: 8px;
-            width: 100%; max-width: 400px;
-            padding: 30px; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            transform: translateY(100%); opacity: 0;
+            background: var(--card-base); 
+            border: 1px solid #eee; 
+            border-radius: 8px;
+            width: 100%; 
+            max-width: 400px;
+            padding: 30px; 
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(100%); 
+            opacity: 0;
             animation: printAnimation 1.5s ease-out forwards;
         }
         .receipt-header {
@@ -269,7 +274,6 @@
         .receipt-item-title { font-weight: 400; color: #555; }
         .receipt-total { border-top: 2px solid var(--text-dark); margin-top: 15px; padding-top: 10px; font-size: 1.4rem; font-weight: 500; }
         .receipt-note-box { background: var(--gray-light); padding: 10px; border-radius: 5px; margin-top: 15px; font-size: 0.9rem; text-align: left; }
-
 
         /* Responsive Design */
         @media (max-width: 900px) {
@@ -442,11 +446,11 @@
                     <div class="step" data-step="10">
                         <h3>Commission Confirmation</h3>
                         <div class="receipt-area">
-                            <div class="receipt-loading">Your receipt is printing, please wait...</div>
+                            <div class="receipt-loading">Preparing your summary...</div>
                             <div class="final-receipt-paper" id="final-receipt-content" style="display: none;">
                             </div>
-                            <button type="button" id="download-receipt-btn" class="nav-button" style="display: none; margin-top: 20px;">
-                                Download Receipt (TXT)
+                            <button type="button" id="copy-and-go-btn" class="nav-button" style="display: none; margin-top: 20px;">
+                                Copy Details & Go to FB Messenger
                             </button>
                         </div>
                     </div>
@@ -516,7 +520,8 @@
     const finalReceiptPaper = document.getElementById('final-receipt-content');
     const finalPriceDisplay = document.getElementById('final-price-value');
     const extraCharSelect = document.getElementById('extra-char-select');
-    const downloadReceiptBtn = document.getElementById('download-receipt-btn');
+    // Renamed button
+    const copyAndGoBtn = document.getElementById('copy-and-go-btn'); 
 
 
     // --- Core Calculation Functions ---
@@ -690,7 +695,7 @@
         }
     }
 
-    // --- Receipt Functions ---
+    // --- Receipt HTML Generation ---
 
     function generateReceiptHTML(items, total, paymentMethod, notes, referenceFile) {
         let itemsHtml = items.map(item => `
@@ -730,7 +735,7 @@
         }
 
         return `
-            <div class="receipt-header">Commission Receipt</div>
+            <div class="receipt-header">Commission Summary</div>
             ${itemsHtml}
             ${paypalFeeHtml}
             <div class="receipt-total">
@@ -741,47 +746,74 @@
             </div>
             <p style="margin-top: 10px; font-size: 0.9rem;">Payment Method: <strong>${paymentMethod || 'Not Selected'}</strong></p>
             ${noteBoxHtml}
-            <p style="margin-top: 20px; font-size: 0.8rem; color: #777;">*Final price confirmed upon review of full details. Thank you!</p>
+            <p style="margin-top: 20px; font-size: 0.8rem; color: #777;">*Copy all details below and send to The Kai Collection.</p>
         `;
     }
 
-    function downloadReceipt(items, total, paymentMethod, notes, referenceFile) {
-        let receiptText = '--- LÜIS Commission Price Calculation ---\n\n';
-        receiptText += 'ITEMIZED BREAKDOWN:\n';
+    // --- COPY TO CLIPBOARD FUNCTIONALITY ---
 
+    function generateCopyText(items, total, paymentMethod, notes, referenceFile) {
+        let receiptText = '--- COMMISSION REQUEST DETAILS (from LUIS Calculator) ---\n\n';
+        
         let finalTotal = total;
+        
+        receiptText += '1. Commission Selections:\n';
         items.forEach(item => {
-            receiptText += `- ${item.name.padEnd(50)} ₱${item.price.toLocaleString()}\n`;
+            receiptText += `- ${item.name}: ₱${item.price.toLocaleString()}\n`;
         });
 
         let paypalFee = 0;
         if (paymentMethod === 'PayPal') {
             paypalFee = Math.round(total * 0.05); 
             finalTotal += paypalFee;
-            receiptText += `- PayPal Transaction Fee (est. 5%)\n`.padEnd(50) + ` +₱${paypalFee.toLocaleString()}\n`;
+            receiptText += `- PayPal Transaction Fee (est. 5%): +₱${paypalFee.toLocaleString()}\n`;
         }
 
-        receiptText += `\n--- TOTAL ESTIMATED PRICE ---\n`;
-        receiptText += `TOTAL PRICE: ${' '.repeat(38)} ₱${finalTotal.toLocaleString()}\n`;
-        receiptText += `Payment Method: ${paymentMethod || 'Not Selected'}\n`;
+        receiptText += `\n2. FINAL ESTIMATED PRICE: ₱${finalTotal.toLocaleString()}\n`;
+        receiptText += `\n3. PAYMENT METHOD: ${paymentMethod || 'Not Selected'}\n`;
         
         if (notes.trim()) {
-            receiptText += `\nNOTES/DESCRIPTION:\n${notes.trim()}\n`;
+            receiptText += `\n4. NOTES / DESCRIPTION:\n${notes.trim()}\n`;
+        } else {
+            receiptText += `\n4. NOTES / DESCRIPTION: (None provided)\n`;
         }
+        
         if (referenceFile) {
-            receiptText += `\nREFERENCE FILE: ${referenceFile.name} attached.\n`;
+            receiptText += `\n5. REFERENCE FILE: ${referenceFile.name} (Please send this file directly to The Kai Collection)\n`;
         }
-        receiptText += '\n*Note: Final price subject to artist review. Thank you for your interest!';
 
-        const blob = new Blob([receiptText], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'luis_commission_receipt.txt';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        receiptText += '\n--- END OF DETAILS ---';
+        
+        return receiptText;
+    }
+
+    function copyDetailsAndPrompt() {
+        const { items, total } = calculateItemizedPrices();
+        const copyText = generateCopyText(
+            items, 
+            total, 
+            selections.payment, 
+            notesInput.value, 
+            selections.referenceFile
+        );
+
+        // Copy text to clipboard
+        navigator.clipboard.writeText(copyText).then(() => {
+            // Success alert with instructions
+            alert(
+                "✅ SUCCESS! Ang commission details ay na-copy na sa clipboard mo (Copy-Paste)!\n\n" +
+                "Ipadala ang details na ito sa The Kai Collection para sa final confirmation at pagbabayad:\n\n" +
+                "A. FACEBOOK MESSENGER:\n" +
+                "   -> Link: https://www.facebook.com/profile.php?id=61581185863360\n\n" +
+                "B. TIKTOK:\n" +
+                "   -> User: @kai_random00\n" +
+                "   -> Link: https://www.tiktok.com/@kai_random00\n\n" +
+                "Huwag kalimutang isama ang Reference File, kung nag-upload ka. Maraming Salamat!"
+            );
+        }).catch(err => {
+            // Fallback for failed copy (e.g., non-secure context)
+            alert("❌ COPY FAILED. Paki-copy na lang mano-mano ang lahat ng detalye sa screen at i-send. Salamat!");
+        });
     }
 
     // --- Step Navigation Functions ---
@@ -812,7 +844,7 @@
 
     function checkStepValidity(stepIndex) {
         const stepElement = document.querySelector(`.step[data-step="${stepIndex}"]`);
-        if (!stepElement) return true; // Should not happen
+        if (!stepElement) return true; 
 
         if (stepIndex === 1 && selections.medium === null) return false;
         
@@ -828,13 +860,12 @@
             if (stepIndex === 3 && selections.digital_type === null) return false;
         }
 
-        // Only enforce payment selection on step 9 for submission readiness
-        if (stepIndex === 9 && nextBtn.textContent === 'Get Final Price →' && selections.payment === null) return false;
+        // Enforce payment selection on step 9 for submission readiness
+        if (stepIndex === 9 && selections.payment === null) return false;
         
         return true;
     }
 
-    // ⭐ F I X E D   S H O W S T E P   F U N C T I O N ⭐
     function showStep(stepIndex, direction = 'next') {
         const targetStepElement = document.querySelector(`.step[data-step="${stepIndex}"]`);
         const currentStepElement = document.querySelector(`.step.active`);
@@ -849,7 +880,7 @@
             currentStepElement.classList.add('slide-out-left');
         } else if (direction === 'prev') {
             currentStepElement.classList.remove('slide-out-left'); 
-            currentStepElement.classList.add('slide-out-right'); // New class to slide out right
+            currentStepElement.classList.add('slide-out-right');
         }
 
         // 2. Prepare the TARGET step for transition (in)
@@ -877,7 +908,7 @@
             steps.forEach(step => {
                 if (step !== targetStepElement) {
                     step.classList.remove('slide-out-left', 'slide-out-right', 'slide-in-from-left');
-                    step.style.transform = ''; // Let CSS handle the off-screen positioning for inactive steps
+                    step.style.transform = ''; 
                 }
             });
             
@@ -887,9 +918,9 @@
             // Special logic for Step 9 (Final Details) and 10 (Receipt)
             if (currentStep === 9) {
                 updateTotalPriceDisplay();
-                nextBtn.textContent = 'Get Final Price →';
+                nextBtn.textContent = 'Confirm & View Summary →';
             } else if (currentStep === 10) {
-                nextBtn.textContent = 'Confirm Order';
+                nextBtn.textContent = 'Summary Complete';
                 
                 // Generate and display receipt
                 const { items, total } = calculateItemizedPrices();
@@ -901,25 +932,25 @@
                     selections.referenceFile
                 );
                 
-                // Animate receipt and show download button
+                // Animate receipt and show copy button
                 receiptLoading.style.display = 'block';
                 finalReceiptPaper.style.display = 'none';
-                downloadReceiptBtn.style.display = 'none'; 
+                copyAndGoBtn.style.display = 'none'; 
                 
                 setTimeout(() => {
                     receiptLoading.style.display = 'none';
                     finalReceiptPaper.style.display = 'block';
-                    // SHOW DOWNLOAD BUTTON 
-                    downloadReceiptBtn.style.display = 'inline-block'; 
+                    // SHOW COPY BUTTON 
+                    copyAndGoBtn.style.display = 'inline-block'; 
                 }, 1000); 
 
             } else {
                 nextBtn.textContent = 'Next →';
-                downloadReceiptBtn.style.display = 'none'; // Ensure hidden on other steps
+                copyAndGoBtn.style.display = 'none'; // Ensure hidden on other steps
             }
         }, 0); 
     }
-    // ⭐ E N D   O F   F I X E D   S H O W S T E P   F U N C T I O N ⭐
+
 
     function updateNavigation() {
         // Update Previous Button
@@ -936,9 +967,9 @@
         
         // Special button text for the final confirmation button
         if (currentStep === 9) {
-             nextBtn.textContent = 'Confirm & View Receipt →';
+             nextBtn.textContent = 'Confirm & View Summary →';
         } else if (currentStep === 10) {
-            nextBtn.textContent = 'Order Complete';
+            nextBtn.textContent = 'Summary Complete';
         }
     }
 
@@ -1043,17 +1074,8 @@
         selections.notes = this.value;
     });
 
-    // Handle Download Receipt Button
-    downloadReceiptBtn.addEventListener('click', () => {
-        const { items, total } = calculateItemizedPrices();
-        downloadReceipt(
-            items, 
-            total, 
-            selections.payment, 
-            notesInput.value, 
-            selections.referenceFile
-        );
-    });
+    // Handle Copy & Go Button
+    copyAndGoBtn.addEventListener('click', copyDetailsAndPrompt);
 
     // --- Initial Setup ---
     function init() {
